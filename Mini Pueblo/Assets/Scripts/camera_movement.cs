@@ -5,18 +5,21 @@ using UnityEngine.AI;
 
 public class camera_movement : MonoBehaviour
 {
-    public GameObject player;
-    float initialZ;
-    float distanceToZoom = 0.9f;
-    Vector3 offset = new Vector3(0, 4.84f, 5.53f - 10.58f);
-    Vector3 zoomOffset = new Vector3(0, 2.99f, -7.95f);
-    Vector3 zoomDirection;
-    Vector3 lastZoomOut;
+    public GameObject player; //Player 
+    float initialZ; //The z axis value for when the zoom in starts
+    public float distanceToZoom = 0.9f; //The distance between the player and the clicked npc at wich the camera starts to zoom in
+    Vector3 offset = new Vector3(0, 4.84f, 5.53f - 10.58f); //The offset between the player and the camera when there is no zoom
+    Vector3 zoomOffset = new Vector3(0, 2.99f, -7.95f); //The offset between the player and the camera when there is zoom
+    Vector3 zoomDirection; //The direction that the camera will follow during the zoom
+    Vector3 lastZoomOut; //Last position of the camera before starting to zoom
 
-    float zoomSpeed = 3.2f;
-    public bool zoomInNow = false;
-    public bool zoomOutNow = false;
-    public bool zoomInFinished = false;
+    public float zoomSpeed = 3.2f; //Speed of the camera zoom
+    [HideInInspector]
+    public bool zoomInNow = false; //True when the zoom in process has to start
+    [HideInInspector]
+    public bool zoomOutNow = false; //True when the zoom out process has to start
+    [HideInInspector]
+    public bool zoomInFinished = false; //True when the zoom in has finished
 
     // Start is called before the first frame update
     void Start()
@@ -35,7 +38,7 @@ public class camera_movement : MonoBehaviour
                 zoomOffset.z = initialZ + 2.63f;
                 zoomIn();
             }
-            if (zoomOutNow == true)
+            else if (zoomOutNow == true)
             {
                 zoomOut();
             }
@@ -64,7 +67,7 @@ public class camera_movement : MonoBehaviour
 
     void zoomOut()
     {
-        zoomDirection = new Vector3(0, lastZoomOut.y - transform.position.y, lastZoomOut.z - transform.position.z).normalized;
+        zoomDirection = new Vector3((player.transform.position.x + offset.x) - transform.position.x, (player.transform.position.y + offset.y) - transform.position.y, (player.transform.position.z + offset.z) - transform.position.z).normalized;
 
         if (transform.position.y < lastZoomOut.y && transform.position.z > lastZoomOut.z)
         {
