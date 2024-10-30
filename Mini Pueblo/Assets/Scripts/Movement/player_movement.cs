@@ -10,9 +10,9 @@ public class player_movement : MonoBehaviour, IDataPersistence
     public float rotationSpeed = 3f;
     NavMeshAgent player;
     [SerializeField] LayerMask clickLayers;
+    [HideInInspector]
     public bool stop = false;
     UnityAction function;
-    string[] characters = { "PaperPlaneCharacter", "ShootingCharacter" }; //Contains the characters tags
 
     // Start is called before the first frame update
     void Start()
@@ -46,14 +46,15 @@ public class player_movement : MonoBehaviour, IDataPersistence
         {
             player.destination = hit.point;
 
-            if (characters.Contains(hit.collider.tag) == true)
+            if (hit.collider.tag == "NPC")
             {
                 stop = true;
                 FindAnyObjectByType<camera_movement>().zoomOutNow = false;
                 FindAnyObjectByType<camera_movement>().zoomInNow = true;
                 FindAnyObjectByType<camera_movement>().zoomInFinished = false;
-                GameObject hitObject = GameObject.FindGameObjectWithTag(hit.collider.tag);
+                GameObject hitObject = hit.collider.gameObject;
                 CharacterTalk character = hitObject.GetComponent<CharacterTalk>();
+                Debug.Log(character.characterPhrase);
                 function = () => { character.talk(); };
             }
         }
