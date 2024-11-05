@@ -13,16 +13,28 @@ public class player_movement : MonoBehaviour, IDataPersistence
     [HideInInspector]
     public bool stop = false;
     UnityAction function;
+    Animator playerAnimator;
 
     // Start is called before the first frame update
     void Start()
     {
         player = GetComponent<NavMeshAgent>();
+        playerAnimator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
+        //Se controlan las animaciones del jugador
+        if ((player.destination.z == player.transform.position.z && player.destination.x == player.transform.position.x) || stop == true)
+        {
+            playerAnimator.SetBool("moving", false);
+        }
+        else
+        {
+            playerAnimator.SetBool("moving", true);
+        }
+
         if(Input.GetMouseButtonDown(0))
         {
             if (stop == false)
