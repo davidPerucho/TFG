@@ -66,7 +66,6 @@ public class player_movement : MonoBehaviour, IDataPersistence
                 FindAnyObjectByType<camera_movement>().zoomInFinished = false;
                 GameObject hitObject = hit.collider.gameObject;
                 CharacterTalk character = hitObject.GetComponent<CharacterTalk>();
-                Debug.Log(character.characterPhrase);
                 function = () => { character.talk(); };
             }
         }
