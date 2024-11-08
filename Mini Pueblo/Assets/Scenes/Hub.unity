@@ -2295,7 +2295,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterPhrase: "\xBFQuieres lanzar un avi\xF3n de papel?"
   sceneName: TutorialPaperPlane
-  distanceToTalk: 0.7
+  rotationSpeed: 2
 --- !u!65 &1042206292514942405
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5868,7 +5868,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.11
-  m_Speed: 3.5
+  m_Speed: 3.2
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 180
@@ -6399,7 +6399,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterPhrase: "\xBFQuieres probar a disparar?"
   sceneName: ShootingGame
-  distanceToTalk: 0.71
+  rotationSpeed: 2
 --- !u!65 &5716631548906794348
 BoxCollider:
   m_ObjectHideFlags: 0

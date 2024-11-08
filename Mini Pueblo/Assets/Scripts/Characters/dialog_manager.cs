@@ -21,14 +21,18 @@ public class dialog_manager : MonoBehaviour
         botonNo.GetComponent<Button>().onClick.AddListener(cancel);
     }
 
-    public void showText(string frase, UnityAction function)
+    public void showText(string frase, UnityAction functionLoad, UnityAction functionCancel)
     {
         text.text = frase;
         botonSi.SetActive(true);
         botonNo.SetActive(true);
 
         botonSi.GetComponent<Button>().onClick.RemoveAllListeners();
-        botonSi.GetComponent<Button>().onClick.AddListener(function);
+        botonSi.GetComponent<Button>().onClick.AddListener(functionLoad);
+
+        botonNo.GetComponent<Button>().onClick.RemoveAllListeners();
+        botonNo.GetComponent<Button>().onClick.AddListener(cancel);
+        botonNo.GetComponent<Button>().onClick.AddListener(functionCancel);
     }
 
     public void deleteText()

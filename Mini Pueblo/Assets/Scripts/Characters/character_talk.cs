@@ -8,12 +8,15 @@ public class CharacterTalk : MonoBehaviour
 {
     public string characterPhrase;
     public string sceneName;
-    public float distanceToTalk = 0.7f;
     Animator characterAnimator;
     Transform playerTransform;
+    Quaternion initialRotation;
+    public float rotationSpeed = 2;
+    bool rotateBack = false;
 
     void Start()
     {
+        initialRotation = transform.rotation;
         characterAnimator = GetComponent<Animator>();
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         playerTransform = player.transform;
@@ -21,22 +24,37 @@ public class CharacterTalk : MonoBehaviour
 
     void Update()
     {
-        if (characterAnimator != null)
+        if (rotateBack == true)
         {
-            if(distance(playerTransform.position, transform.position) <= distanceToTalk)
-            {
-                characterAnimator.SetBool("talking", true);
-            }
-            else {
-                characterAnimator.SetBool("talking", false);
-            }
+            transform.rotation = Quaternion.Slerp(transform.rotation, initialRotation, Time.deltaTime * rotationSpeed);
+        }
+
+        // Stop further rotation
+        if (Quaternion.Angle(transform.rotation, initialRotation) < 0.1f)
+        {
+            transform.rotation = initialRotation;
+            rotateBack = false;
         }
     }
 
     //Asings the character phrase to the text on the dialog manager
     public void talk()
     {
-        FindAnyObjectByType<dialog_manager>().showText(characterPhrase, loadScene);
+        //Stop previus rotation
+        rotateBack = false;
+
+        //Start talking animation
+        if (characterAnimator != null)
+        {
+            characterAnimator.SetBool("talking", true);
+        }
+
+        //Rotate towards the player
+        Vector3 direction = (playerTransform.position - transform.position).normalized;
+        Quaternion rotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * rotationSpeed);
+
+        FindAnyObjectByType<dialog_manager>().showText(characterPhrase, loadScene, cancelTalk);
     }
 
     //Loads the scene that has the name sceneName
@@ -46,8 +64,16 @@ public class CharacterTalk : MonoBehaviour
         DataPersitence.instance.saveGame();
     }
 
-    float distance(Vector3 pos1, Vector3 pos2)
+    //Ends the talk with the player
+    public void cancelTalk()
     {
-        return Mathf.Sqrt(Mathf.Pow(pos2.x - pos1.x, 2) + Mathf.Pow(pos2.y - pos1.y, 2));
+        //Cancel talking animation
+        if (characterAnimator != null)
+        {
+            characterAnimator.SetBool("talking", false);
+        }
+
+        //Rotates the character towards its normal rotation
+        rotateBack = true;
     }
 }
