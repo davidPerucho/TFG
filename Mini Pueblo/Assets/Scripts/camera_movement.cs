@@ -12,7 +12,8 @@ public class camera_movement : MonoBehaviour
     [SerializeField]
     Vector3 offset = new Vector3(0, 4.84f, 5.53f - 10.58f); //The offset between the player and the camera when there is no zoom
     Vector3 zoomOffset = new Vector3(0, 2.99f, -7.95f); //The offset between the player and the camera when there is zoom
-    Vector3 zoomDirection; //The direction that the camera will follow during the zoom
+    Vector3 zoomInDirection; //The direction that the camera will follow during the zoom in
+    Vector3 zoomOutDirection; //The direction that the camera will follow during the zoom out
     Vector3 lastZoomOut; //Last position of the camera before starting to zoom
 
     public float zoomSpeed = 3.2f; //Speed of the camera zoom
@@ -27,7 +28,7 @@ public class camera_movement : MonoBehaviour
     void Start()
     {
         lastZoomOut = transform.position;
-        zoomDirection = new Vector3(0, transform.position.y - zoomOffset.y, transform.position.z - zoomOffset.z).normalized;
+        zoomInDirection = new Vector3(0, transform.position.y - zoomOffset.y, transform.position.z - zoomOffset.z).normalized;
     }
 
     // Update is called once per frame
@@ -57,25 +58,24 @@ public class camera_movement : MonoBehaviour
 
     void zoomIn()
     {
-        zoomDirection = new Vector3(transform.position.x - player.transform.position.x, transform.position.y - zoomOffset.y, transform.position.z - zoomOffset.z).normalized;
+        zoomInDirection = new Vector3(transform.position.x - player.transform.position.x, transform.position.y - zoomOffset.y, transform.position.z - zoomOffset.z).normalized;
 
         if (transform.position.y > zoomOffset.y && transform.position.z < zoomOffset.z)
         {
-            transform.position = new Vector3(transform.position.x - zoomDirection.x * zoomSpeed * Time.deltaTime, transform.position.y - zoomDirection.y * zoomSpeed * Time.deltaTime, transform.position.z - zoomDirection.z * zoomSpeed * Time.deltaTime);
+            transform.position = new Vector3(transform.position.x - zoomInDirection.x * zoomSpeed * Time.deltaTime, transform.position.y - zoomInDirection.y * zoomSpeed * Time.deltaTime, transform.position.z - zoomInDirection.z * zoomSpeed * Time.deltaTime);
         }
         else
         {
             zoomInFinished = true;
+            zoomOutDirection = new Vector3(cameraPosition.x - transform.position.x, cameraPosition.y - transform.position.y, cameraPosition.z - transform.position.z).normalized;
         }
     }
 
     void zoomOut()
     {
-        zoomDirection = new Vector3(cameraPosition.x - transform.position.x, cameraPosition.y - transform.position.y, cameraPosition.z - transform.position.z).normalized;
-
-        if (transform.position.y <= cameraPosition.y)
+        if (transform.position.y < cameraPosition.y)
         {
-            transform.position = new Vector3(transform.position.x, transform.position.y + zoomDirection.y * zoomSpeed * Time.deltaTime, transform.position.z + zoomDirection.z * zoomSpeed * Time.deltaTime);
+            transform.position = new Vector3(transform.position.x, transform.position.y + zoomOutDirection.y * zoomSpeed * Time.deltaTime, transform.position.z + zoomOutDirection.z * zoomSpeed * Time.deltaTime);
         }
         else
         {
