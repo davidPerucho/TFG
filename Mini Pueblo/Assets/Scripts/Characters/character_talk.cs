@@ -12,6 +12,7 @@ public class CharacterTalk : MonoBehaviour
     Quaternion initialRotation;
     public float rotationSpeed = 2;
     bool rotateBack = false;
+    bool rotatePlayer = false;
 
     void Start()
     {
@@ -26,13 +27,28 @@ public class CharacterTalk : MonoBehaviour
         if (rotateBack == true)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, initialRotation, Time.deltaTime * rotationSpeed);
+
+            // Stop further rotation
+            if (Quaternion.Angle(transform.rotation, initialRotation) < 0.1f)
+            {
+                transform.rotation = initialRotation;
+                rotateBack = false;
+            }
         }
 
-        // Stop further rotation
-        if (Quaternion.Angle(transform.rotation, initialRotation) < 0.1f)
+        if (rotatePlayer == true)
         {
-            transform.rotation = initialRotation;
-            rotateBack = false;
+            //Rotate towards the player
+            Vector3 direction = (playerTransform.position - transform.position).normalized;
+            Quaternion rotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+            transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * rotationSpeed);
+
+            // Stop further rotation
+            if (Quaternion.Angle(transform.rotation, rotation) < 0.1f)
+            {
+                transform.rotation = rotation;
+                rotatePlayer = false;
+            }
         }
     }
 
@@ -48,12 +64,10 @@ public class CharacterTalk : MonoBehaviour
             characterAnimator.SetBool("talking", true);
         }
 
-        //Rotate towards the player
-        Vector3 direction = (playerTransform.position - transform.position).normalized;
-        Quaternion rotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-        transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * rotationSpeed);
+        //Rotar hacia el jugador
+        rotatePlayer = true;
 
-        FindAnyObjectByType<dialog_manager>().showText(characterPhrase, loadScene, cancelTalk);
+        StartCoroutine(FindAnyObjectByType<dialog_manager>().showUIWithDelay(characterPhrase, loadScene, cancelTalk));
     }
 
     //Loads the scene that has the name sceneName
@@ -71,6 +85,9 @@ public class CharacterTalk : MonoBehaviour
         {
             characterAnimator.SetBool("talking", false);
         }
+
+        //Cancela la rotación hacia el jugador
+        rotatePlayer = false;
 
         //Rotates the character towards its normal rotation
         rotateBack = true;

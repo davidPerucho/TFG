@@ -12,10 +12,12 @@ public class player_movement : MonoBehaviour, IDataPersistence
 
     [HideInInspector]
     public bool stop = false;
+    bool prepareToStop = false;
 
     UnityAction function;
     Animator playerAnimator;
     Quaternion targetRotation;
+    bool talking = false;
 
     // Start is called before the first frame update
     void Start()
@@ -28,7 +30,7 @@ public class player_movement : MonoBehaviour, IDataPersistence
     void Update()
     {
         // Control de animaciones del jugador
-        bool isAtDestination = Vector3.Distance(player.destination, transform.position) < 0.1f;
+        bool isAtDestination = isAtDestination = Vector3.Distance(player.destination, transform.position) < 0.1f;
 
         if (isAtDestination == true || stop == true)
         {
@@ -50,6 +52,21 @@ public class player_movement : MonoBehaviour, IDataPersistence
             playerAnimator.SetBool("talking", false);
         }
 
+        //En caso de que el jugador se dirija a un NPC se comprueba si se ha acercado lo suficiente como para anunciar la parada
+        if (prepareToStop == true)
+        {
+            if (Vector3.Distance(player.destination, transform.position) < 0.7f)
+            {
+                prepareToStop = false;
+
+                stop = true;
+                var cameraMovement = FindAnyObjectByType<camera_movement>();
+                cameraMovement.zoomOutNow = false;
+                cameraMovement.zoomInNow = true;
+                cameraMovement.zoomInFinished = false;
+            }
+        }
+
         //Moverse con el click izquierdo o al tocar la pantalla
         if (Input.GetMouseButtonDown(0) && stop == false)
         {
@@ -57,9 +74,17 @@ public class player_movement : MonoBehaviour, IDataPersistence
         }
 
         //Cuando se termina el zoom se inicia la conversación con el NPC
-        if (stop == true && FindAnyObjectByType<camera_movement>().zoomInFinished == true && FindAnyObjectByType<camera_movement>().zoomOutNow == false)
+        if (stop == true && FindAnyObjectByType<camera_movement>().zoomInFinished == true && FindAnyObjectByType<camera_movement>().zoomOutNow == false && talking == false)
         {
             function();
+            talking = true;
+        }
+        else
+        {
+            if (stop == false) 
+            {
+                talking = false;
+            }
         }
     }
 
@@ -73,11 +98,7 @@ public class player_movement : MonoBehaviour, IDataPersistence
 
             if (hit.collider.CompareTag("NPC"))
             {
-                stop = true;
-                var cameraMovement = FindAnyObjectByType<camera_movement>();
-                cameraMovement.zoomOutNow = false;
-                cameraMovement.zoomInNow = true;
-                cameraMovement.zoomInFinished = false;
+                prepareToStop = true;
 
                 GameObject hitObject = hit.collider.gameObject;
                 CharacterTalk character = hitObject.GetComponent<CharacterTalk>();

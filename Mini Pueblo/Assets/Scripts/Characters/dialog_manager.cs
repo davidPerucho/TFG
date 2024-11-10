@@ -10,6 +10,7 @@ public class dialog_manager : MonoBehaviour
     TextMeshProUGUI text;
     public GameObject botonSi;
     public GameObject botonNo;
+    float secondsBeforeTalk = 1;
 
     // Start is called before the first frame update
     void Start()
@@ -21,7 +22,13 @@ public class dialog_manager : MonoBehaviour
         botonNo.GetComponent<Button>().onClick.AddListener(cancel);
     }
 
-    public void showText(string frase, UnityAction functionLoad, UnityAction functionCancel)
+    public IEnumerator showUIWithDelay(string frase, UnityAction functionLoad, UnityAction functionCancel)
+    {
+        yield return new WaitForSeconds(secondsBeforeTalk);
+        showUI(frase, functionLoad, functionCancel);
+    }
+
+    void showUI(string frase, UnityAction functionLoad, UnityAction functionCancel)
     {
         text.text = frase;
         botonSi.SetActive(true);
