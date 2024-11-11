@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// Esta clase se encarga de almacenar las conversaciones y acciones de los NPC.
+/// </summary>
 public class CharacterTalk : MonoBehaviour
 {
-    public string characterPhrase;
-    public string sceneName;
-    Animator characterAnimator;
-    Transform playerTransform;
-    Quaternion initialRotation;
-    public float rotationSpeed = 2;
-    bool rotateBack = false;
-    bool rotatePlayer = false;
+    public string characterPhrase; //Frase del NPC
+    public string sceneName; //Nombre de la scena (minijuego/actividad) de la que se encraga el NPC
+    Animator characterAnimator; //Animador del NPC
+    Transform playerTransform; //Posición y rotación del jugador
+    Quaternion initialRotation; //Rotación inicial del NPC
+    public float rotationSpeed = 2; //Velocidad de rotación del NPC
+    bool rotateBack = false; //True si el personaje está volviendo a la rotación orignal
+    bool rotatePlayer = false; //True si el NPC está rotando en dirección al jugador
 
     void Start()
     {
@@ -28,7 +31,7 @@ public class CharacterTalk : MonoBehaviour
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, initialRotation, Time.deltaTime * rotationSpeed);
 
-            // Stop further rotation
+            //Si la rotación está practicamente terminada se finaliza
             if (Quaternion.Angle(transform.rotation, initialRotation) < 0.1f)
             {
                 transform.rotation = initialRotation;
@@ -38,12 +41,11 @@ public class CharacterTalk : MonoBehaviour
 
         if (rotatePlayer == true)
         {
-            //Rotate towards the player
             Vector3 direction = (playerTransform.position - transform.position).normalized;
             Quaternion rotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
             transform.rotation = Quaternion.Slerp(transform.rotation, rotation, Time.deltaTime * rotationSpeed);
 
-            // Stop further rotation
+            //Si la rotación está practicamente terminada se finaliza
             if (Quaternion.Angle(transform.rotation, rotation) < 0.1f)
             {
                 transform.rotation = rotation;
@@ -52,13 +54,15 @@ public class CharacterTalk : MonoBehaviour
         }
     }
 
-    //Asings the character phrase to the text on the dialog manager
+    /// <summary>
+    /// Muetra en pantalla, con retraso, la frase del NPC.
+    /// </summary>
     public void talk()
     {
         //Stop previus rotation
         rotateBack = false;
 
-        //Start talking animation
+        //Inicia la animación de Habla del NPC
         if (characterAnimator != null)
         {
             characterAnimator.SetBool("talking", true);
@@ -67,20 +71,25 @@ public class CharacterTalk : MonoBehaviour
         //Rotar hacia el jugador
         rotatePlayer = true;
 
+        //Retrasa la aparición del texto
         StartCoroutine(FindAnyObjectByType<dialog_manager>().showUIWithDelay(characterPhrase, loadScene, cancelTalk));
     }
 
-    //Loads the scene that has the name sceneName
+    /// <summary>
+    /// Carga la escena con la que está relacionado el NPC.
+    /// </summary>
     public void loadScene()
     {
         SceneManager.LoadScene(sceneName);
         DataPersitence.instance.saveGame();
     }
 
-    //Ends the talk with the player
+    /// <summary>
+    /// Finaliza la conversación del NPC.
+    /// </summary>
     public void cancelTalk()
     {
-        //Cancel talking animation
+        //Finaliza la animación de habla
         if (characterAnimator != null)
         {
             characterAnimator.SetBool("talking", false);

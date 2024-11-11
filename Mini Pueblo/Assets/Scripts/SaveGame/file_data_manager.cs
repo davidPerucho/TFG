@@ -4,17 +4,29 @@ using UnityEngine;
 using System;
 using System.IO;
 
+/// <summary>
+/// Clase que se encarga de administrar los ficheros de guardado.
+/// </summary>
 public class FileDataManager
 {
-    string directoryPath = "";
-    string fileName = "";
+    string directoryPath = ""; //Dirección del directorio
+    string fileName = ""; //Nombre del fichero
 
+    /// <summary>
+    /// Constructor de la clase.
+    /// </summary>
+    /// <param name="directoryPath">Dirección del directorio.</param>
+    /// <param name="fileName">Nombre del fichero.</param>
     public FileDataManager(string directoryPath, string fileName)
     {
         this.directoryPath = directoryPath;
         this.fileName = fileName;
     }
 
+    /// <summary>
+    /// Carga los datos del fichero.
+    /// </summary>
+    /// <returns>Devuelve los datos almacenados en en un objeto GameData.</returns>
     public GameData load() 
     {
         string path = Path.Combine(directoryPath, fileName);
@@ -44,6 +56,10 @@ public class FileDataManager
         return loadData;
     }
 
+    /// <summary>
+    /// Alamcena los datos de juego en un fichero.
+    /// </summary>
+    /// <param name="data">Datos de juego.</param>
     public void save(GameData data) 
     { 
         string path = Path.Combine(directoryPath, fileName);
@@ -67,6 +83,10 @@ public class FileDataManager
         }
     }
 
+    /// <summary>
+    /// Comprueba si existe un fichero en el directorio directoryPath con nombre fileName.
+    /// </summary>
+    /// <returns>True si el fichero existe.</returns>
     public bool file_exists()
     {
         string path = Path.Combine(directoryPath, fileName);
@@ -74,6 +94,9 @@ public class FileDataManager
         return File.Exists(path);
     }
 
+    /// <summary>
+    /// Elimina el fichero guardado.
+    /// </summary>
     public void delete_save()
     {
         string path = Path.Combine(directoryPath, fileName);

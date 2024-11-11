@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1600
     height: 852
   m_ShowMode: 0
-  m_Title: Project
+  m_Title: Game
   m_RootView: {fileID: 4}
   m_MinSize: {x: 100, y: 50}
   m_MaxSize: {x: 8096, y: 8096}
@@ -220,7 +220,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 119
+  controlID: 165
 --- !u!114 &10
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -390,7 +390,7 @@ MonoBehaviour:
   m_ShowGizmos: 0
   m_TargetDisplay: 0
   m_ClearColor: {r: 0, g: 0, b: 0, a: 0}
-  m_TargetSize: {x: 2000, y: 1012.5}
+  m_TargetSize: {x: 1600, y: 810}
   m_TextureFilterMode: 0
   m_TextureHideFlags: 61
   m_RenderIMGUI: 1
@@ -493,7 +493,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts/Characters
+    - Assets/Scripts/SaveGame
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -501,16 +501,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Scripts/Characters
+  - Assets/Scripts/SaveGame
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\david\TFG\Mini Pueblo
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: ce5f0000
-    m_LastClickedID: 24526
-    m_ExpandedIDs: 00000000965f0000985f00009a5f00009c5f00009e5f0000a05f0000a25f000000ca9a3bffffff7f
+    m_SelectedIDs: dc5f0000
+    m_LastClickedID: 24540
+    m_ExpandedIDs: 000000009a5f00009c5f00009e5f0000a05f0000a25f0000a45f0000a65f000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -538,7 +538,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000965f0000985f00009a5f00009c5f00009e5f0000a05f0000a25f0000
+    m_ExpandedIDs: 000000009a5f00009c5f00009e5f0000a05f0000a25f0000a45f0000a65f0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -665,9 +665,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
+      m_SelectedIDs: 40520000
       m_LastClickedID: 0
-      m_ExpandedIDs: b2f7fffffef7ffff70f9ffff8af9ffffb0f9ffffc6f9ffffe0f9ffff2cfbffff
+      m_ExpandedIDs: 2cfbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1034,9 +1034,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: 5.4713044, y: -4.054019, z: 5.9609084}
+    m_Target: {x: 5.707896, y: -2.5398073, z: 1.7618952}
     speed: 2
-    m_Value: {x: 5.4713044, y: -4.054019, z: 5.9609084}
+    m_Value: {x: 5.707896, y: -2.5398073, z: 1.7618952}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1082,13 +1082,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.19916488, y: 0.069020584, z: -0.014061916, w: -0.9774415}
+    m_Target: {x: -0.24516669, y: 0.029948603, z: -0.007575053, w: -0.9689999}
     speed: 2
-    m_Value: {x: -0.19916487, y: 0.069020584, z: -0.014061915, w: -0.97744143}
+    m_Value: {x: -0.24516404, y: 0.02994828, z: -0.007574971, w: -0.96898943}
   m_Size:
-    m_Target: 7.8673897
+    m_Target: 5.7263484
     speed: 2
-    m_Value: 7.8673897
+    m_Value: 5.7263484
   m_Ortho:
     m_Target: 0
     speed: 2

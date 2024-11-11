@@ -3,16 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
+/// <summary>
+/// Clase que se encarga de la persistencia de datos de la escena.
+/// </summary>
 public class DataPersitence : MonoBehaviour
 {
-    public static DataPersitence instance { get; private set; }
+    public static DataPersitence instance { get; private set; } //Instancia de la clase
 
-    GameData gameData;
-    List<IDataPersistence> persitentObjects;
+    GameData gameData; //Datos del juego
+    List<IDataPersistence> persitentObjects; //Lista de objetos que almacenarán sus datos
 
-    [SerializeField] string fileName;
-    FileDataManager fileDataManager;
+    [SerializeField] 
+    string fileName; //Nombre del fichero
 
+    FileDataManager fileDataManager; //Se encarga de manejar el fichero.
+
+    //Singleton
     private void Awake()
     {
         if (instance != null)
@@ -30,11 +36,17 @@ public class DataPersitence : MonoBehaviour
         loadGame();
     }
 
+    /// <summary>
+    /// Crea una nueva partida.
+    /// </summary>
     public void newGame()
     {
         gameData = new GameData();
     }
 
+    /// <summary>
+    /// Guarda los datos de cada objeto.
+    /// </summary>
     public void saveGame()
     {
         foreach (IDataPersistence obj in persitentObjects)
@@ -45,6 +57,9 @@ public class DataPersitence : MonoBehaviour
         fileDataManager.save(gameData);
     }
 
+    /// <summary>
+    /// Carga los datos de los objetos, iniciando la partida.
+    /// </summary>
     public void loadGame()
     {
         gameData = fileDataManager.load();
@@ -61,6 +76,10 @@ public class DataPersitence : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Guarda en una lista todos los objetos que guardan datos.
+    /// </summary>
+    /// <returns>Lista con los objetos que guardan datos.</returns>
     List<IDataPersistence> findPersistenceObjects() 
     {
         return FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>().ToList();
