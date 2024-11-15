@@ -7,6 +7,8 @@ public class rotate_towards : MonoBehaviour
     public bool toObject; //Indicates if the rotation needs to be towards an object
     public GameObject rotationObject; //Reference for the game object rotation
     public bool toMouse; //Indicates if the rotation needs to be towards the mouse
+    public bool fixedX = false; //True si solo se mira al eje Y del ratón
+    public bool fixedY = false; //True si solo se mira al eje X del ratón
 
     // Update is called once per frame
     void Update()
@@ -20,11 +22,15 @@ public class rotate_towards : MonoBehaviour
         else
         {
             Vector3 mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            if (mouseScreenPosition.x <= transform.position.x)
+            if (fixedX == true)
             {
-                mouseScreenPosition.x = transform.position.x + (transform.position.x - mouseScreenPosition.x);
-                mouseScreenPosition.y = transform.position.y + (transform.position.y - mouseScreenPosition.y);
+                mouseScreenPosition.x = 0;
             }
+            else if (fixedY == true)
+            {
+                mouseScreenPosition.y = 0;
+            }
+
             float anguloRad = Mathf.Atan2(mouseScreenPosition.y - transform.position.y, mouseScreenPosition.x - transform.position.x);
             float anguloDeg = (180 / Mathf.PI) * anguloRad;
             transform.rotation = Quaternion.Euler(0, 0, anguloDeg);

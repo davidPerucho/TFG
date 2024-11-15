@@ -23,6 +23,18 @@ public class rotate_towards_editor : Editor
         if (myScript.toMouse)
         {
             myScript.toObject = false;
+
+            myScript.fixedX = EditorGUILayout.Toggle("Fixed X", myScript.fixedX);
+            if (myScript.fixedX)
+            {
+                myScript.fixedY = false;
+            }
+
+            myScript.fixedY = EditorGUILayout.Toggle("Fixed Y", myScript.fixedY);
+            if (myScript.fixedY)
+            {
+                myScript.fixedX = false;
+            }
         }
 
         //Saves changes

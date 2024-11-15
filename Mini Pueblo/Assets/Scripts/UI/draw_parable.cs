@@ -4,25 +4,28 @@ using UnityEngine;
 
 public class draw_parable : MonoBehaviour
 {
-    public GameObject point; //The points that are going to be drawn
-    public int numberOfPoints; //The number of points in the parable
-    int lastNumberOfPoints; //The last number of points in the parable
-    public float force; //The force used to calculate the parable
-    public float spaceBetwenPoints; //The space between the points of the drawing
-    public bool drawAlways; //The parable will always be drawed
-    public bool drawWhenTouched = true; //The parable will only be drawed when the screen is touched
-    public bool dynamicDifficulty; //The parable will get sorter as the player scores more points
-    public int pointsToIncrease; //The amount of points needed to increase the dificulty
-    GameObject[] points; //Array containing all the points
-    Vector3 lastTouchPos; //Position of the last time the screen was toched
-    bool pressed;
-    bool drawn;
-    int lastIncrease;
+    public GameObject point; //Contiene el objeto punto que formará la parábola
+    public int numberOfPoints; //Número de puntos de la parábola
+    int lastNumberOfPoints; //Cuantos puntos tenía la parábola la ultima vez que se dibujó
+    public float force; //La fuerza que se usa para calcular la parábola
+    public float spaceBetwenPoints; //Espacio entre los puntos de la parábola
+    public bool drawAlways; //La parábola se dibuja constantemente
+    public bool drawWhenTouched = true; //La parábola se dibuja al hacer click
+    public bool dynamicDifficulty; //La parábola se vuelve más corta a medida que se avanza
+    public bool fixedX = false; //True si solo se mira al eje Y del ratón
+    public bool fixedY = false; //True si solo se mira al eje X del ratón
+    public int pointsToIncrease; //Número de puntos necesarios para aumentar la dificultad
+    GameObject[] points; //Array con los puntos que conforman la parábola
+    Vector3 lastTouchPos; //Última posición en la que se hizo click
+    bool pressed; //True si se esta haciendo click
+    bool drawn; //True si se ha dibujado la parábola
+    int lastIncrease; //La ultima vez que se aumentó la dificultad
+    Vector3 mouseScreenPosition; //Posición del ratón en la pantalla
 
     // Start is called before the first frame update
     void Start()
     {
-        force = force / 50; //Apply the proportion of the force to make the parable and the trayectory be the same
+        force = force / 50; //Ajusta la furza de la parábola
         points = new GameObject[numberOfPoints];
         lastTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         lastIncrease = FindAnyObjectByType<points_system>().initialPoints;
@@ -32,7 +35,16 @@ public class draw_parable : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3 mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        if (fixedX )
+        {
+            mouseScreenPosition.x = 0;
+        }
+        else if (fixedY )
+        {
+            mouseScreenPosition.y = 0;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             pressed = true;
@@ -78,7 +90,7 @@ public class draw_parable : MonoBehaviour
             }
         }
 
-        //Check dynamic difficulty
+        //Comprueba la dificultad dinámica
         if (dynamicDifficulty == true)
         {
             updateDifficulty();
@@ -87,12 +99,6 @@ public class draw_parable : MonoBehaviour
 
     Vector2 getPointPosition(float t)
     {
-        Vector3 mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        if (mouseScreenPosition.x <= transform.position.x)
-        {
-            mouseScreenPosition.x = transform.position.x + (transform.position.x - mouseScreenPosition.x);
-            mouseScreenPosition.y = transform.position.y + (transform.position.y - mouseScreenPosition.y);
-        }
         Vector2 direction = new Vector2(mouseScreenPosition.x - transform.position.x, mouseScreenPosition.y - transform.position.y);
         Vector2 speed = direction.normalized * force;
         Vector2 pos = (Vector2)transform.position + (speed * t) + 0.5f * Physics2D.gravity * (t * t);
