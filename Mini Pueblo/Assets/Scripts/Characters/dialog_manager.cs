@@ -10,7 +10,7 @@ using UnityEngine.UI;
 /// </summary>
 public class dialog_manager : MonoBehaviour
 {
-    TextMeshProUGUI text; //Tecto de la intervaz.
+    TextMeshProUGUI text; //Texto de la intervaz.
     public GameObject botonSi; //Botón de aceptar de la interfaz.
     public GameObject botonNo; //Botón de rechazar de la interfaz.
     float secondsBeforeTalk = 1; //Retraso antes de mostrar la interfaz (para dar tiempo a las animaciones)

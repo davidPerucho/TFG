@@ -509,7 +509,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1483817084169983037}
-  distanceToZoom: 1
   offset: {x: 0, y: 4.84, z: -5.05}
   zoomSpeed: 3.8
   zoomInNow: 0
@@ -973,6 +972,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1706643541}
   - component: {fileID: 1706643540}
+  - component: {fileID: 1706643542}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -1008,6 +1008,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1706643542
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1706643539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6807572d2c34c944e929b170af3f22ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frasesTutorial:
+  - phrase: Hola que tal
+    tag: 
+    pause: {fileID: 11400000, guid: bf73aa736b6bde245a4b3ccb2861850b, type: 2}
+  startTutorial: 1
+  text: {fileID: 2115924854}
 --- !u!1 &1757689943
 GameObject:
   m_ObjectHideFlags: 0
@@ -1431,7 +1449,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   botonSi: {fileID: 1565973261}
   botonNo: {fileID: 999777017}
-  secondsBeforeTalk: 1
 --- !u!4 &18319939364971259
 Transform:
   m_ObjectHideFlags: 0
