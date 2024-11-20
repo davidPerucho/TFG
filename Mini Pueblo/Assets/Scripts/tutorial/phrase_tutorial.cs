@@ -9,6 +9,5 @@ using UnityEngine;
 public struct PhraseTutorial
 {
     public string phrase; //Frase
-    public string tag; //Tag asociado a la frase
     public AbstractPause pause; //Funciones para pausar y reanudar el juego
 }

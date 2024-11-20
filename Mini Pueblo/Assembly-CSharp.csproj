@@ -60,23 +60,23 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\2022.3.30f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\hub_tutorial_phrase1.cs" />
     <Compile Include="Assets\Scripts\Characters\dialog_manager.cs" />
     <Compile Include="Assets\Scripts\Movement\rotate_towards.cs" />
     <Compile Include="Assets\Scripts\Colliders\points_collider.cs" />
+    <Compile Include="Assets\Scripts\tutorial\pause_abstract.cs" />
+    <Compile Include="Assets\Scripts\tutorial\tutorial_manager.cs" />
     <Compile Include="Assets\Scripts\Movement\player_movement.cs" />
     <Compile Include="Assets\Scripts\Movement\simple_movement.cs" />
     <Compile Include="Assets\Scripts\camera_movement.cs" />
     <Compile Include="Assets\Scripts\PaperPlane\Tutorial\block_spawnUP_tutorial.cs" />
     <Compile Include="Assets\Scripts\UI\MainMenu.cs" />
     <Compile Include="Assets\Scripts\SaveGame\file_data_manager.cs" />
-    <Compile Include="Assets\Scripts\tutorial_manager.cs" />
-    <Compile Include="Assets\Scripts\pause_abstract.cs" />
+    <Compile Include="Assets\Scripts\tutorial\Hub\hub_tutorial_phrase1.cs" />
     <Compile Include="Assets\Scripts\UI\draw_parable.cs" />
     <Compile Include="Assets\Scripts\Movement\physics_movement.cs" />
     <Compile Include="Assets\Scripts\Movement\simple_rotation.cs" />
     <Compile Include="Assets\Scripts\PaperPlane\Tutorial\block_spawnDown_tutorial.cs" />
-    <Compile Include="Assets\Scripts\phrase_tutorial.cs" />
+    <Compile Include="Assets\Scripts\tutorial\phrase_tutorial.cs" />
     <Compile Include="Assets\Scripts\difficulty_manager.cs" />
     <Compile Include="Assets\Scripts\Spawner\click_spawner.cs" />
     <Compile Include="Assets\Scripts\Spawner\random_object_spawner.cs" />
@@ -90,6 +90,7 @@
     <Compile Include="Assets\Scripts\Characters\character_talk.cs" />
     <Compile Include="Assets\Scripts\UI\text_tutorial.cs" />
     <Compile Include="Assets\Scripts\Movement\initial_force.cs" />
+    <Compile Include="Assets\Scripts\tutorial\Hub\hub_tutorial_phrase2.cs" />
     <Compile Include="Assets\Scripts\UI\hand_animation.cs" />
   </ItemGroup>
   <ItemGroup>

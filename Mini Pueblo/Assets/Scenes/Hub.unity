@@ -227,7 +227,7 @@ GameObject:
   - component: {fileID: 777174997}
   m_Layer: 0
   m_Name: ObjetosBosque
-  m_TagString: Untagged
+  m_TagString: Enviroment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1021,9 +1021,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   frasesTutorial:
-  - phrase: Hola que tal
-    tag: 
+  - phrase: Haz click en el terreno para mover al jugador.
     pause: {fileID: 11400000, guid: bf73aa736b6bde245a4b3ccb2861850b, type: 2}
+  - phrase: Haz click en los personajes para hablar con ellos.
+    pause: {fileID: 11400000, guid: 9d3136cec9c1f0c41b40338b95369daa, type: 2}
   startTutorial: 1
   text: {fileID: 2115924854}
 --- !u!1 &1757689943
@@ -1141,7 +1142,7 @@ GameObject:
   - component: {fileID: 1831196769}
   m_Layer: 0
   m_Name: Casas
-  m_TagString: Untagged
+  m_TagString: Enviroment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2151,9 +2152,10 @@ GameObject:
   - component: {fileID: 543450651575183461}
   - component: {fileID: 3469287837706807232}
   - component: {fileID: 1711813854985982730}
+  - component: {fileID: 3469287837706807233}
   m_Layer: 0
   m_Name: terreno
-  m_TagString: Untagged
+  m_TagString: Terrain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2171,7 +2173,7 @@ GameObject:
   - component: {fileID: 1711813855922507587}
   m_Layer: 0
   m_Name: casa_basica
-  m_TagString: Untagged
+  m_TagString: Enviroment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4444,6 +4446,28 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 919132147924054751}
   m_Mesh: {fileID: -462981019419857548, guid: d2052de8d47fe8d4fb11a3f77e0a3aad, type: 3}
+--- !u!64 &3469287837706807233
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132147924054751}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -462981019419857548, guid: d2052de8d47fe8d4fb11a3f77e0a3aad, type: 3}
 --- !u!33 &3497401585712332961
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -5002,7 +5026,7 @@ GameObject:
   - component: {fileID: 2588601024011146386}
   m_Layer: 0
   m_Name: casaGrande_roja
-  m_TagString: Untagged
+  m_TagString: Enviroment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5796,9 +5820,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rotationSpeed: 60
+  player: {fileID: 0}
   clickLayers:
     serializedVersion: 2
-    m_Bits: 1
+    m_Bits: 5
   stop: 0
 --- !u!195 &5277215728868922623
 NavMeshAgent:
@@ -6454,7 +6479,7 @@ GameObject:
   - component: {fileID: 5356164524693305017}
   m_Layer: 0
   m_Name: casaGigante
-  m_TagString: Untagged
+  m_TagString: Enviroment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6488,7 +6513,7 @@ GameObject:
   - component: {fileID: 5392046371372491711}
   m_Layer: 0
   m_Name: casaGrande
-  m_TagString: Untagged
+  m_TagString: Enviroment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8103,7 +8128,7 @@ GameObject:
   - component: {fileID: 7301090278048347909}
   m_Layer: 0
   m_Name: casa_basica_blanca
-  m_TagString: Untagged
+  m_TagString: Enviroment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

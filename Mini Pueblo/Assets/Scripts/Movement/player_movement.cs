@@ -8,13 +8,17 @@ using UnityEngine.Events;
 public class player_movement : MonoBehaviour, IDataPersistence
 {
     public float rotationSpeed = 3f; //Velocidad a la que rota el jugador
-    NavMeshAgent player; //Agente jugador encargado del movimiento
+
+    [HideInInspector]
+    public NavMeshAgent player; //Agente jugador encargado del movimiento
 
     [SerializeField] 
     LayerMask clickLayers; //Capas sobre las que se puede hacer click para moverse
 
     [HideInInspector]
     public bool stop = false; //True si el jugador esta parado
+    [HideInInspector]
+    public RaycastHit hit; //Almacena la información del punto en el que se ha hecho click
 
     bool prepareToStop = false; //True si el jugador se está preparando para parar
     UnityAction function; //Almacena las distintas funciones de conversación dee los NPCs
@@ -98,7 +102,6 @@ public class player_movement : MonoBehaviour, IDataPersistence
     void moveToMouse()
     {
         //Se calcula el punto en el que se ha hecho click
-        RaycastHit hit;
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 100, clickLayers))
         {
             player.destination = hit.point;
