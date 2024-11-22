@@ -9,6 +9,8 @@ using UnityEngine.Events;
 [CreateAssetMenu(menuName = "Tutorial/Hub_tutorial_phrase 1")]
 public class hub_tutorial_phrase1 : AbstractPause
 {
+    //Límites que forman el cuadrado donde se puede hacer click
+    SquareLimits square = new SquareLimits(-4.6f, 11.84f, -7.29f, 0.83f);
 
     /// <summary>
     /// Indica que hay que pausar el juego al empezar.
@@ -25,9 +27,10 @@ public class hub_tutorial_phrase1 : AbstractPause
     /// <returns>Devuelve True para indicar que se debe de reanudar el juego.</returns>
     public override bool UnPause()
     {
-        string tag = FindAnyObjectByType<player_movement>().hit.collider?.tag ?? "";
+        RaycastHit hit = FindAnyObjectByType<player_movement>().hit;
 
-        if (tag == "Terrain")
+        //Si el punto esta fuera del cuadrado se pausa el juego
+        if (square.isInsideSquare(hit.point) == true && Input.GetMouseButtonDown(0) == true)
         {
             return true;
         }
