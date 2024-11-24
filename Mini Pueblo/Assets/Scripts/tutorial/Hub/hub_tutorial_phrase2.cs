@@ -15,7 +15,7 @@ public class hub_tutorial_phrase2 : AbstractPause
     bool startWait = false; //True cuando ya se ha llamado a la función por primera vez
 
     //Límites que forman el cuadrado donde se puede hacer click
-    SquareLimits square = new SquareLimits(-4.6f, 11.84f, -7.29f, 0.83f);
+    SquareLimits square = new SquareLimits(-2.5f, 11.84f, -6.9f, 0.83f);
 
     /// <summary>
     /// Indica que hay que pausar el juego cuando hayan pasado dos segundos de el anterior texto del tutorial.
