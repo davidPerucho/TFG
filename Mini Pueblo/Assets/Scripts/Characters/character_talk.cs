@@ -59,7 +59,10 @@ public class CharacterTalk : MonoBehaviour
     /// </summary>
     public void talk()
     {
-        //Stop previus rotation
+        //Baja el volumen de la música de fondo
+        FindAnyObjectByType<SoundManager>().volumeDown();
+
+        //Para la rotación previa
         rotateBack = false;
 
         //Inicia la animación de Habla del NPC
@@ -95,10 +98,13 @@ public class CharacterTalk : MonoBehaviour
             characterAnimator.SetBool("talking", false);
         }
 
+        //Vuelve a subir el volumen de la música a lo normal
+        FindAnyObjectByType<SoundManager>().volumeUp();
+
         //Cancela la rotación hacia el jugador
         rotatePlayer = false;
 
-        //Rotates the character towards its normal rotation
+        //Rota al NPC a su rotación normal
         rotateBack = true;
     }
 }
