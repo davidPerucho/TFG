@@ -60,7 +60,7 @@ public class CharacterTalk : MonoBehaviour
     public void talk()
     {
         //Baja el volumen de la música de fondo
-        FindAnyObjectByType<SoundManager>().volumeDown();
+        SoundManager.instance.volumeMusicDown();
 
         //Para la rotación previa
         rotateBack = false;
@@ -99,7 +99,7 @@ public class CharacterTalk : MonoBehaviour
         }
 
         //Vuelve a subir el volumen de la música a lo normal
-        FindAnyObjectByType<SoundManager>().volumeUp();
+        SoundManager.instance.volumeMusicUp();
 
         //Cancela la rotación hacia el jugador
         rotatePlayer = false;

@@ -26,6 +26,11 @@ public class player_movement : MonoBehaviour, IDataPersistence
     Quaternion targetRotation; //Rotación deseada
     bool talking = false; //True si el jugador está en una conversación
 
+    AudioSource playerAudio; //Reproductor de los sonidos del jugador
+
+    [SerializeField]
+    AudioClip runningAudio; //Running audio of the player
+
     // Start is called before the first frame update
     void Start()
     {
@@ -42,10 +47,18 @@ public class player_movement : MonoBehaviour, IDataPersistence
         if (isAtDestination == true || stop == true)
         {
             playerAnimator.SetBool("moving", false); //Se inicia animación estática
+            if (playerAudio != null)
+            {
+                Destroy(playerAudio); //Se para el sonido de correr del jugador
+            }
         }
         else
         {
             playerAnimator.SetBool("moving", true); //Se inicia animación de movimiento
+            if(playerAudio == null)
+            {
+                playerAudio = SoundManager.instance.addSFXLoop(transform, runningAudio, 0.8f); //Se inicia el sonido de correr del jugador
+            }
             faceMouse();  // Continuar rotando hasta la posición de destino
         }
 
