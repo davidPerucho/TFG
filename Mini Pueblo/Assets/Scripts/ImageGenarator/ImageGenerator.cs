@@ -1,61 +1,56 @@
 using UnityEngine;
 using UnityEngine.Networking;
-using Python.Runtime;
-using UnityEditor.Scripting.Python;
+using System.Collections;
 using System.IO;
 
 public class ImageGenerator : MonoBehaviour
 {
-    /**
-    [SerializeField]
-    string apiKey = "TU_CLAVE_API";
-    string apiEndpoint = "";**/
-
-    [SerializeField]
-    string theme;
+    // Parámetros de la API
+    static int numImage = 0;
+    public string baseUrl = "https://image.pollinations.ai/prompt/";
+    public string prompt = "A simple colorbook page of a landscape without color";
+    public int width = 512;
+    public int height = 512;
+    public bool nologo = true; // No incluir el logo
+    int seed = 0;
 
     void Start()
     {
-        GenerateImage();
+        seed = Random.Range(0, int.MaxValue);
+        StartCoroutine(GenerateAndSaveImage(prompt));
     }
 
-    public void GenerateImage()
+    IEnumerator GenerateAndSaveImage(string prompt)
     {
-        /**PythonRunner.EnsureInitialized();
-        using (Py.GIL())
-        {
-            var pythonGeneratorScript = Py.Import("StableDifusion");
-            PyString prompt = new PyString(theme);
-            pythonGeneratorScript.InvokeMethod("generateImage", new PyObject[] {prompt});
-        }**/
+        // Construir la URL con los parámetros
+        string apiUrl = $"{baseUrl}{UnityWebRequest.EscapeURL(prompt)}?width={width}&height={height}&nologo={(nologo ? 1 : 0)}&seed={seed}";
 
-        string dir = __DIR__();
-        PythonRunner.EnsureInitialized();
+        // Realizar la solicitud GET
+        UnityWebRequest request = UnityWebRequestTexture.GetTexture(apiUrl);
 
-        using (Py.GIL())
+        // Esperar la respuesta
+        yield return request.SendWebRequest();
+
+        // Manejar errores
+        if (request.result != UnityWebRequest.Result.Success)
         {
-            PyObject sys = Py.Import("sys");
-            PyObject path = sys.GetAttr("path");
-            if (!path.InvokeMethod("count", new PyObject[] { new PyString(dir) }).As<int>().Equals(1))
-            {
-                path.InvokeMethod("append", new PyObject[] { new PyString(dir) });
-            }
+            Debug.LogError($"Error al generar la imagen: {request.error}");
         }
+        else
+        {
+            // Obtener la textura de la respuesta
+            Texture2D texture = DownloadHandlerTexture.GetContent(request);
 
-        PythonRunner.RunString($@"
-            import StableDifusion
-            StableDifusion.generateImage(""{theme}"")
-        ");
+            // Convertir la textura en bytes PNG
+            byte[] imageData = texture.EncodeToPNG();
+
+            string filePath = "C:\\Users\\david\\TFG\\Mini Pueblo\\Assets\\GeneratedImages\\Image"+seed.ToString()+".png";
+            numImage++;
+
+            // Guardar la imagen en el disco
+            File.WriteAllBytes(filePath, imageData);
+
+            Debug.Log($"Imagen guardada en: {filePath}");
+        }
     }
-
-    /// <summary>
-    /// Hack to get the current file's directory
-    /// </summary>
-    /// <param name="fileName">Leave it blank to the current file's directory</param>
-    /// <returns></returns>
-    private static string __DIR__([System.Runtime.CompilerServices.CallerFilePath] string fileName = "")
-    {
-        return Path.GetDirectoryName(fileName);
-    }
-
 }

@@ -151,8 +151,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b26ef29e39285447a160b46a3f17e7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  theme: animal
-  scriptPath: C:\Users\david\TFG\Mini Pueblo\Assets\Scripts\ImageGenarator\StableDifusion.py
+  baseUrl: https://image.pollinations.ai/prompt/
+  prompt: A simple colorbook page of a landscape
+  width: 512
+  height: 512
+  nologo: 1
 --- !u!4 &1727319109
 Transform:
   m_ObjectHideFlags: 0
