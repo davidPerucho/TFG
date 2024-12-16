@@ -6,18 +6,28 @@ using System.IO;
 public class ImageGenerator : MonoBehaviour
 {
     // Parámetros de la API
-    static int numImage = 0;
     public string baseUrl = "https://image.pollinations.ai/prompt/";
     public string prompt = "A simple colorbook page of a landscape without color";
     public int width = 512;
     public int height = 512;
     public bool nologo = true; // No incluir el logo
+    string imagesDirectory;
     int seed = 0;
 
     void Start()
     {
         seed = Random.Range(0, int.MaxValue);
-        StartCoroutine(GenerateAndSaveImage(prompt));
+        imagesDirectory = Path.Combine(Application.persistentDataPath, "GeneratedImages");
+
+        //Comprobar que el directorio existe
+        if (Directory.Exists(imagesDirectory))
+        {
+            StartCoroutine(GenerateAndSaveImage(prompt));
+        }
+        else
+        {
+            Debug.LogError("No existe el directorio en el que se pretende guardar la imagen");
+        }
     }
 
     IEnumerator GenerateAndSaveImage(string prompt)
@@ -28,10 +38,8 @@ public class ImageGenerator : MonoBehaviour
         // Realizar la solicitud GET
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(apiUrl);
 
-        // Esperar la respuesta
         yield return request.SendWebRequest();
 
-        // Manejar errores
         if (request.result != UnityWebRequest.Result.Success)
         {
             Debug.LogError($"Error al generar la imagen: {request.error}");
@@ -44,8 +52,7 @@ public class ImageGenerator : MonoBehaviour
             // Convertir la textura en bytes PNG
             byte[] imageData = texture.EncodeToPNG();
 
-            string filePath = "C:\\Users\\david\\TFG\\Mini Pueblo\\Assets\\GeneratedImages\\Image"+seed.ToString()+".png";
-            numImage++;
+            string filePath = Path.Combine(imagesDirectory, $"Image_{seed}.png");
 
             // Guardar la imagen en el disco
             File.WriteAllBytes(filePath, imageData);
