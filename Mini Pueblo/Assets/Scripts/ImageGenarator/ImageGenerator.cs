@@ -6,11 +6,18 @@ using System.IO;
 public class ImageGenerator : MonoBehaviour
 {
     // Parámetros de la API
-    public string baseUrl = "https://image.pollinations.ai/prompt/";
-    public string prompt = "A simple colorbook page of a landscape without color";
+    [SerializeField]
+    string baseUrl = "https://image.pollinations.ai/prompt/";
+
+    [SerializeField]
+    string prompt = "A simple colorbook page of a landscape without color";
+
     public int width = 512;
     public int height = 512;
-    public bool nologo = true; // No incluir el logo
+
+    [SerializeField]
+    public bool nologo = true;
+
     string imagesDirectory;
     int seed = 0;
 
@@ -22,11 +29,11 @@ public class ImageGenerator : MonoBehaviour
         //Comprobar que el directorio existe
         if (Directory.Exists(imagesDirectory))
         {
-            StartCoroutine(GenerateAndSaveImage(prompt));
+            //StartCoroutine(GenerateAndSaveImage(prompt));
         }
         else
         {
-            Debug.LogError("No existe el directorio en el que se pretende guardar la imagen");
+            Debug.LogError($"No existe el directorio: {imagesDirectory}");
         }
     }
 
