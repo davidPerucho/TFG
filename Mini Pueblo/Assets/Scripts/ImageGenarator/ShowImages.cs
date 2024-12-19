@@ -15,11 +15,8 @@ public class ShowImages : MonoBehaviour
     [SerializeField]
     GameObject imagePrefab; //Un prefab con un componente Image
 
-    [SerializeField]
-    Button leftButon;
-
-    [SerializeField]
-    Button rightButton;
+    public Button leftButon;
+    public Button rightButton;
 
     string imagesDirectory;
     int leftIndex = 0;
@@ -152,6 +149,28 @@ public class ShowImages : MonoBehaviour
     {
         leftIndex--;
         rightIndex--;
+
+        DisplayImages();
+    }
+
+    public void reloadImages()
+    {
+        //Obtener todos los archivos PNG en el directorio
+        imageFiles = Directory.GetFiles(imagesDirectory, "*.png");
+
+        numImages = imageFiles.Length;
+
+        //Se muestran como mucho tres imágenes a la vez
+        if (numImages > 3)
+        {
+            rightIndex = 2;
+        }
+        else
+        {
+            rightIndex = numImages - 1;
+        }
+
+        leftIndex = 0;
 
         DisplayImages();
     }

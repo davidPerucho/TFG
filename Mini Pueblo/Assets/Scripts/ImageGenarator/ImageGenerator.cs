@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
 using System.IO;
+using UnityEngine.UI;
 
 public class ImageGenerator : MonoBehaviour
 {
@@ -16,31 +17,37 @@ public class ImageGenerator : MonoBehaviour
     public int height = 512;
 
     [SerializeField]
-    public bool nologo = true;
+    bool noLogo = true;
+
+    [SerializeField]
+    Button generateImageButton;
 
     string imagesDirectory;
     int seed = 0;
 
     void Start()
     {
+        generateImageButton.onClick.RemoveAllListeners();
+        generateImageButton.onClick.AddListener(generateAndLoad);
         seed = Random.Range(0, int.MaxValue);
         imagesDirectory = Path.Combine(Application.persistentDataPath, "GeneratedImages");
 
         //Comprobar que el directorio existe
-        if (Directory.Exists(imagesDirectory))
-        {
-            //StartCoroutine(GenerateAndSaveImage(prompt));
-        }
-        else
+        if (!Directory.Exists(imagesDirectory))
         {
             Debug.LogError($"No existe el directorio: {imagesDirectory}");
         }
     }
 
-    IEnumerator GenerateAndSaveImage(string prompt)
+    IEnumerator GenerateAndSaveImage()
     {
+        //Desactivo los botones
+        generateImageButton.enabled = false;
+        FindAnyObjectByType<ShowImages>().leftButon.enabled = false;
+        FindAnyObjectByType<ShowImages>().rightButton.enabled = false;
+
         // Construir la URL con los parámetros
-        string apiUrl = $"{baseUrl}{UnityWebRequest.EscapeURL(prompt)}?width={width}&height={height}&nologo={(nologo ? 1 : 0)}&seed={seed}";
+        string apiUrl = $"{baseUrl}{UnityWebRequest.EscapeURL(prompt)}?width={width}&height={height}&nologo={(noLogo ? 1 : 0)}&seed={seed}";
 
         // Realizar la solicitud GET
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(apiUrl);
@@ -64,7 +71,21 @@ public class ImageGenerator : MonoBehaviour
             // Guardar la imagen en el disco
             File.WriteAllBytes(filePath, imageData);
 
+            //Vuelvo a activar los botones
+            generateImageButton.enabled = true;
+            FindAnyObjectByType<ShowImages>().leftButon.enabled = true;
+            FindAnyObjectByType<ShowImages>().rightButton.enabled = true;
+
+            //Vuelvo a cargar la lista
+            FindAnyObjectByType<ShowImages>().reloadImages();
+
             Debug.Log($"Imagen guardada en: {filePath}");
         }
+    }
+
+    void generateAndLoad()
+    {
+        //Genero la imagen
+        StartCoroutine(GenerateAndSaveImage());
     }
 }
