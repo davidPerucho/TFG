@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class ShowImages : MonoBehaviour
 {
     const int MAX_IMAGES = 3;
-    const float BUTTONS_TRANSPARENCY = 0.4f;
 
     [SerializeField]
     Transform imageLayout; //Un GameObject con un Horizontal Layout Group para posicionar las imágenes
@@ -28,11 +27,8 @@ public class ShowImages : MonoBehaviour
     void Start()
     {
         //Añado a cada boton su función correspondiente
-        leftButon.onClick.RemoveAllListeners();
-        leftButon.onClick.AddListener(moveLeft);
-
-        rightButton.onClick.RemoveAllListeners();
-        rightButton.onClick.AddListener(moveRight);
+        UIManager.Instance.AddListenerToButton("ButtonListLeft", moveLeft);
+        UIManager.Instance.AddListenerToButton("ButtonListRight", moveRight);
 
         //Ruta al directorio donde se guardan las imágenes
         imagesDirectory = Path.Combine(Application.persistentDataPath, "GeneratedImages");
@@ -66,35 +62,30 @@ public class ShowImages : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Image imageButtonLeft = leftButon.GetComponent<Image>();
-        Image imageButtonRight = rightButton.GetComponent<Image>();
-        Color colorButtonLeft = imageButtonLeft.color;
-        Color colorButtonRight = imageButtonRight.color;
-
-        if (leftIndex == 0 || numImages <= 3)
+        if (FindAnyObjectByType<ImageGenerator>().loading == true)
         {
-            leftButon.enabled = false;
-            colorButtonLeft.a = Mathf.Clamp01(BUTTONS_TRANSPARENCY);
-            imageButtonLeft.color = colorButtonLeft;
+            UIManager.Instance.disableButton("ButtonListLeft");
+            UIManager.Instance.disableButton("ButtonListRight");
         }
         else
         {
-            leftButon.enabled = true;
-            colorButtonLeft.a = Mathf.Clamp01(1);
-            imageButtonLeft.color = colorButtonLeft;
-        }
+            if (leftIndex == 0 || numImages <= 3)
+            {
+                UIManager.Instance.disableButton("ButtonListLeft");
+            }
+            else
+            {
+                UIManager.Instance.enableButton("ButtonListLeft");
+            }
 
-        if (rightIndex == (numImages-1) || numImages <= 3)
-        {
-            rightButton.enabled = false;
-            colorButtonRight.a = Mathf.Clamp01(BUTTONS_TRANSPARENCY);
-            imageButtonRight.color = colorButtonRight;
-        }
-        else
-        {
-            rightButton.enabled = true;
-            colorButtonRight.a = Mathf.Clamp01(1);
-            imageButtonRight.color = colorButtonRight;
+            if (rightIndex == (numImages - 1) || numImages <= 3)
+            {
+                UIManager.Instance.disableButton("ButtonListRight");
+            }
+            else
+            {
+                UIManager.Instance.enableButton("ButtonListRight");
+            }
         }
     }
 

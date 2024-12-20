@@ -203,7 +203,7 @@ GameObject:
   - component: {fileID: 347278679}
   - component: {fileID: 347278678}
   m_Layer: 5
-  m_Name: ListRight
+  m_Name: ButtonListRight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -324,7 +324,7 @@ GameObject:
   - component: {fileID: 738871573}
   - component: {fileID: 738871572}
   m_Layer: 5
-  m_Name: ListLeft
+  m_Name: ButtonListLeft
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -507,7 +507,7 @@ GameObject:
   - component: {fileID: 1414070104}
   - component: {fileID: 1414070103}
   m_Layer: 5
-  m_Name: GenerateButton
+  m_Name: ButtonGenerateImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -865,6 +865,7 @@ GameObject:
   - component: {fileID: 1727319109}
   - component: {fileID: 1727319108}
   - component: {fileID: 1727319110}
+  - component: {fileID: 1727319111}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -921,6 +922,23 @@ MonoBehaviour:
   imagePrefab: {fileID: 4802982128869268939, guid: b6493ba05e57d6a4083cee4fc8316900, type: 3}
   leftButon: {fileID: 738871572}
   rightButton: {fileID: 347278678}
+--- !u!114 &1727319111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727319107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8c617bcbeb3d3544957375ea6b41022, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buttonsUI:
+  - {fileID: 347278678}
+  - {fileID: 738871572}
+  - {fileID: 1414070103}
+  textsUI: []
 --- !u!1 &1813727634
 GameObject:
   m_ObjectHideFlags: 0

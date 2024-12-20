@@ -15,6 +15,7 @@ public class ImageGenerator : MonoBehaviour
 
     public int width = 512;
     public int height = 512;
+    public bool loading = false;
 
     [SerializeField]
     bool noLogo = true;
@@ -27,8 +28,7 @@ public class ImageGenerator : MonoBehaviour
 
     void Start()
     {
-        generateImageButton.onClick.RemoveAllListeners();
-        generateImageButton.onClick.AddListener(generateAndLoad);
+        UIManager.Instance.AddListenerToButton("ButtonGenerateImage", generateAndLoad);
         seed = Random.Range(0, int.MaxValue);
         imagesDirectory = Path.Combine(Application.persistentDataPath, "GeneratedImages");
 
@@ -42,9 +42,9 @@ public class ImageGenerator : MonoBehaviour
     IEnumerator GenerateAndSaveImage()
     {
         //Desactivo los botones
-        generateImageButton.enabled = false;
-        FindAnyObjectByType<ShowImages>().leftButon.enabled = false;
-        FindAnyObjectByType<ShowImages>().rightButton.enabled = false;
+        UIManager.Instance.disableButton("ButtonGenerateImage");
+        UIManager.Instance.disableButton("ButtonListLeft");
+        UIManager.Instance.disableButton("ButtonListRight");
 
         // Construir la URL con los parámetros
         string apiUrl = $"{baseUrl}{UnityWebRequest.EscapeURL(prompt)}?width={width}&height={height}&nologo={(noLogo ? 1 : 0)}&seed={seed}";
@@ -72,9 +72,10 @@ public class ImageGenerator : MonoBehaviour
             File.WriteAllBytes(filePath, imageData);
 
             //Vuelvo a activar los botones
-            generateImageButton.enabled = true;
-            FindAnyObjectByType<ShowImages>().leftButon.enabled = true;
-            FindAnyObjectByType<ShowImages>().rightButton.enabled = true;
+            loading = false;
+            UIManager.Instance.enableButton("ButtonGenerateImage");
+            UIManager.Instance.enableButton("ButtonListLeft");
+            UIManager.Instance.enableButton("ButtonListRight");
 
             //Vuelvo a cargar la lista
             FindAnyObjectByType<ShowImages>().reloadImages();
@@ -85,6 +86,8 @@ public class ImageGenerator : MonoBehaviour
 
     void generateAndLoad()
     {
+        loading = true;
+
         //Genero la imagen
         StartCoroutine(GenerateAndSaveImage());
     }
