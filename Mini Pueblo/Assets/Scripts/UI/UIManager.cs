@@ -72,4 +72,26 @@ public class UIManager : MonoBehaviour
             }
         }
     }
+
+    public void disableObject(string objectName)
+    {
+        foreach (Button button in buttonsUI)
+        {
+            if (button.name == objectName)
+            {
+                button.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    public void enableObject(string objectName)
+    {
+        foreach (Button button in buttonsUI)
+        {
+            if (button.name == objectName)
+            {
+                button.gameObject.SetActive(true);
+            }
+        }
+    }
 }

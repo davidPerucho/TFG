@@ -97,32 +97,47 @@ public class ShowImages : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        // Cargar las tres primeras imágenes y mostrarlas
+        //Cargar las tres primeras imágenes y mostrarlas
         if (numImages > 0)
         {
             for (int i = leftIndex; i <= rightIndex; i++)
             {
                 string filePath = imageFiles[i];
 
-                // Cargar la imagen desde el archivo
+                //Cargar la imagen desde el archivo
                 byte[] imageBytes = File.ReadAllBytes(filePath);
                 Texture2D texture = new Texture2D(2, 2);
                 texture.LoadImage(imageBytes);
 
-                // Crear un nuevo Sprite a partir de la textura
+                //Crear un nuevo Sprite a partir de la textura
                 Sprite sprite = Sprite.Create(
                     texture,
                     new Rect(0, 0, texture.width, texture.height),
                     new Vector2(0.5f, 0.5f)
                 );
 
-                // Instanciar el prefab y configurarlo
+                //Instanciar el prefab y configurarlo
                 GameObject imageObject = Instantiate(imagePrefab, imageLayout);
                 Image uiImage = imageObject.GetComponent<Image>();
                 if (uiImage != null)
                 {
                     uiImage.sprite = sprite;
                     uiImage.preserveAspect = true;
+                }
+                else
+                {
+                    Debug.LogError("No se ha encontrado el componente Image en el prefab de la imagen.");
+                }
+
+                Button uiButton = imageObject.GetComponent<Button>();
+                if (uiButton != null)
+                {
+                    uiButton.onClick.RemoveAllListeners();
+                    uiButton.onClick.AddListener(() => DisplaySingleImage(filePath));
+                }
+                else
+                {
+                    Debug.LogError("No se ha encontrado el componente Button en el prefab de la imagen.");
                 }
             }
         }
@@ -164,5 +179,27 @@ public class ShowImages : MonoBehaviour
         leftIndex = 0;
 
         DisplayImages();
+    }
+
+    void DisplaySingleImage(string filePath)
+    {
+        //Desactivo los elementos UI de la lista
+        UIManager.Instance.disableObject("ButtonListRight");
+        UIManager.Instance.disableObject("ButtonListLeft");
+        UIManager.Instance.disableObject("ButtonGenerateImage");
+
+        //Activo los elementos UI del selector de imagen
+        UIManager.Instance.enableObject("ButtonReturn");
+        UIManager.Instance.enableObject("ButtonColor");
+        UIManager.Instance.enableObject("ButtonDelete");
+
+        //Elimino las imágenes de la lista
+        foreach (Transform child in imageLayout)
+        {
+            Destroy(child.gameObject);
+        }
+
+        //Inicio la funcionalidad del selector de imagen
+        FindAnyObjectByType<SelectImage>().DisplaySingleImage(filePath);
     }
 }

@@ -15,6 +15,8 @@ public class ImageGenerator : MonoBehaviour
 
     public int width = 512;
     public int height = 512;
+
+    [HideInInspector]
     public bool loading = false;
 
     [SerializeField]
