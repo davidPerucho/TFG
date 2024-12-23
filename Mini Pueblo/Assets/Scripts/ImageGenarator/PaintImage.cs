@@ -114,16 +114,7 @@ public class PaintImage : MonoBehaviour
         float brightness = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
 
         // Devuelve verdadero si el brillo es menor a un umbral (por ejemplo, 0.2)
-        return brightness < 0.2f;
-    }
-
-    bool isBrightColor(Color color)
-    {
-        // Calcula el brillo del color (usando la fórmula de luminosidad perceptiva)
-        float brightness = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
-
-        // Devuelve verdadero si el brillo es menor a un umbral (por ejemplo, 0.2)
-        return brightness > 0.2f;
+        return brightness < 0.4f;
     }
 
     void save()
@@ -138,12 +129,13 @@ public class PaintImage : MonoBehaviour
             Debug.LogError($"Error al intentar eliminar la imagen: {ioEx.Message}");
         }
 
+        //Guardo la imagen añadiendo la fecha en el nombre
         byte[] bytes = texture.EncodeToPNG();
-        File.WriteAllBytes(Path.Combine(savePath, $"Coloreada_0.png"), bytes);
+        string timestamp = System.DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        File.WriteAllBytes(Path.Combine(savePath, $"Coloreada_{timestamp}.png"), bytes);
         Debug.Log($"Imagen guardada en {savePath}");
 
         //Vuelvo a la lista de imagenes
-        //Activo los elementos UI de la lista
         UIManager.Instance.enableObject("ButtonListRight");
         UIManager.Instance.enableObject("ButtonListLeft");
         UIManager.Instance.enableObject("ButtonGenerateImage");

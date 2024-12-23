@@ -43,6 +43,9 @@ public class ImageGenerator : MonoBehaviour
 
     IEnumerator GenerateAndSaveImage()
     {
+        //Genero una semilla aleatoria
+        seed = Random.Range(0, int.MaxValue);
+
         //Desactivo los botones
         UIManager.Instance.disableButton("ButtonGenerateImage");
         UIManager.Instance.disableButton("ButtonListLeft");
