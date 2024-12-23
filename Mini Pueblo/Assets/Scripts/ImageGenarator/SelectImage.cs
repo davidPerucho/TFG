@@ -82,6 +82,7 @@ public class SelectImage : MonoBehaviour
     void PaintImage()
     {
         //Activo los elementos UI para pintar
+        UIManager.Instance.enableObject("ButtonSave");
 
         //Desactivo los elementos UI del selector de imagen
         UIManager.Instance.disableObject("ButtonReturn");
