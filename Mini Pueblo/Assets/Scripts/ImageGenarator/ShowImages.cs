@@ -187,6 +187,7 @@ public class ShowImages : MonoBehaviour
         UIManager.Instance.disableObject("ButtonListRight");
         UIManager.Instance.disableObject("ButtonListLeft");
         UIManager.Instance.disableObject("ButtonGenerateImage");
+        UIManager.Instance.disableObject("TextImageGeneration");
 
         //Activo los elementos UI del selector de imagen
         UIManager.Instance.enableObject("ButtonReturn");

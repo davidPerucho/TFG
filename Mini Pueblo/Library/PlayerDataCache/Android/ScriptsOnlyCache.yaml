@@ -6,6 +6,8 @@ ScriptsOnlyBuild:
     - DifficultyManager
     - ImageGenerator
     - MainMenu
+    - PaintImage
+    - SelectImage
     - ShowImages
     - SoundManager
     - UIManager
@@ -63,6 +65,7 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.GraphicRaycaster
     - UnityEngine.UI.HorizontalLayoutGroup
     - UnityEngine.UI.Image
+    - UnityEngine.UI.RawImage
   serializedClasses:
     Assembly-CSharp:
     - ObjectWithProbability
@@ -121,11 +124,13 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 16672}
     - Class: 114
-      Script: {instanceID: 17734}
+      Script: {instanceID: 16674}
     - Class: 114
-      Script: {instanceID: 17938}
+      Script: {instanceID: 17436}
     - Class: 114
-      Script: {instanceID: 18236}
+      Script: {instanceID: 17736}
+    - Class: 114
+      Script: {instanceID: 17940}
     - Class: 114
       Script: {instanceID: 18710}
     - Class: 114
@@ -141,7 +146,11 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 20934}
     - Class: 114
-      Script: {instanceID: 21264}
+      Script: {instanceID: 20966}
+    - Class: 114
+      Script: {instanceID: 21266}
+    - Class: 114
+      Script: {instanceID: 22102}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -202,13 +211,13 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 16672}
     - Class: 114
-      Script: {instanceID: 17734}
+      Script: {instanceID: 16674}
     - Class: 114
-      Script: {instanceID: 17938}
+      Script: {instanceID: 17736}
     - Class: 114
-      Script: {instanceID: 18208}
+      Script: {instanceID: 17940}
     - Class: 114
-      Script: {instanceID: 18236}
+      Script: {instanceID: 18210}
     - Class: 114
       Script: {instanceID: 20194}
     - Class: 114
@@ -222,19 +231,19 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 20934}
     - Class: 114
-      Script: {instanceID: 20984}
+      Script: {instanceID: 20986}
     - Class: 114
-      Script: {instanceID: 21150}
+      Script: {instanceID: 21152}
     - Class: 114
-      Script: {instanceID: 21264}
+      Script: {instanceID: 21266}
     - Class: 114
-      Script: {instanceID: 22128}
+      Script: {instanceID: 22132}
     - Class: 114
-      Script: {instanceID: 22500}
+      Script: {instanceID: 22504}
     - Class: 114
-      Script: {instanceID: 22570}
+      Script: {instanceID: 22574}
     - Class: 114
-      Script: {instanceID: 22754}
+      Script: {instanceID: 22758}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -279,13 +288,13 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 16672}
     - Class: 114
-      Script: {instanceID: 17308}
+      Script: {instanceID: 16674}
     - Class: 114
-      Script: {instanceID: 17734}
+      Script: {instanceID: 17310}
     - Class: 114
-      Script: {instanceID: 17938}
+      Script: {instanceID: 17736}
     - Class: 114
-      Script: {instanceID: 18236}
+      Script: {instanceID: 17940}
     - Class: 114
       Script: {instanceID: 19024}
     - Class: 114
@@ -299,7 +308,7 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 20934}
     - Class: 114
-      Script: {instanceID: 21264}
+      Script: {instanceID: 21266}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -340,11 +349,11 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 17528}
+      Script: {instanceID: 17530}
     - Class: 114
-      Script: {instanceID: 17734}
+      Script: {instanceID: 17736}
     - Class: 114
-      Script: {instanceID: 17938}
+      Script: {instanceID: 17940}
     - Class: 114
       Script: {instanceID: 18754}
     - Class: 114
@@ -360,9 +369,9 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 20934}
     - Class: 114
-      Script: {instanceID: 21264}
+      Script: {instanceID: 21266}
     - Class: 114
-      Script: {instanceID: 22336}
+      Script: {instanceID: 22340}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -403,11 +412,11 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 17586}
+      Script: {instanceID: 17588}
     - Class: 114
-      Script: {instanceID: 17734}
+      Script: {instanceID: 17736}
     - Class: 114
-      Script: {instanceID: 17938}
+      Script: {instanceID: 17940}
     - Class: 114
       Script: {instanceID: 19232}
     - Class: 114
@@ -423,11 +432,11 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 20934}
     - Class: 114
-      Script: {instanceID: 20966}
+      Script: {instanceID: 20968}
     - Class: 114
-      Script: {instanceID: 21264}
+      Script: {instanceID: 21266}
     - Class: 114
-      Script: {instanceID: 22854}
+      Script: {instanceID: 22858}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -474,13 +483,13 @@ ScriptsOnlyBuild:
     - Class: 104
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 16814}
+      Script: {instanceID: 16816}
     - Class: 114
-      Script: {instanceID: 17734}
+      Script: {instanceID: 17736}
     - Class: 114
-      Script: {instanceID: 17938}
+      Script: {instanceID: 17940}
     - Class: 114
-      Script: {instanceID: 18180}
+      Script: {instanceID: 18182}
     - Class: 114
       Script: {instanceID: 18754}
     - Class: 114
@@ -494,13 +503,13 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 20934}
     - Class: 114
-      Script: {instanceID: 21264}
+      Script: {instanceID: 21266}
     - Class: 114
-      Script: {instanceID: 21372}
+      Script: {instanceID: 21374}
     - Class: 114
-      Script: {instanceID: 21602}
+      Script: {instanceID: 21604}
     - Class: 114
-      Script: {instanceID: 22336}
+      Script: {instanceID: 22340}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -526,6 +535,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI
     namespaceName: UnityEngine.UI
     className: Image
+  - hash:
+      serializedVersion: 2
+      Hash: 915204dac8acad99f076d6e72ada0a0f
+    assemblyName: UnityEngine.UI
+    namespaceName: UnityEngine.UI
+    className: Button
   - hash:
       serializedVersion: 2
       Hash: 55060a7bf226ac385ce19ebd450f199f
@@ -754,12 +769,6 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI
     namespaceName: UnityEngine.UI
     className: ToggleGroup
-  - hash:
-      serializedVersion: 2
-      Hash: 915204dac8acad99f076d6e72ada0a0f
-    assemblyName: UnityEngine.UI
-    namespaceName: UnityEngine.UI
-    className: Button
   - hash:
       serializedVersion: 2
       Hash: d90629714fa6b0145fcaffc87f5c6559
@@ -1224,6 +1233,12 @@ ScriptsOnlyBuild:
     className: TextMeshProUGUI
   - hash:
       serializedVersion: 2
+      Hash: 9dd9c856dde71dcb45c7cef81e709c92
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: SelectImage
+  - hash:
+      serializedVersion: 2
       Hash: 412e747c8e9a17c9439e53a64d848308
     assemblyName: Assembly-CSharp
     namespaceName: 
@@ -1414,6 +1429,12 @@ ScriptsOnlyBuild:
     assemblyName: UnityEngine.UI
     namespaceName: UnityEngine.UI
     className: Dropdown
+  - hash:
+      serializedVersion: 2
+      Hash: adaef3ae43d8aff518dd7b291d6ed58e
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: PaintImage
   - hash:
       serializedVersion: 2
       Hash: 4728e3d21cc2a12e391e71ec9b7eed0b

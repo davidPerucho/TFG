@@ -83,6 +83,7 @@ public class SelectImage : MonoBehaviour
     {
         //Activo los elementos UI para pintar
         UIManager.Instance.enableObject("ButtonSave");
+        UIManager.Instance.enableObject("TextColor");
 
         //Desactivo los elementos UI del selector de imagen
         UIManager.Instance.disableObject("ButtonReturn");

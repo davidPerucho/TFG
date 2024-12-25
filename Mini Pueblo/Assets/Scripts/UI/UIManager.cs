@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -75,22 +76,72 @@ public class UIManager : MonoBehaviour
 
     public void disableObject(string objectName)
     {
+        bool found = false;
+
         foreach (Button button in buttonsUI)
         {
             if (button.name == objectName)
             {
+                found = true;
                 button.gameObject.SetActive(false);
+            }
+        }
+
+        if (found == false)
+        {
+            foreach (TextMeshProUGUI text in textsUI)
+            {
+                if (text.name == objectName)
+                {
+                    text.gameObject.SetActive(false);
+                }
             }
         }
     }
 
     public void enableObject(string objectName)
     {
+        bool found = false;
+
         foreach (Button button in buttonsUI)
         {
             if (button.name == objectName)
             {
+                found = true;
                 button.gameObject.SetActive(true);
+            }
+        }
+
+        if (found == false)
+        {
+            foreach (TextMeshProUGUI text in textsUI)
+            {
+                if (text.name == objectName)
+                {
+                    text.gameObject.SetActive(true);
+                }
+            }
+        }
+    }
+
+    public void setText(string name, string newText)
+    {
+        foreach (TextMeshProUGUI text in textsUI)
+        {
+            if (text.name == name)
+            {
+                text.text = newText;
+            }
+        }
+    }
+
+    public void setTextColor(string name, Color color)
+    {
+        foreach (TextMeshProUGUI text in textsUI)
+        {
+            if (text.name == name)
+            {
+                text.color = color;
             }
         }
     }

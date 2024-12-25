@@ -209,6 +209,7 @@ public class PaintImage : MonoBehaviour
 
         //Desactivo los elementos UI del selector de imagen
         UIManager.Instance.disableObject("ButtonSave");
+        UIManager.Instance.disableObject("TextColor");
 
         //Desactivo los elementos UI
         image.gameObject.SetActive(false);

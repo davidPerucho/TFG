@@ -37,7 +37,8 @@ public class ImageGenerator : MonoBehaviour
         //Comprobar que el directorio existe
         if (!Directory.Exists(imagesDirectory))
         {
-            Debug.LogError($"No existe el directorio: {imagesDirectory}");
+            Directory.CreateDirectory(imagesDirectory);
+            Debug.Log($"El directorio no existía, pero se ha creado: {imagesDirectory}");
         }
     }
 
@@ -61,6 +62,9 @@ public class ImageGenerator : MonoBehaviour
 
         if (request.result != UnityWebRequest.Result.Success)
         {
+            loading = false;
+            UIManager.Instance.setText("TextImageGeneration", "Error al generar el mandala, comprueba la conexión a internet.");
+            UIManager.Instance.setTextColor("TextImageGeneration", Color.red);
             Debug.LogError($"Error al generar la imagen: {request.error}");
         }
         else
@@ -78,6 +82,9 @@ public class ImageGenerator : MonoBehaviour
 
             //Vuelvo a activar los botones
             loading = false;
+            UIManager.Instance.setText("TextImageGeneration", "Mandala generado correctamente.");
+            UIManager.Instance.setTextColor("TextImageGeneration", Color.green);
+
             UIManager.Instance.enableButton("ButtonGenerateImage");
             UIManager.Instance.enableButton("ButtonListLeft");
             UIManager.Instance.enableButton("ButtonListRight");
@@ -92,6 +99,8 @@ public class ImageGenerator : MonoBehaviour
     void generateAndLoad()
     {
         loading = true;
+        UIManager.Instance.enableObject("TextImageGeneration");
+        UIManager.Instance.setText("TextImageGeneration", "");
 
         //Genero la imagen
         StartCoroutine(GenerateAndSaveImage());
