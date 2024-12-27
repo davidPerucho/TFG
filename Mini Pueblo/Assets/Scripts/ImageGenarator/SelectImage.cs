@@ -4,13 +4,16 @@ using System.Collections;
 using System.IO;
 using UnityEngine.UI;
 
+/// <summary>
+/// Clase que se encarga de manejar los elementos del selector de imágenes.
+/// </summary>
 public class SelectImage : MonoBehaviour
 {
     string filePath;
-    GameObject imageObject;
+    GameObject imageObject; //Objeto que contiene la imagen actual
 
     [SerializeField]
-    GameObject imagePrefab;
+    GameObject imagePrefab; //Prefab utilizado para crear objetos con la imagen actual
 
     // Start is called before the first frame update
     void Start()
@@ -21,6 +24,10 @@ public class SelectImage : MonoBehaviour
         UIManager.Instance.AddListenerToButton("ButtonDelete", DeleteImage);
     }
 
+    /// <summary>
+    /// Muestra la imagen por pantalla.
+    /// </summary>
+    /// <param name="imagePath">Ruta de la imagen.</param>
     public void DisplaySingleImage(string imagePath)
     {
         filePath = imagePath;
@@ -64,6 +71,9 @@ public class SelectImage : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Elimina la imagen seleccionada.
+    /// </summary>
     void DeleteImage()
     {
         try
@@ -79,16 +89,19 @@ public class SelectImage : MonoBehaviour
         Return();
     }
 
+    /// <summary>
+    /// Mustra la vista para pintar la imagen.
+    /// </summary>
     void PaintImage()
     {
         //Activo los elementos UI para pintar
-        UIManager.Instance.enableObject("ButtonSave");
-        UIManager.Instance.enableObject("TextColor");
+        UIManager.Instance.EnableObject("ButtonSave");
+        UIManager.Instance.EnableObject("TextColor");
 
         //Desactivo los elementos UI del selector de imagen
-        UIManager.Instance.disableObject("ButtonReturn");
-        UIManager.Instance.disableObject("ButtonColor");
-        UIManager.Instance.disableObject("ButtonDelete");
+        UIManager.Instance.DisableObject("ButtonReturn");
+        UIManager.Instance.DisableObject("ButtonColor");
+        UIManager.Instance.DisableObject("ButtonDelete");
 
         //Elimino la imagen de la vista
         Destroy(imageObject);
@@ -97,24 +110,27 @@ public class SelectImage : MonoBehaviour
         FindAnyObjectByType<PaintImage>().DisplayPaintImage(filePath);
     }
 
+    /// <summary>
+    /// Vuelve a la lista de imágenes.
+    /// </summary>
     void Return()
     {
         //Activo los elementos UI de la lista
-        UIManager.Instance.enableObject("ButtonListRight");
-        UIManager.Instance.enableObject("ButtonListLeft");
-        UIManager.Instance.enableObject("ButtonGenerateImage");
-        UIManager.Instance.enableObject("TextImageGenerator");
-        UIManager.Instance.enableObject("TextTutorial");
+        UIManager.Instance.EnableObject("ButtonListRight");
+        UIManager.Instance.EnableObject("ButtonListLeft");
+        UIManager.Instance.EnableObject("ButtonGenerateImage");
+        UIManager.Instance.EnableObject("TextImageGenerator");
+        UIManager.Instance.EnableObject("TextTutorial");
 
         //Desactivo los elementos UI del selector de imagen
-        UIManager.Instance.disableObject("ButtonReturn");
-        UIManager.Instance.disableObject("ButtonColor");
-        UIManager.Instance.disableObject("ButtonDelete");
+        UIManager.Instance.DisableObject("ButtonReturn");
+        UIManager.Instance.DisableObject("ButtonColor");
+        UIManager.Instance.DisableObject("ButtonDelete");
 
         //Elimino la imagen de la vista
         Destroy(imageObject);
 
         //Inicio la funcionalidad del selector de imagen
-        FindAnyObjectByType<ShowImages>().reloadImages();
+        FindAnyObjectByType<ShowImages>().ReloadImages();
     }
 }

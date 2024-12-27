@@ -4,33 +4,36 @@ using System.Collections;
 using System.IO;
 using UnityEngine.UI;
 
+/// <summary>
+/// Clase que se encarga de la funcionalidad a la hora de generar imágenes.
+/// </summary>
 public class ImageGenerator : MonoBehaviour
 {
     // Parámetros de la API
     [SerializeField]
-    string baseUrl = "https://image.pollinations.ai/prompt/";
+    string baseUrl = "https://image.pollinations.ai/prompt/"; //Ruta de la api
 
     [SerializeField]
-    string prompt = "A simple colorbook page of a landscape without color";
+    string prompt; //Prompt utilizado para generar la imagen
 
-    public int width = 512;
-    public int height = 512;
+    public int width; //Ancho deseado para la imagen generada
+    public int height; //Alto deseado para la imagen generada
 
     [HideInInspector]
-    public bool loading = false;
+    public bool loading = false; //True cuando se está creando una nueva imagen
 
     [SerializeField]
-    bool noLogo = true;
+    bool noLogo = true; //True cuando no se quiere que el logo de la IA aparezca en la imagen
 
     [SerializeField]
-    Button generateImageButton;
+    Button generateImageButton; //Botón encargado de activar la generación de imágenes
 
-    string imagesDirectory;
-    int seed = 0;
+    string imagesDirectory; //Ruta al directorio en el que se encuentran las imágenes generadas
+    int seed = 0; //Semilla utilizada para generar la imagen
 
     void Start()
     {
-        UIManager.Instance.AddListenerToButton("ButtonGenerateImage", generateAndLoad);
+        UIManager.Instance.AddListenerToButton("ButtonGenerateImage", GenerateAndLoad);
         seed = Random.Range(0, int.MaxValue);
         imagesDirectory = Path.Combine(Application.persistentDataPath, "GeneratedImages");
 
@@ -42,65 +45,73 @@ public class ImageGenerator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Rutina encargada de llamar a la api y gestionar la generación de la imagen.
+    /// </summary>
     IEnumerator GenerateAndSaveImage()
     {
         //Genero una semilla aleatoria
         seed = Random.Range(0, int.MaxValue);
 
         //Desactivo los botones
-        UIManager.Instance.disableButton("ButtonGenerateImage");
-        UIManager.Instance.disableButton("ButtonListLeft");
-        UIManager.Instance.disableButton("ButtonListRight");
+        UIManager.Instance.DisableButton("ButtonGenerateImage");
+        UIManager.Instance.DisableButton("ButtonListLeft");
+        UIManager.Instance.DisableButton("ButtonListRight");
 
-        // Construir la URL con los parámetros
+        //Construyo la URL con sus parámetros
         string apiUrl = $"{baseUrl}{UnityWebRequest.EscapeURL(prompt)}?width={width}&height={height}&nologo={(noLogo ? 1 : 0)}&seed={seed}";
 
-        // Realizar la solicitud GET
+        //Realizo la solicitud GET
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(apiUrl);
 
-        yield return request.SendWebRequest();
+        yield return request.SendWebRequest(); //Espero la respuesta
 
         if (request.result != UnityWebRequest.Result.Success)
         {
+            //Si hay un error se muestra con un texto rojo por pantalla
             loading = false;
-            UIManager.Instance.setText("TextImageGeneration", "Error al generar el mandala, comprueba la conexión a internet.");
-            UIManager.Instance.setTextColor("TextImageGeneration", Color.red);
+            UIManager.Instance.SetText("TextImageGeneration", "Error al generar el mandala, comprueba la conexión a internet.");
+            UIManager.Instance.SetTextColor("TextImageGeneration", Color.red);
             Debug.LogError($"Error al generar la imagen: {request.error}");
         }
         else
         {
-            // Obtener la textura de la respuesta
+            //Obtengo la textura de la respuesta
             Texture2D texture = DownloadHandlerTexture.GetContent(request);
 
-            // Convertir la textura en bytes PNG
+            //Convierto la textura en bytes PNG
             byte[] imageData = texture.EncodeToPNG();
 
             string filePath = Path.Combine(imagesDirectory, $"Image_{seed}.png");
 
-            // Guardar la imagen en el disco
+            //Guardo la imagen en el disco
             File.WriteAllBytes(filePath, imageData);
 
             //Vuelvo a activar los botones
             loading = false;
-            UIManager.Instance.setText("TextImageGeneration", "Mandala generado correctamente.");
-            UIManager.Instance.setTextColor("TextImageGeneration", Color.green);
+            UIManager.Instance.SetText("TextImageGeneration", "Mandala generado correctamente.");
+            UIManager.Instance.SetTextColor("TextImageGeneration", Color.green);
 
-            UIManager.Instance.enableButton("ButtonGenerateImage");
-            UIManager.Instance.enableButton("ButtonListLeft");
-            UIManager.Instance.enableButton("ButtonListRight");
+            UIManager.Instance.EnableButton("ButtonGenerateImage");
+            UIManager.Instance.EnableButton("ButtonListLeft");
+            UIManager.Instance.EnableButton("ButtonListRight");
 
             //Vuelvo a cargar la lista
-            FindAnyObjectByType<ShowImages>().reloadImages();
+            FindAnyObjectByType<ShowImages>().ReloadImages();
 
             Debug.Log($"Imagen guardada en: {filePath}");
         }
     }
 
-    void generateAndLoad()
+    /// <summary>
+    /// Fuencion encargada de llamar a la rutina para generar la imagen.
+    /// </summary>
+    void GenerateAndLoad()
     {
+        //Desactivo otras funcionalidades mientras se genera la imagen
         loading = true;
-        UIManager.Instance.enableObject("TextImageGeneration");
-        UIManager.Instance.setText("TextImageGeneration", "");
+        UIManager.Instance.EnableObject("TextImageGeneration");
+        UIManager.Instance.SetText("TextImageGeneration", "");
 
         //Genero la imagen
         StartCoroutine(GenerateAndSaveImage());

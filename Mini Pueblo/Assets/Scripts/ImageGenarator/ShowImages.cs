@@ -4,31 +4,34 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Clase que se encarga de manejar los elementos de la vista de imágenes.
+/// </summary>
 public class ShowImages : MonoBehaviour
 {
-    const int MAX_IMAGES = 3;
+    const int MAX_IMAGES = 3; //El número máximo de imágenes que se pueden mostrar por pantalla a la vez
 
     [SerializeField]
-    Transform imageLayout; //Un GameObject con un Horizontal Layout Group para posicionar las imágenes
+    Transform imageLayout; //Objeto que contiene el layout utilizado para posicionar las imágenes
 
     [SerializeField]
-    GameObject imagePrefab; //Un prefab con un componente Image
+    GameObject imagePrefab; //Un prefab utilizado para crear la vista de las imágenes
 
-    public Button leftButon;
-    public Button rightButton;
+    public Button leftButon; //Botón utilizado para desplazarse a la izquierda en la lista de imágenes
+    public Button rightButton; //Botón utilizado para desplazarse a la derecha en la lista de imágenes
 
-    string imagesDirectory;
-    int leftIndex = 0;
-    int rightIndex = 0;
-    int numImages = MAX_IMAGES;
-    string[] imageFiles;
+    string imagesDirectory; //Ruta al directorio donde se almacenan las imágenes
+    int leftIndex = 0; //Posición en el indice de imágenes de la imágen a la izquierda en la pantalla
+    int rightIndex = 0; //Posición en el indice de imágenes de la imágen a la derecha en la pantalla
+    int numImages = MAX_IMAGES; //Número de imágenes en el sistema
+    string[] imageFiles; //Array con las rutas de las imágenes
 
     // Start is called before the first frame update
     void Start()
     {
         //Añado a cada boton su función correspondiente
-        UIManager.Instance.AddListenerToButton("ButtonListLeft", moveLeft);
-        UIManager.Instance.AddListenerToButton("ButtonListRight", moveRight);
+        UIManager.Instance.AddListenerToButton("ButtonListLeft", MoveLeft);
+        UIManager.Instance.AddListenerToButton("ButtonListRight", MoveRight);
 
         //Ruta al directorio donde se guardan las imágenes
         imagesDirectory = Path.Combine(Application.persistentDataPath, "GeneratedImages");
@@ -65,40 +68,43 @@ public class ShowImages : MonoBehaviour
         //Cambio el texto del tutorial segun corresponda
         if (numImages > 0)
         {
-            UIManager.Instance.setText("TextTutorial", "Pulsa sobre un mandala para seleccionarlo");
+            UIManager.Instance.SetText("TextTutorial", "Pulsa sobre un mandala para seleccionarlo");
         }
         else
         {
-            UIManager.Instance.setText("TextTutorial", "Pulsa el boton de la parte superior para crear un nuevo mandala");
+            UIManager.Instance.SetText("TextTutorial", "Pulsa el boton de la parte superior para crear un nuevo mandala");
         }
 
         if (FindAnyObjectByType<ImageGenerator>().loading == true)
         {
-            UIManager.Instance.disableButton("ButtonListLeft");
-            UIManager.Instance.disableButton("ButtonListRight");
+            UIManager.Instance.DisableButton("ButtonListLeft");
+            UIManager.Instance.DisableButton("ButtonListRight");
         }
         else
         {
             if (leftIndex == 0 || numImages <= 3)
             {
-                UIManager.Instance.disableButton("ButtonListLeft");
+                UIManager.Instance.DisableButton("ButtonListLeft");
             }
             else
             {
-                UIManager.Instance.enableButton("ButtonListLeft");
+                UIManager.Instance.EnableButton("ButtonListLeft");
             }
 
             if (rightIndex == (numImages - 1) || numImages <= 3)
             {
-                UIManager.Instance.disableButton("ButtonListRight");
+                UIManager.Instance.DisableButton("ButtonListRight");
             }
             else
             {
-                UIManager.Instance.enableButton("ButtonListRight");
+                UIManager.Instance.EnableButton("ButtonListRight");
             }
         }
     }
 
+    /// <summary>
+    /// Mustra por pantalla la lista de imágenes creadas.
+    /// </summary>
     void DisplayImages()
     {
         //Eliminar todas las imagenes que hay en la lista actualmente
@@ -143,7 +149,7 @@ public class ShowImages : MonoBehaviour
                 if (uiButton != null)
                 {
                     uiButton.onClick.RemoveAllListeners();
-                    uiButton.onClick.AddListener(() => DisplaySingleImage(filePath));
+                    uiButton.onClick.AddListener(() => SelectSingleImage(filePath));
                 }
                 else
                 {
@@ -153,7 +159,10 @@ public class ShowImages : MonoBehaviour
         }
     }
 
-    void moveRight()
+    /// <summary>
+    /// Desplaza la lista de imágenes hacia la derecha.
+    /// </summary>
+    void MoveRight()
     {
         leftIndex++;
         rightIndex++;
@@ -161,7 +170,10 @@ public class ShowImages : MonoBehaviour
         DisplayImages();
     }
 
-    void moveLeft()
+    /// <summary>
+    /// Desplaza la lista de imágenes hacia la izquierda.
+    /// </summary>
+    void MoveLeft()
     {
         leftIndex--;
         rightIndex--;
@@ -169,7 +181,10 @@ public class ShowImages : MonoBehaviour
         DisplayImages();
     }
 
-    public void reloadImages()
+    /// <summary>
+    /// Recarga la lista de imágenes.
+    /// </summary>
+    public void ReloadImages()
     {
         //Obtener todos los archivos PNG en el directorio
         imageFiles = Directory.GetFiles(imagesDirectory, "*.png");
@@ -191,22 +206,26 @@ public class ShowImages : MonoBehaviour
         DisplayImages();
     }
 
-    void DisplaySingleImage(string filePath)
+    /// <summary>
+    /// Mustra por pantalla la imagen seleccionada y varias opciones.
+    /// </summary>
+    /// <param name="filePath">Ruta de la imagen seleccionada.</param>
+    void SelectSingleImage(string filePath)
     {
-        //Si se esta creando un nuevo mandala no se puede seleccionar un mandala
+        //Si se esta creando una nueva imagen no se puede seleccionar la imagen
         if (FindAnyObjectByType<ImageGenerator>().loading == false) 
         { 
             //Desactivo los elementos UI de la lista
-            UIManager.Instance.disableObject("ButtonListRight");
-            UIManager.Instance.disableObject("ButtonListLeft");
-            UIManager.Instance.disableObject("ButtonGenerateImage");
-            UIManager.Instance.disableObject("TextImageGeneration");
-            UIManager.Instance.disableObject("TextTutorial");
+            UIManager.Instance.DisableObject("ButtonListRight");
+            UIManager.Instance.DisableObject("ButtonListLeft");
+            UIManager.Instance.DisableObject("ButtonGenerateImage");
+            UIManager.Instance.DisableObject("TextImageGeneration");
+            UIManager.Instance.DisableObject("TextTutorial");
 
             //Activo los elementos UI del selector de imagen
-            UIManager.Instance.enableObject("ButtonReturn");
-            UIManager.Instance.enableObject("ButtonColor");
-            UIManager.Instance.enableObject("ButtonDelete");
+            UIManager.Instance.EnableObject("ButtonReturn");
+            UIManager.Instance.EnableObject("ButtonColor");
+            UIManager.Instance.EnableObject("ButtonDelete");
 
             //Elimino las imágenes de la lista
             foreach (Transform child in imageLayout)
