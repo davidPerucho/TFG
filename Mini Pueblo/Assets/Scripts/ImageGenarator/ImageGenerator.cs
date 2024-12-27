@@ -111,7 +111,7 @@ public class ImageGenerator : MonoBehaviour
         //Desactivo otras funcionalidades mientras se genera la imagen
         loading = true;
         UIManager.Instance.EnableObject("TextImageGeneration");
-        UIManager.Instance.SetText("TextImageGeneration", "");
+        UIManager.Instance.SetText("TextImageGeneration", "Generando mandala...");
 
         //Genero la imagen
         StartCoroutine(GenerateAndSaveImage());
