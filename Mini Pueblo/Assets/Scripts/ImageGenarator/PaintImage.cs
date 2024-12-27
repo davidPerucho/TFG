@@ -11,6 +11,7 @@ public class PaintImage : MonoBehaviour
     Texture2D imageTexture;
     Color fillColor;
     Color currentColor = Color.white;
+    bool pressed = false;
 
     [SerializeField]
     RawImage image;
@@ -33,7 +34,16 @@ public class PaintImage : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && image.gameObject.activeSelf && colorWheel.gameObject.activeSelf && colorOutput.gameObject.activeSelf)
+        if (Input.GetMouseButtonDown(0))
+        {
+            pressed = true;
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            pressed = false;
+        }
+
+        if (pressed && image.gameObject.activeSelf && colorWheel.gameObject.activeSelf && colorOutput.gameObject.activeSelf)
         {
             Vector2 localCursor;
             RectTransformUtility.ScreenPointToLocalPointInRectangle(image.rectTransform, Input.mousePosition, null, out localCursor);
@@ -145,11 +155,9 @@ public class PaintImage : MonoBehaviour
 
     bool isDarkColor(Color color)
     {
-        // Calcula el brillo del color (usando la fórmula de luminosidad perceptiva)
         float brightness = 0.299f * color.r + 0.587f * color.g + 0.114f * color.b;
-
-        // Devuelve verdadero si el brillo es menor a un umbral (por ejemplo, 0.2)
-        return brightness < 0.4f;
+        
+        return brightness < 0.25f;
     }
 
     void createColorWheel()
@@ -206,6 +214,8 @@ public class PaintImage : MonoBehaviour
         UIManager.Instance.enableObject("ButtonListRight");
         UIManager.Instance.enableObject("ButtonListLeft");
         UIManager.Instance.enableObject("ButtonGenerateImage");
+        UIManager.Instance.enableObject("TextImageGenerator");
+        UIManager.Instance.enableObject("TextTutorial");
 
         //Desactivo los elementos UI del selector de imagen
         UIManager.Instance.disableObject("ButtonSave");

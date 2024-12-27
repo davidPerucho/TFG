@@ -103,6 +103,8 @@ public class SelectImage : MonoBehaviour
         UIManager.Instance.enableObject("ButtonListRight");
         UIManager.Instance.enableObject("ButtonListLeft");
         UIManager.Instance.enableObject("ButtonGenerateImage");
+        UIManager.Instance.enableObject("TextImageGenerator");
+        UIManager.Instance.enableObject("TextTutorial");
 
         //Desactivo los elementos UI del selector de imagen
         UIManager.Instance.disableObject("ButtonReturn");

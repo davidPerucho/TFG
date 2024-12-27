@@ -62,6 +62,16 @@ public class ShowImages : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Cambio el texto del tutorial segun corresponda
+        if (numImages > 0)
+        {
+            UIManager.Instance.setText("TextTutorial", "Pulsa sobre un mandala para seleccionarlo");
+        }
+        else
+        {
+            UIManager.Instance.setText("TextTutorial", "Pulsa el boton de la parte superior para crear un nuevo mandala");
+        }
+
         if (FindAnyObjectByType<ImageGenerator>().loading == true)
         {
             UIManager.Instance.disableButton("ButtonListLeft");
@@ -183,24 +193,29 @@ public class ShowImages : MonoBehaviour
 
     void DisplaySingleImage(string filePath)
     {
-        //Desactivo los elementos UI de la lista
-        UIManager.Instance.disableObject("ButtonListRight");
-        UIManager.Instance.disableObject("ButtonListLeft");
-        UIManager.Instance.disableObject("ButtonGenerateImage");
-        UIManager.Instance.disableObject("TextImageGeneration");
+        //Si se esta creando un nuevo mandala no se puede seleccionar un mandala
+        if (FindAnyObjectByType<ImageGenerator>().loading == false) 
+        { 
+            //Desactivo los elementos UI de la lista
+            UIManager.Instance.disableObject("ButtonListRight");
+            UIManager.Instance.disableObject("ButtonListLeft");
+            UIManager.Instance.disableObject("ButtonGenerateImage");
+            UIManager.Instance.disableObject("TextImageGeneration");
+            UIManager.Instance.disableObject("TextTutorial");
 
-        //Activo los elementos UI del selector de imagen
-        UIManager.Instance.enableObject("ButtonReturn");
-        UIManager.Instance.enableObject("ButtonColor");
-        UIManager.Instance.enableObject("ButtonDelete");
+            //Activo los elementos UI del selector de imagen
+            UIManager.Instance.enableObject("ButtonReturn");
+            UIManager.Instance.enableObject("ButtonColor");
+            UIManager.Instance.enableObject("ButtonDelete");
 
-        //Elimino las imágenes de la lista
-        foreach (Transform child in imageLayout)
-        {
-            Destroy(child.gameObject);
+            //Elimino las imágenes de la lista
+            foreach (Transform child in imageLayout)
+            {
+                Destroy(child.gameObject);
+            }
+
+            //Inicio la funcionalidad del selector de imagen
+            FindAnyObjectByType<SelectImage>().DisplaySingleImage(filePath);
         }
-
-        //Inicio la funcionalidad del selector de imagen
-        FindAnyObjectByType<SelectImage>().DisplaySingleImage(filePath);
     }
 }
