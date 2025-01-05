@@ -4,7 +4,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class tutorial_manager : MonoBehaviour
+/// <summary>
+/// Clase que se encarga de manejar el tutorial.
+/// </summary>
+public class TutorialManager : MonoBehaviour
 {
     public List<PhraseTutorial> frasesTutorial; //Lista con los textos (y posibles reestricciones) que irán apareciendo en el tutorial
 
