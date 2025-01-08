@@ -25,6 +25,7 @@ public class player_movement : MonoBehaviour, IDataPersistence
     Animator playerAnimator; //El animador del jugador
     Quaternion targetRotation; //Rotación deseada
     bool talking = false; //True si el jugador está en una conversación
+    Vector3 posicionNPC; //Almacena la posición de el NPC en el que se ha hecho click
 
     AudioSource playerAudio; //Reproductor de los sonidos del jugador
 
@@ -59,13 +60,13 @@ public class player_movement : MonoBehaviour, IDataPersistence
             {
                 playerAudio = SoundManager.instance.addSFXLoop(transform, runningAudio, 0.8f); //Se inicia el sonido de correr del jugador
             }
-            faceMouse();  // Continuar rotando hasta la posición de destino
+            faceMouseOrNPC();  // Continuar rotando hasta la posición de destino
         }
 
         if (stop == true)
         {
             playerAnimator.SetBool("talking", true); //Se inicia la animación de hablar
-            faceMouse();  // Rotar hacia el NPC
+            faceMouseOrNPC();  // Rotar hacia el NPC
         }
         else
         {
@@ -77,10 +78,10 @@ public class player_movement : MonoBehaviour, IDataPersistence
         {
             if (Vector3.Distance(player.destination, transform.position) < 0.7f)
             {
+                stop = true;
                 prepareToStop = false;
 
                 //Una vez se para el jugador comienza el proceso de zoomIn
-                stop = true;
                 var cameraMovement = FindAnyObjectByType<camera_movement>();
                 cameraMovement.zoomOutNow = false;
                 cameraMovement.zoomInNow = true;
@@ -89,7 +90,7 @@ public class player_movement : MonoBehaviour, IDataPersistence
         }
 
         //Moverse con el click izquierdo o al tocar la pantalla
-        if (Input.GetMouseButtonDown(0) && stop == false)
+        if (Input.GetMouseButtonDown(0) && stop == false && prepareToStop == false)
         {
             moveToMouse();
         }
@@ -128,6 +129,8 @@ public class player_movement : MonoBehaviour, IDataPersistence
                 GameObject hitObject = hit.collider.gameObject;
                 CharacterTalk character = hitObject.GetComponent<CharacterTalk>();
                 function = () => { character.talk(); };
+                //posicionNPC = hitObject.transform.position;
+                //setTargetRotation(posicionNPC);
             }
         }
     }
@@ -143,11 +146,11 @@ public class player_movement : MonoBehaviour, IDataPersistence
     }
 
     /// <summary>
-    /// Rota al jugador en dirección al ratón
+    /// Rota al jugador en dirección al ratón o al NPC sobre el que se ha hecho click
     /// </summary>
-    void faceMouse()
+    void faceMouseOrNPC()
     {
-        if (Quaternion.Angle(transform.rotation, targetRotation) > 0.1f)
+        if (Quaternion.Angle(transform.rotation, targetRotation) > 0.05f)
         {
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
         }

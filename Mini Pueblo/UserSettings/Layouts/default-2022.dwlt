@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1600
     height: 852
   m_ShowMode: 0
-  m_Title: Project
+  m_Title: Game
   m_RootView: {fileID: 4}
   m_MinSize: {x: 100, y: 50}
   m_MaxSize: {x: 8096, y: 8096}
@@ -43,7 +43,7 @@ MonoBehaviour:
     width: 1536
     height: 772.8
   m_ShowMode: 4
-  m_Title: Inspector
+  m_Title: Hierarchy
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -395,7 +395,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts
+    - Assets/Scripts/Characters
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -403,15 +403,15 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Scripts
+  - Assets/Scripts/Characters
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\david\TFG\Mini Pueblo
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: ea600000
-    m_LastClickedID: 24810
+    m_SelectedIDs: 28610000
+    m_LastClickedID: 24872
     m_ExpandedIDs: 00000000e8600000ea600000ec600000ee600000f0600000f2600000f460000000ca9a3bffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -467,8 +467,8 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 1
-    m_ExpandedInstanceIDs: 9e65000098650000565a0000ea60000002610000
+    m_HadKeyboardFocusLastEvent: 0
+    m_ExpandedInstanceIDs: 9e65000098650000565a0000ea600000026100001861000000000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -665,8 +665,8 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: da5a0000
-      m_LastClickedID: 23258
+      m_SelectedIDs: d05b0000
+      m_LastClickedID: 23504
       m_ExpandedIDs: 2cfbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
@@ -1034,9 +1034,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -1.8804089, y: -3.2592273, z: 4.1683326}
+    m_Target: {x: -10.335837, y: -4.9194403, z: 4.484711}
     speed: 2
-    m_Value: {x: -1.8804089, y: -3.2592273, z: 4.1683326}
+    m_Value: {x: -10.335837, y: -4.9194403, z: 4.484711}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1082,13 +1082,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.22704425, y: 0.24773055, z: -0.059839293, w: -0.939949}
+    m_Target: {x: -0.27654997, y: -0.0072100763, z: 0.0020747494, w: -0.9609725}
     speed: 2
-    m_Value: {x: -0.22704376, y: 0.24773002, z: -0.059839167, w: -0.93994695}
+    m_Value: {x: -0.27654937, y: -0.007210061, z: 0.002074745, w: -0.9609704}
   m_Size:
-    m_Target: 7.0297785
+    m_Target: 7.9656124
     speed: 2
-    m_Value: 7.0297785
+    m_Value: 7.9656124
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -1253,9 +1253,9 @@ MonoBehaviour:
       e32: 0
       e33: 1
   m_PreviewAnimator: {fileID: 0}
-  m_AnimatorController: {fileID: 9100000, guid: b22aa39b2ba09b24ca6bdadb1201955d, type: 2}
+  m_AnimatorController: {fileID: 9100000, guid: b9817353997e99943a0a953d61838866, type: 2}
   m_BreadCrumbs:
-  - m_Target: {fileID: 2503785349641322080, guid: b22aa39b2ba09b24ca6bdadb1201955d, type: 2}
+  - m_Target: {fileID: 8790561383566104791, guid: b9817353997e99943a0a953d61838866, type: 2}
     m_ScrollPosition: {x: 0, y: 0}
   stateMachineGraph: {fileID: 0}
   stateMachineGraphGUI: {fileID: 0}
@@ -1284,7 +1284,7 @@ MonoBehaviour:
   m_MaxSize: {x: 4000, y: 4000}
   m_TitleContent:
     m_Text: Inspector
-    m_Image: {fileID: -440750813802333266, guid: 0000000000000000d000000000000000, type: 0}
+    m_Image: {fileID: -2667387946076563598, guid: 0000000000000000d000000000000000, type: 0}
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
