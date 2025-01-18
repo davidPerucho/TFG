@@ -993,7 +993,7 @@ AudioSource:
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -1099,6 +1099,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1706643541}
+  - component: {fileID: 1706643545}
   - component: {fileID: 1706643540}
   - component: {fileID: 1706643542}
   - component: {fileID: 1706643544}
@@ -1268,6 +1269,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioSFX: {fileID: 1629180468}
   increaseDecrase: 0.4
+--- !u!114 &1706643545
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1706643539}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2fb7c10c7a24584bbb1c68314f25d16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  apiURL: https://api-inference.huggingface.co/models/hexgrad/Kokoro-82M
+  apiKey: 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
 --- !u!1 &1757689943
 GameObject:
   m_ObjectHideFlags: 0
