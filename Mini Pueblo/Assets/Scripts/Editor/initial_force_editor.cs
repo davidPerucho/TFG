@@ -11,20 +11,22 @@ public class initial_force_editor : Editor
         myScript.force = EditorGUILayout.FloatField("Force", myScript.force);
         myScript.distanceToDestroy = EditorGUILayout.FloatField("Distance to destroy", myScript.distanceToDestroy);
 
-        myScript.specificDirecton = EditorGUILayout.Toggle("Specific direction", myScript.specificDirecton);
-        if (myScript.specificDirecton)
+        myScript.specificX = EditorGUILayout.Toggle("Specific direction X", myScript.specificX);
+        if (myScript.specificX)
         {
-            myScript.touchDirection = false;
-            myScript.objectDirection = false;
             myScript.directionX = EditorGUILayout.FloatField("Direction X", myScript.directionX);
-            myScript.directionY = EditorGUILayout.FloatField("Direction Y", myScript.directionY);
+        }
+
+        myScript.specificY = EditorGUILayout.Toggle("Specific direction Y", myScript.specificY);
+        if (myScript.specificY)
+        {
+            myScript.directionY = EditorGUILayout.FloatField("Direction X", myScript.directionY);
         }
 
         myScript.objectDirection = EditorGUILayout.Toggle("Object direction", myScript.objectDirection);
         if (myScript.objectDirection)
         {
             myScript.touchDirection = false;
-            myScript.specificDirecton = false;
             myScript.targetObject = (GameObject)EditorGUILayout.ObjectField("Target object", myScript.targetObject, typeof(GameObject), true);
         }
 
@@ -32,7 +34,6 @@ public class initial_force_editor : Editor
         if (myScript.objectDirection)
         {
             myScript.objectDirection = false;
-            myScript.specificDirecton = false;
         }
 
         //Saves changes

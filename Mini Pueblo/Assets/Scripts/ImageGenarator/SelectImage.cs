@@ -119,6 +119,7 @@ public class SelectImage : MonoBehaviour
         UIManager.Instance.EnableObject("ButtonListRight");
         UIManager.Instance.EnableObject("ButtonListLeft");
         UIManager.Instance.EnableObject("ButtonGenerateImage");
+        UIManager.Instance.EnableObject("ButtonExit");
         UIManager.Instance.EnableObject("TextImageGenerator");
         UIManager.Instance.EnableObject("TextTutorial");
 

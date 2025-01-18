@@ -5,16 +5,17 @@ using UnityEngine;
 
 public class initial_force : MonoBehaviour
 {
-    public float force; //The force that its going to be added on the strat
-    public float distanceToDestroy; //The distance at wich the object will be destroyed
-    public bool touchDirection; //If true the force will be applied in the direction of the touch
-    public bool objectDirection; //If true the force will be applied in the directio of an object
-    public GameObject targetObject; //The object that will mark the direction of the force
-    public bool specificDirecton; //If true the force will apply in a specific direction
-    public float directionX; //Specific direction X
-    public float directionY; //Specfic direction Y
-    Rigidbody2D rb;
-    Vector2 initialPosition;
+    public float force; //La furza añadida al instanciar el objeto
+    public float distanceToDestroy; //Distancia del origen a la que el objeto será destruido
+    public bool touchDirection; //True si se quiere que el objeto vaya en la dirección del ratón
+    public bool objectDirection; //True si se quiere que el objeto vaya en la dirección de un objeto
+    public GameObject targetObject; //El objeto hacia el que se dirigirá la fuerza si objectDirection es true
+    public float directionX; //Dirección específica en X
+    public float directionY; //Dirección específica en Y
+    public bool specificX = false; //True si se quiere una dirección X específica
+    public bool specificY = false; //True si se quiere una dirección Y específica
+    Rigidbody2D rb; //RigidBody del objeto
+    Vector2 initialPosition; //Posición original del objeto
 
     // Start is called before the first frame update
     void Start()
@@ -23,11 +24,7 @@ public class initial_force : MonoBehaviour
         initialPosition = transform.position;
         Vector2 direction;
 
-        if (specificDirecton == true)
-        {
-            direction = new Vector2(directionX, directionY).normalized;
-        }
-        else if (touchDirection == true)
+        if (touchDirection == true)
         {
             Vector3 mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             if (mouseScreenPosition.x <= transform.position.x)
@@ -35,11 +32,30 @@ public class initial_force : MonoBehaviour
                 mouseScreenPosition.x = transform.position.x + (transform.position.x - mouseScreenPosition.x);
                 mouseScreenPosition.y = transform.position.y + (transform.position.y - mouseScreenPosition.y);
             }
+
+            if (specificX == true)
+            {
+                mouseScreenPosition.x = directionX;
+            }
+            if (specificY == true)
+            {
+                mouseScreenPosition.y = directionY;
+            }
+
             direction = new Vector2(mouseScreenPosition.x - transform.position.x, mouseScreenPosition.y - transform.position.y).normalized;
         }
         else
         {
-            direction = new Vector2(targetObject.transform.position.x - transform.position.x, targetObject.transform.position.y - transform.position.y).normalized;
+            Vector2 objectDirection = new Vector2(targetObject.transform.position.x - transform.position.x, targetObject.transform.position.y - transform.position.y);
+            if (specificX == true)
+            {
+                objectDirection.x = directionX;
+            }
+            if (specificY == true)
+            {
+                objectDirection.y = directionY;
+            }
+            direction = objectDirection.normalized;
         }
 
         rb.AddForce(direction*force);

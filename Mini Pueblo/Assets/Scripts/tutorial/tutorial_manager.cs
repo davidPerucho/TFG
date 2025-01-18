@@ -7,12 +7,11 @@ using UnityEngine.Events;
 /// <summary>
 /// Clase que se encarga de manejar el tutorial.
 /// </summary>
-public class TutorialManager : MonoBehaviour
+public class TutorialManager : MonoBehaviour, IDataPersistence
 {
     public List<PhraseTutorial> frasesTutorial; //Lista con los textos (y posibles reestricciones) que irán apareciendo en el tutorial
 
-    [HideInInspector]
-    public bool startTutorial = true; //True si se quiere realizar el tutorial
+    bool startTutorial = true; //True si se quiere realizar el tutorial
 
     public TextMeshProUGUI text; //Texto de la intervaz
     int index = 0; //Indice actual de la lista
@@ -82,5 +81,23 @@ public class TutorialManager : MonoBehaviour
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Carga los datos guardados del tutorial.
+    /// </summary>
+    /// <param name="data">Datos del juego.</param>
+    public void loadData(GameData data)
+    {
+        startTutorial = data.tutorial;
+    }
+
+    /// <summary>
+    /// Guarda los datos del tutorial.
+    /// </summary>
+    /// <param name="data">Referencia a los datos del juego.</param>
+    public void saveData(ref GameData data)
+    {
+        data.tutorial = startTutorial;
     }
 }

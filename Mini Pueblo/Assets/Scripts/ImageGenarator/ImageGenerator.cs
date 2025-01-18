@@ -57,6 +57,7 @@ public class ImageGenerator : MonoBehaviour
         UIManager.Instance.DisableButton("ButtonGenerateImage");
         UIManager.Instance.DisableButton("ButtonListLeft");
         UIManager.Instance.DisableButton("ButtonListRight");
+        UIManager.Instance.DisableButton("ButtonExit");
 
         //Construyo la URL con sus parámetros
         string apiUrl = $"{baseUrl}{UnityWebRequest.EscapeURL(prompt)}?width={width}&height={height}&nologo={(noLogo ? 1 : 0)}&seed={seed}";
@@ -95,6 +96,7 @@ public class ImageGenerator : MonoBehaviour
             UIManager.Instance.EnableButton("ButtonGenerateImage");
             UIManager.Instance.EnableButton("ButtonListLeft");
             UIManager.Instance.EnableButton("ButtonListRight");
+            UIManager.Instance.EnableButton("ButtonExit");
 
             //Vuelvo a cargar la lista
             FindAnyObjectByType<ShowImages>().ReloadImages();

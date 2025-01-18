@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class rotate_towards : MonoBehaviour
 {
-    public bool toObject; //Indicates if the rotation needs to be towards an object
-    public GameObject rotationObject; //Reference for the game object rotation
-    public bool toMouse; //Indicates if the rotation needs to be towards the mouse
+    public bool toObject; //True si la rotación se realiza en dirección a un objeto
+    public GameObject rotationObject; //Referencia al objeto hacia el que se rota cuando toObject es true
+    public bool toMouse; //True si la rotación se hará en dirección al ratón
     public bool fixedX = false; //True si solo se mira al eje Y del ratón
     public bool fixedY = false; //True si solo se mira al eje X del ratón
+    public float fixedXValue = 0; //Valor de la posición x de referencia para la rotación cuando fixedX es true
+    public float fixedYValue = 0; //Valor de la posición y de referencia para la rotación cuando fixedY es true
 
     // Update is called once per frame
     void Update()
@@ -24,11 +26,11 @@ public class rotate_towards : MonoBehaviour
             Vector3 mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             if (fixedX == true)
             {
-                mouseScreenPosition.x = 0;
+                mouseScreenPosition.x = fixedXValue;
             }
             else if (fixedY == true)
             {
-                mouseScreenPosition.y = 0;
+                mouseScreenPosition.y = fixedYValue;
             }
 
             float anguloRad = Mathf.Atan2(mouseScreenPosition.y - transform.position.y, mouseScreenPosition.x - transform.position.x);

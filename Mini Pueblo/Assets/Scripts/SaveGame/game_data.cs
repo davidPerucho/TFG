@@ -8,8 +8,12 @@ using UnityEngine;
 [System.Serializable]
 public class GameData
 {
+    //Variables jugador
     public Vector3 playerPosition;
     public Quaternion playerRotation;
+
+    //Variables tutorial
+    public bool tutorial;
 
     /// <summary>
     /// Constructor de la clase.
@@ -18,5 +22,6 @@ public class GameData
     {
         playerPosition = new Vector3(3.62f, 0.78f, -5.53f);
         playerRotation = Quaternion.identity;
+        tutorial = true;
     }
 }

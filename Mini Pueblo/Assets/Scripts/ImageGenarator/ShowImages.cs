@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 /// <summary>
@@ -32,6 +33,7 @@ public class ShowImages : MonoBehaviour
         //Añado a cada boton su función correspondiente
         UIManager.Instance.AddListenerToButton("ButtonListLeft", MoveLeft);
         UIManager.Instance.AddListenerToButton("ButtonListRight", MoveRight);
+        UIManager.Instance.AddListenerToButton("ButtonExit", () => { SceneManager.LoadScene("Hub"); });
 
         //Ruta al directorio donde se guardan las imágenes
         imagesDirectory = Path.Combine(Application.persistentDataPath, "GeneratedImages");
@@ -219,6 +221,7 @@ public class ShowImages : MonoBehaviour
             UIManager.Instance.DisableObject("ButtonListRight");
             UIManager.Instance.DisableObject("ButtonListLeft");
             UIManager.Instance.DisableObject("ButtonGenerateImage");
+            UIManager.Instance.DisableObject("ButtonExit");
             UIManager.Instance.DisableObject("TextImageGeneration");
             UIManager.Instance.DisableObject("TextTutorial");
 

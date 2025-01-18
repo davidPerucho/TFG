@@ -14,6 +14,8 @@ public class draw_parable : MonoBehaviour
     public bool dynamicDifficulty; //La parábola se vuelve más corta a medida que se avanza
     public bool fixedX = false; //True si solo se mira al eje Y del ratón
     public bool fixedY = false; //True si solo se mira al eje X del ratón
+    public float fixedXValue = 0; //Valor de la posición x de referencia para la rotación cuando fixedX es true
+    public float fixedYValue = 0; //Valor de la posición y de referencia para la rotación cuando fixedY es true
     public int pointsToIncrease; //Número de puntos necesarios para aumentar la dificultad
     GameObject[] points; //Array con los puntos que conforman la parábola
     Vector3 lastTouchPos; //Última posición en la que se hizo click
@@ -36,11 +38,11 @@ public class draw_parable : MonoBehaviour
     void Update()
     {
         mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        if (fixedX )
+        if (fixedX == true)
         {
             mouseScreenPosition.x = 0;
         }
-        else if (fixedY )
+        else if (fixedY == true)
         {
             mouseScreenPosition.y = 0;
         }

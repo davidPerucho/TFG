@@ -36,12 +36,14 @@ public class draw_parable_editor : Editor
         if (myScript.fixedX)
         {
             myScript.fixedY = false;
+            myScript.fixedXValue = EditorGUILayout.FloatField("X", myScript.fixedXValue);
         }
 
         myScript.fixedY = EditorGUILayout.Toggle("Fixed Y", myScript.fixedY);
         if (myScript.fixedY)
         {
             myScript.fixedX = false;
+            myScript.fixedYValue = EditorGUILayout.FloatField("Y", myScript.fixedYValue);
         }
 
         myScript.dynamicDifficulty = EditorGUILayout.Toggle(dynamicDifficultyContent, myScript.dynamicDifficulty);
