@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+/// <summary>
+/// Clase que se encarga de manejar el código destinado a aplicar una fuerza inicial sobre un objeto.
+/// </summary>
 public class initial_force : MonoBehaviour
 {
     public float force; //La furza añadida al instanciar el objeto
@@ -27,11 +30,11 @@ public class initial_force : MonoBehaviour
         if (touchDirection == true)
         {
             Vector3 mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            if (mouseScreenPosition.x <= transform.position.x)
+            /**if (mouseScreenPosition.x <= transform.position.x)
             {
                 mouseScreenPosition.x = transform.position.x + (transform.position.x - mouseScreenPosition.x);
                 mouseScreenPosition.y = transform.position.y + (transform.position.y - mouseScreenPosition.y);
-            }
+            }**/
 
             if (specificX == true)
             {
@@ -70,7 +73,10 @@ public class initial_force : MonoBehaviour
         }
     }
 
-    //Returns the distance from the object to the spawn position
+    /// <summary>
+    /// Devielve la distancia a la que se encuentra el objeto de su punto de partida.
+    /// </summary>
+    /// <returns>Distancia con el punto de origen.</returns>
     float getDistanceToSpawn()
     {
         return Mathf.Sqrt(Mathf.Pow(initialPosition.x - transform.position.x, 2) + Mathf.Pow(initialPosition.y - transform.position.y, 2));

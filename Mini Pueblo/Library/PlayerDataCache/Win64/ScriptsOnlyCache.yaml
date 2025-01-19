@@ -33,8 +33,6 @@ ScriptsOnlyBuild:
     - simple_spawner
     - text_tutorial
     - voice_manager
-    Unity.AI.Navigation.Editor.dll:
-    - Unity.AI.Navigation.Editor.NavMeshAssetManager
     Unity.AI.Navigation.dll:
     - Unity.AI.Navigation.NavMeshSurface
     Unity.Rider.Editor.dll:
@@ -173,17 +171,17 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 21152}
     - Class: 114
-      Script: {instanceID: 21266}
+      Script: {instanceID: 21172}
     - Class: 114
-      Script: {instanceID: 22132}
+      Script: {instanceID: 21268}
     - Class: 114
-      Script: {instanceID: 22504}
+      Script: {instanceID: 22134}
     - Class: 114
-      Script: {instanceID: 22574}
+      Script: {instanceID: 22506}
     - Class: 114
-      Script: {instanceID: 22758}
+      Script: {instanceID: 22576}
     - Class: 114
-      Script: {instanceID: 23080}
+      Script: {instanceID: 22760}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -248,7 +246,7 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 20934}
     - Class: 114
-      Script: {instanceID: 21266}
+      Script: {instanceID: 21268}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -311,9 +309,9 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 20966}
     - Class: 114
-      Script: {instanceID: 21266}
+      Script: {instanceID: 21268}
     - Class: 114
-      Script: {instanceID: 22102}
+      Script: {instanceID: 22104}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -374,9 +372,9 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 20934}
     - Class: 114
-      Script: {instanceID: 21266}
+      Script: {instanceID: 21268}
     - Class: 114
-      Script: {instanceID: 22340}
+      Script: {instanceID: 22342}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -439,9 +437,9 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 20968}
     - Class: 114
-      Script: {instanceID: 21266}
+      Script: {instanceID: 21268}
     - Class: 114
-      Script: {instanceID: 22858}
+      Script: {instanceID: 22860}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -508,13 +506,13 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 20934}
     - Class: 114
-      Script: {instanceID: 21266}
+      Script: {instanceID: 21268}
     - Class: 114
-      Script: {instanceID: 21374}
+      Script: {instanceID: 21376}
     - Class: 114
-      Script: {instanceID: 21604}
+      Script: {instanceID: 21606}
     - Class: 114
-      Script: {instanceID: 22340}
+      Script: {instanceID: 22342}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -950,7 +948,7 @@ ScriptsOnlyBuild:
     className: RectMask2D
   - hash:
       serializedVersion: 2
-      Hash: 1c4de885da4bb3b5f44340a267bacb29
+      Hash: f7a40ced9f7b626ad9eb04ffed19165d
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: draw_parable
@@ -962,7 +960,7 @@ ScriptsOnlyBuild:
     className: TMP_Settings
   - hash:
       serializedVersion: 2
-      Hash: 2eb073a240c0049478c76ff66f2ed43f
+      Hash: 06f4813516e228e01ad295c0fd96bce9
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: initial_force
@@ -1004,7 +1002,7 @@ ScriptsOnlyBuild:
     className: UnityOnCancelMessageListener
   - hash:
       serializedVersion: 2
-      Hash: 1dad81ceeb082ad144d2e1d431380bef
+      Hash: 41de7bdb345fdfade874ae922aa3527d
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: rotate_towards
@@ -1142,7 +1140,7 @@ ScriptsOnlyBuild:
     className: simple_movement
   - hash:
       serializedVersion: 2
-      Hash: 76efe534ff27700a308e625b5fdc67c4
+      Hash: 5781835cc7466179c57c41029bba9494
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: TutorialManager
@@ -1266,6 +1264,12 @@ ScriptsOnlyBuild:
     assemblyName: Assembly-CSharp
     namespaceName: 
     className: SoundManager
+  - hash:
+      serializedVersion: 2
+      Hash: 9fef9c1d1a725864d75ed50cb2321be8
+    assemblyName: Assembly-CSharp
+    namespaceName: 
+    className: voice_manager
   - hash:
       serializedVersion: 2
       Hash: 4f353524ce6564e40764f1ea080b2d85
@@ -1572,12 +1576,6 @@ ScriptsOnlyBuild:
     assemblyName: Unity.VisualScripting.Core
     namespaceName: Unity.VisualScripting
     className: UnityOnSliderValueChangedMessageListener
-  - hash:
-      serializedVersion: 2
-      Hash: 9fef9c1d1a725864d75ed50cb2321be8
-    assemblyName: Assembly-CSharp
-    namespaceName: 
-    className: voice_manager
   platform: 19
   scenePathNames:
   - Assets/Scenes/MainMenu.unity

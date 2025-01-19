@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Clase que se encarga de la rotación de un objeto en una dirección.
+/// </summary>
 public class rotate_towards : MonoBehaviour
 {
     public bool toObject; //True si la rotación se realiza en dirección a un objeto
@@ -15,12 +18,14 @@ public class rotate_towards : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        //Rotar en dirección a un objeto
         if (toObject == true)
         {
             float anguloRad = Mathf.Atan2(rotationObject.transform.position.y - transform.position.y, rotationObject.transform.position.x - transform.position.x);
             float anguloDeg = (180 / Mathf.PI) * anguloRad;
             transform.rotation = Quaternion.Euler(0, 0, anguloDeg);
         }
+        //Rotar en dirección al ratón
         else
         {
             Vector3 mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);

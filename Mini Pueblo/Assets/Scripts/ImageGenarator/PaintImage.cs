@@ -181,6 +181,7 @@ public class PaintImage : MonoBehaviour
             pixels.Push(new Vector2Int(x, y - 1));
         }
 
+        //Aplica las modificaciones de color a la textura de la imagen
         imageTexture.Apply();
     }
 
@@ -252,6 +253,7 @@ public class PaintImage : MonoBehaviour
         UIManager.Instance.EnableObject("ButtonListRight");
         UIManager.Instance.EnableObject("ButtonListLeft");
         UIManager.Instance.EnableObject("ButtonGenerateImage");
+        UIManager.Instance.EnableObject("ButtonExit");
         UIManager.Instance.EnableObject("TextImageGenerator");
         UIManager.Instance.EnableObject("TextTutorial");
 

@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Clase destinada a manejar los elementos necesarios para dibujar una parábola.
+/// </summary>
 public class draw_parable : MonoBehaviour
 {
     public GameObject point; //Contiene el objeto punto que formará la parábola
@@ -99,6 +102,11 @@ public class draw_parable : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Devuelve la posición que debe ocupar un punto de la parábola en función del tiempo.
+    /// </summary>
+    /// <param name="t">Variable que representa el tiempo.</param>
+    /// <returns>La posición de un punto de la parábola.</returns>
     Vector2 getPointPosition(float t)
     {
         Vector2 direction = new Vector2(mouseScreenPosition.x - transform.position.x, mouseScreenPosition.y - transform.position.y);
@@ -108,6 +116,9 @@ public class draw_parable : MonoBehaviour
         return pos;
     }
 
+    /// <summary>
+    /// Aumenta la dificultad disminuyendo el número de puntos en la parábola.
+    /// </summary>
     void updateDifficulty()
     {
         if (pointsToIncrease <= (FindAnyObjectByType<points_system>().points - lastIncrease))

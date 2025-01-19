@@ -2,15 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Clase encargada de generar objetos al hacer click.
+/// </summary>
 public class click_spawner : MonoBehaviour
 {
-    public GameObject spawnObject; //The object that will be spawned
-    public bool onReleased; //If true the object will spawn when the screen is released
-    public bool onPressed; //If true the object will spawn when the screen is pressed
-    public bool continuousSpawn; //If the object will continue spawning while the screen is pressed
-    public float timeToSpawn; //Time till the next spawn
-    bool pressed = false; //True if the screen is pressed
-    float remainiingTime = 0; //Time remaining till the next spawn
+    public GameObject spawnObject; //El objeto que se quiere crear
+    public bool onReleased; //True si se quiere crear el objeto al soltar el click
+    public bool onPressed; //True si se quiere crear el objeto al presionar el click
+    public bool continuousSpawn; //True si se quiere generar objetos de manera continua mientras se esté presionando
+    public float timeToSpawn; //El tiempo de generación cuando continuousSpawn es true
+    bool pressed = false; //True si se está haciendo click
+    float remainingTime = 0; //El tiempo que falta para generar el proximo objeto cuando continuousSpawn es true
 
     // Update is called once per frame
     void Update()
@@ -34,13 +37,13 @@ public class click_spawner : MonoBehaviour
 
         if (pressed == true && onPressed == true && continuousSpawn == true)
         {
-            if (remainiingTime <= 0)
+            if (remainingTime <= 0)
             {
                 Instantiate(spawnObject, transform.position, Quaternion.identity);
-                remainiingTime = timeToSpawn;
+                remainingTime = timeToSpawn;
             }
         }
 
-        remainiingTime -= Time.deltaTime;
+        remainingTime -= Time.deltaTime;
     }
 }
