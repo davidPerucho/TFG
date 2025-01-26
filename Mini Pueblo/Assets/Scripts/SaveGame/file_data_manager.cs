@@ -95,7 +95,7 @@ public class FileDataManager
     }
 
     /// <summary>
-    /// Elimina el fichero guardado.
+    /// Elimina el fichero de guardado.
     /// </summary>
     public void delete_save()
     {
@@ -105,7 +105,6 @@ public class FileDataManager
         {
             try
             {
-
                 File.Delete(path);
                 Debug.Log("Archivo eliminado correctamente: " + path);
 

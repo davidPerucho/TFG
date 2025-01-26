@@ -15,6 +15,7 @@ public class plane_collisions : MonoBehaviour
 
             if (FindAnyObjectByType<points_system>().points >= 20)
             {
+                DataPersitence.instance.saveGame();
                 SceneManager.LoadScene("Hub");
             }
             else
@@ -44,6 +45,7 @@ public class plane_collisions : MonoBehaviour
             tutorialIterations++;
             if (tutorialIterations >= 4)
             {
+                DataPersitence.instance.saveGame();
                 SceneManager.LoadScene("PaperPlane");
             }
         }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Clase que se encarga de la persistencia de datos de la escena.
@@ -23,17 +24,40 @@ public class DataPersitence : MonoBehaviour
     {
         if (instance != null)
         {
-            Debug.LogError("Error, ya existe una instancia de la clase DataPersitance.");
+            Debug.Log("Se ha destruido una instancia duplicada de guardado.");
+            Destroy(gameObject);
+            return;
         }
 
         instance = this;
+        DontDestroyOnLoad(gameObject); //Evita que el objeto se destruya al pasar de escena
+
+        fileDataManager = new FileDataManager(Application.persistentDataPath, fileName);
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        fileDataManager = new FileDataManager(Application.persistentDataPath, fileName);
-        persitentObjects = findPersistenceObjects();
-        loadGame();
+        SceneManager.sceneLoaded += SceneEnter;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= SceneEnter;
+    }
+
+    private void OnApplicationQuit()
+    {
+        SceneManager.sceneLoaded -= SceneEnter;
+        saveGame();
+    }
+
+    private void SceneEnter(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name != "MainMenu")
+        {
+            persitentObjects = findPersistenceObjects();
+            loadGame();
+        }
     }
 
     /// <summary>
@@ -41,7 +65,13 @@ public class DataPersitence : MonoBehaviour
     /// </summary>
     public void newGame()
     {
+        if (fileDataManager.file_exists())
+        {
+            fileDataManager.delete_save();
+        }
+        
         gameData = new GameData();
+        fileDataManager.save(gameData);
     }
 
     /// <summary>
@@ -49,6 +79,12 @@ public class DataPersitence : MonoBehaviour
     /// </summary>
     public void saveGame()
     {
+        if (gameData == null)
+        {
+            Debug.LogWarning("No existe partida para guardar.");
+            return;
+        }
+
         foreach (IDataPersistence obj in persitentObjects)
         {
             obj.saveData(ref gameData);
@@ -66,8 +102,8 @@ public class DataPersitence : MonoBehaviour
 
         if (gameData == null)
         {
-            Debug.Log("Iniciando una nueva partida.");
-            newGame();
+            Debug.LogWarning("No existe partida para cargar.");
+            return;
         }
 
         foreach (IDataPersistence obj in persitentObjects)

@@ -83,8 +83,8 @@ public class CharacterTalk : MonoBehaviour
     /// </summary>
     public void loadScene()
     {
-        SceneManager.LoadScene(sceneName);
         DataPersitence.instance.saveGame();
+        SceneManager.LoadScene(sceneName);
     }
 
     /// <summary>

@@ -13,6 +13,7 @@ public class points_collider : MonoBehaviour
             FindAnyObjectByType<points_system>().addPoints(1);
             if (FindAnyObjectByType<points_system>().points >= 7)
             {
+                DataPersitence.instance.saveGame();
                 SceneManager.LoadScene("Hub");
             }
         }
@@ -22,6 +23,7 @@ public class points_collider : MonoBehaviour
             FindAnyObjectByType<points_system>().addPoints(2);
             if (FindAnyObjectByType<points_system>().points >= 7)
             {
+                DataPersitence.instance.saveGame();
                 SceneManager.LoadScene("Hub");
             }
         }

@@ -15,6 +15,9 @@ public class GameData
     //Variables tutorial
     public bool tutorial;
 
+    //Variables sistema de puntos
+    public List<PointsDataSave> points;
+
     /// <summary>
     /// Constructor de la clase.
     /// </summary>
@@ -23,5 +26,6 @@ public class GameData
         playerPosition = new Vector3(3.62f, 0.78f, -5.53f);
         playerRotation = Quaternion.identity;
         tutorial = true;
+        points = new List<PointsDataSave>();
     }
 }

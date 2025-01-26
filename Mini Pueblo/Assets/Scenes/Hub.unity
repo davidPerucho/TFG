@@ -1100,7 +1100,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1706643541}
   - component: {fileID: 1706643545}
-  - component: {fileID: 1706643540}
   - component: {fileID: 1706643542}
   - component: {fileID: 1706643544}
   - component: {fileID: 1706643543}
@@ -1111,19 +1110,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1706643540
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1706643539}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ca1b00c9cf18b442ac90340a764f3ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  fileName: datos.json
 --- !u!4 &1706643541
 Transform:
   m_ObjectHideFlags: 0
@@ -1157,7 +1143,6 @@ MonoBehaviour:
     pause: {fileID: 11400000, guid: bf73aa736b6bde245a4b3ccb2861850b, type: 2}
   - phrase: Haz click en los personajes para hablar con ellos.
     pause: {fileID: 11400000, guid: 9d3136cec9c1f0c41b40338b95369daa, type: 2}
-  startTutorial: 1
   text: {fileID: 2115924854}
 --- !u!82 &1706643543
 AudioSource:

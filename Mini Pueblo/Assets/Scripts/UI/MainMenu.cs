@@ -17,26 +17,37 @@ public class MainMenu : MonoBehaviour
         buttonPlay.GetComponent<Button>().onClick.AddListener(play);
         buttonOptions.onClick.AddListener(options);
         fileDataManager = new FileDataManager(Application.persistentDataPath, "datos.json");
-        if (fileDataManager.file_exists()) 
+        buttonNewGame.GetComponent<Button>().onClick.AddListener(new_game);
+        if (fileDataManager.file_exists() == false) 
         {
-            buttonNewGame.SetActive(true);
-            buttonNewGame.GetComponent<Button>().onClick.AddListener(new_game);
+            buttonPlay.SetActive(false);
+            
         }
     }
 
     void play()
     {
-        SceneManager.LoadScene("Hub");
+        disableButtons();
+        SceneManager.LoadSceneAsync("Hub");
     }
 
     void new_game()
     {
-        fileDataManager.delete_save();
-        SceneManager.LoadScene("Hub");
-    }
+        disableButtons();
+        DataPersitence.instance.newGame();
+        SceneManager.LoadSceneAsync("Hub");
+    }    
 
     void options()
     {
-        SceneManager.LoadScene("AnimalPainting");
+        disableButtons();
+        SceneManager.LoadSceneAsync("AnimalPainting");
+    }
+
+    void disableButtons()
+    {
+        buttonNewGame.SetActive(false);
+        buttonPlay.SetActive(false);
+        buttonOptions.enabled = false;
     }
 }
