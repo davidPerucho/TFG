@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 54897012}
   - component: {fileID: 54897015}
   m_Layer: 0
-  m_Name: escopeta
+  m_Name: ShootGun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -317,6 +317,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &108972020
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 108972021}
+  - component: {fileID: 108972022}
+  m_Layer: 0
+  m_Name: Life
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &108972021
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108972020}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7.96, y: 4, z: -0.038438417}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &108972022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108972020}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 909d1b150c197d3479fafb9ff2d29142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  numLifes: 3
+  spaceBetweenLifes: 1
+  heartImage: {fileID: 21300000, guid: f037eff97606d84428382e043b5680a5, type: 3}
+  imageSize: {x: 20, y: 20}
 --- !u!1 &181388444
 GameObject:
   m_ObjectHideFlags: 0
@@ -861,3 +909,4 @@ SceneRoots:
   - {fileID: 621884569}
   - {fileID: 87065237}
   - {fileID: 1384428582}
+  - {fileID: 108972021}

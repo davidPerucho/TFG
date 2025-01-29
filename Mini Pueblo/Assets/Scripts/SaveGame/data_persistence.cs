@@ -35,22 +35,34 @@ public class DataPersitence : MonoBehaviour
         fileDataManager = new FileDataManager(Application.persistentDataPath, fileName);
     }
 
+    /// <summary>
+    /// Función que se llama cuando se entra en la escena.
+    /// </summary>
     private void OnEnable()
     {
         SceneManager.sceneLoaded += SceneEnter;
     }
 
+    /// <summary>
+    /// Función que se llama cuando se sale de la escena.
+    /// </summary>
     private void OnDisable()
     {
         SceneManager.sceneLoaded -= SceneEnter;
     }
 
+    /// <summary>
+    /// Función que se llama cuando se sale del juego.
+    /// </summary>
     private void OnApplicationQuit()
     {
         SceneManager.sceneLoaded -= SceneEnter;
         saveGame();
     }
 
+    /// <summary>
+    /// Carga los datos de los objetos en escena.
+    /// </summary>
     private void SceneEnter(Scene scene, LoadSceneMode mode)
     {
         if (scene.name != "MainMenu")
