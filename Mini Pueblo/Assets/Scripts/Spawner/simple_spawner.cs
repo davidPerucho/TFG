@@ -39,9 +39,9 @@ public class simple_spawner : MonoBehaviour
 
     void Update()
     {
-        if (dynamicDifficulty == true && pointsToIncrease <= (FindAnyObjectByType<points_system>().points - lastIncrease))
+        if (dynamicDifficulty == true && pointsToIncrease <= (PointsSystem.instance.points - lastIncrease))
         {
-            lastIncrease = FindAnyObjectByType<points_system>().points;
+            lastIncrease = PointsSystem.instance.points;
             if (secondsBetweenSpawns > 4)
             {
                 secondsBetweenSpawns--;

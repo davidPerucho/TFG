@@ -61,7 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Characters\dialog_manager.cs" />
-    <Compile Include="Assets\Scripts\points_data_save.cs" />
     <Compile Include="Assets\Scripts\Movement\rotate_towards.cs" />
     <Compile Include="Assets\Scripts\Colliders\points_collider.cs" />
     <Compile Include="Assets\Scripts\tutorial\pause_abstract.cs" />
@@ -100,6 +99,7 @@
     <Compile Include="Assets\Scripts\Characters\character_talk.cs" />
     <Compile Include="Assets\Scripts\UI\text_tutorial.cs" />
     <Compile Include="Assets\Scripts\Movement\initial_force.cs" />
+    <Compile Include="Assets\HighScore.cs" />
     <Compile Include="Assets\Scripts\tutorial\Hub\hub_tutorial_phrase2.cs" />
     <Compile Include="Assets\Scripts\UI\hand_animation.cs" />
     <Compile Include="Assets\Scripts\ImageGenarator\ShowImages.cs" />

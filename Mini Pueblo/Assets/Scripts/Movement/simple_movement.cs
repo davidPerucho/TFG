@@ -45,9 +45,9 @@ public class simple_movement : MonoBehaviour
 
         if (dynamicDifficulty == true)
         {
-            if (pointsToIncrease <= (FindAnyObjectByType<points_system>().points - lastIncrease))
+            if (pointsToIncrease <= (PointsSystem.instance.points - lastIncrease))
             {
-                lastIncrease = FindAnyObjectByType<points_system>().points;
+                lastIncrease = PointsSystem.instance.points;
                 DifficultyManager.instance.increaseSpeed(0.1f);
             }
             

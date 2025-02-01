@@ -13,7 +13,7 @@ public class plane_collisions : MonoBehaviour
         {
             Destroy(gameObject);
 
-            if (FindAnyObjectByType<points_system>().points >= 20)
+            if (PointsSystem.instance.points >= 20)
             {
                 DataPersitence.instance.saveGame();
                 SceneManager.LoadScene("Hub");

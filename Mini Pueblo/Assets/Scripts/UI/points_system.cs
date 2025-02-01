@@ -7,12 +7,25 @@ using UnityEngine;
 /// <summary>
 /// Clase que se encarga de manejar los puntos y el marcador de los minijuegos.
 /// </summary>
-public class points_system : MonoBehaviour, IDataPersistence
+public class PointsSystem : MonoBehaviour
 {
     public int initialPoints = 0; //Puntos a partir de los cuales empieza a contar el marcador
     public bool pointEachSecond; //True si se quiere sumar puntos a medida que pasa el tiempo
     public int points { get; private set; } //Puntos actuales
     TextMeshProUGUI pointsText; //Texto que muestra por pantalla los puntos actuales
+    public static PointsSystem instance { get; private set; } //Instancia de la clase
+
+    //Singleton
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Debug.Log("Error en singleton PointsSystem.");
+            return;
+        }
+
+        instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -57,46 +70,6 @@ public class points_system : MonoBehaviour, IDataPersistence
             yield return new WaitForSeconds(1);
             points++;
             pointsText.text = points.ToString();
-        }
-    }
-
-    public void loadData(GameData data)
-    {
-        foreach (PointsDataSave p in data.points)
-        {
-            if (p.pointsScene == UnityEngine.SceneManagement.SceneManager.GetActiveScene().name && p.pointsObject == gameObject.name)
-            {
-                initialPoints = p.pointsCount;
-                pointEachSecond = p.pointsEachSecond;
-            }
-        }
-    }
-
-    public void saveData(ref GameData data)
-    {
-        bool exist = false;
-
-        foreach (PointsDataSave p in data.points)
-        {
-            if (p.pointsScene == UnityEngine.SceneManagement.SceneManager.GetActiveScene().name && p.pointsObject == gameObject.name)
-            {
-                if (points > p.pointsCount)
-                {
-                    p.pointsCount = points;
-                }
-                p.pointsEachSecond = pointEachSecond;
-                exist = true;
-            }
-        }
-
-        if (exist == false)
-        {
-            PointsDataSave p = new PointsDataSave();
-            p.pointsScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-            p.pointsObject = gameObject.name;
-            p.pointsCount = points;
-            p.pointsEachSecond = pointEachSecond;
-            data.points.Add(p);
         }
     }
 }

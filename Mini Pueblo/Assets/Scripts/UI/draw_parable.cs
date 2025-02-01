@@ -33,7 +33,7 @@ public class draw_parable : MonoBehaviour
         force = force / 50; //Ajusta la furza de la parábola
         points = new GameObject[numberOfPoints];
         lastTouchPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        lastIncrease = FindAnyObjectByType<points_system>().initialPoints;
+        lastIncrease = PointsSystem.instance.initialPoints;
         lastNumberOfPoints = numberOfPoints;
     }
 
@@ -121,10 +121,10 @@ public class draw_parable : MonoBehaviour
     /// </summary>
     void updateDifficulty()
     {
-        if (pointsToIncrease <= (FindAnyObjectByType<points_system>().points - lastIncrease))
+        if (pointsToIncrease <= (PointsSystem.instance.points - lastIncrease))
         {
             numberOfPoints -= 2;
-            lastIncrease = FindAnyObjectByType<points_system>().points;
+            lastIncrease = PointsSystem.instance.points;
         }
     }
 }

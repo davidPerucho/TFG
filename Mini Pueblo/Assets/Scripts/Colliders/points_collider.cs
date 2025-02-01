@@ -45,8 +45,9 @@ public class PointsCollider : MonoBehaviour
 
                 if (LifeUI.instance.numLifes == 0)
                 {
-                    DataPersitence.instance.saveGame();
-                    SceneManager.LoadScene("Hub");
+                    HighScore.instance.showHighScores(PointsSystem.instance.points);
+                    //DataPersitence.instance.saveGame();
+                    //SceneManager.LoadScene("Hub");
                 }
             }
         }
@@ -55,8 +56,8 @@ public class PointsCollider : MonoBehaviour
         {
             LifeUI.instance.increaseLife();
             Destroy(collision.gameObject);
-            FindAnyObjectByType<points_system>().addPoints(1);
-            if (FindAnyObjectByType<points_system>().points >= 7)
+            PointsSystem.instance.addPoints(1);
+            if (PointsSystem.instance.points >= 7)
             {
                 DataPersitence.instance.saveGame();
                 SceneManager.LoadScene("Hub");
@@ -66,8 +67,8 @@ public class PointsCollider : MonoBehaviour
         {
             LifeUI.instance.increaseLife();
             Destroy(collision.gameObject);
-            FindAnyObjectByType<points_system>().addPoints(2);
-            if (FindAnyObjectByType<points_system>().points >= 7)
+            PointsSystem.instance.addPoints(2);
+            if (PointsSystem.instance.points >= 7)
             {
                 DataPersitence.instance.saveGame();
                 SceneManager.LoadScene("Hub");
