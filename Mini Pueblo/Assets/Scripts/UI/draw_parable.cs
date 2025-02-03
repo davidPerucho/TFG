@@ -59,7 +59,7 @@ public class draw_parable : MonoBehaviour
             pressed = false;
         }
 
-        if ((drawWhenTouched == true && pressed == true) || drawAlways == true)
+        if (((drawWhenTouched == true && pressed == true) || drawAlways == true) && Time.timeScale != 0)
         {
             if (drawn == false)
             {

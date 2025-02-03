@@ -15,6 +15,10 @@ public class click_spawner : MonoBehaviour
     bool pressed = false; //True si se está haciendo click
     float remainingTime = 0; //El tiempo que falta para generar el proximo objeto cuando continuousSpawn es true
 
+    public float timeBetweenSpawns = 0; //Tiempo mínimo que tiene que pasar entre un spawn y el siguiente
+
+    float lastSpawn = 0;
+
     // Update is called once per frame
     void Update()
     {
@@ -23,7 +27,11 @@ public class click_spawner : MonoBehaviour
             pressed = true;
             if (onPressed == true && continuousSpawn == false)
             {
-                Instantiate(spawnObject, transform.position, Quaternion.identity);
+                if ((lastSpawn == 0 || (Time.time - lastSpawn) >= timeBetweenSpawns) && Time.timeScale != 0)
+                {
+                    Instantiate(spawnObject, transform.position, Quaternion.identity);
+                    lastSpawn = Time.time;
+                }
             }
         }
         if (Input.GetMouseButtonUp(0))
@@ -31,13 +39,17 @@ public class click_spawner : MonoBehaviour
             pressed = false;
             if (onReleased == true)
             {
-                Instantiate(spawnObject, transform.position, Quaternion.identity);
+                if ((lastSpawn == 0 || (Time.time - lastSpawn) >= timeBetweenSpawns) && Time.timeScale != 0)
+                {
+                    Instantiate(spawnObject, transform.position, Quaternion.identity);
+                    lastSpawn = Time.time;
+                }
             }
         }
 
         if (pressed == true && onPressed == true && continuousSpawn == true)
         {
-            if (remainingTime <= 0)
+            if (remainingTime <= 0 && Time.timeScale != 0)
             {
                 Instantiate(spawnObject, transform.position, Quaternion.identity);
                 remainingTime = timeToSpawn;

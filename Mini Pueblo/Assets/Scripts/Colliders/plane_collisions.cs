@@ -39,7 +39,7 @@ public class plane_collisions : MonoBehaviour
     {
         if (collision.gameObject.tag == "PlaneBlockTutorial")
         {
-            FindAnyObjectByType<text_tutorial>().nextText();
+            TextTutorial.instance.nextText();
             FindAnyObjectByType<hand_animation>().change_animation();
 
             tutorialIterations++;

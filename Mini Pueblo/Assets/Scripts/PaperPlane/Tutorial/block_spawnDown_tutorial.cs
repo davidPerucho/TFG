@@ -25,7 +25,7 @@ public class block_spawnDown_tutorial : MonoBehaviour
     IEnumerator blockSpawnDown()
     {
         yield return new WaitForSeconds(initialOffset);
-        FindAnyObjectByType<text_tutorial>().nextText();
+        TextTutorial.instance.nextText();
         hand.SetActive(true);
         yield return new WaitForSeconds(spawnOffset);
 

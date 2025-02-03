@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class random_object_spawner : MonoBehaviour
+public class RandomObjectSpawner : MonoBehaviour
 {
     public ObjectWithProbability[] spawnObjects; //Array with diferent objects and their possibilities of spawning
     GameObject spawnedObject; //The last object to be spawned. Null if there is no object

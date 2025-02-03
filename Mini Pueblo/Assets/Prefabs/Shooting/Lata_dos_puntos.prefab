@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8076485610087710393}
   - component: {fileID: 4595350875562557561}
   - component: {fileID: 8604090440728172488}
+  - component: {fileID: 1157980058058763404}
   m_Layer: 0
   m_Name: Lata_dos_puntos
   m_TagString: TwoPoints
@@ -159,6 +160,18 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &1157980058058763404
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4578515983073142619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3375a62f7368e814f9a9038983dcd4d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5656631719281707317
 GameObject:
   m_ObjectHideFlags: 0

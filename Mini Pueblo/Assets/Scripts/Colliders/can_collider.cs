@@ -6,8 +6,14 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// Clase que se encarga de gestionar las colisiones de las latas.
 /// </summary>
-public class can_collider : MonoBehaviour
+public class CanCollider : MonoBehaviour
 {
+
+    void Start()
+    {
+        PointsCollider.instance.hit = false;
+    }
+
     /// <summary>
     /// Función que se llama cuando hay una colisión.
     /// </summary>

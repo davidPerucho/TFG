@@ -8,7 +8,8 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class PointsCollider : MonoBehaviour
 {
-    public bool hit = false; //True si la bala a golpeado la lata
+    [HideInInspector]
+    public bool hit = false;
     public static PointsCollider instance { get; private set; } //Instancia de la clase
 
     //Singleton
@@ -16,19 +17,11 @@ public class PointsCollider : MonoBehaviour
     {
         if (instance != null)
         {
-            Debug.Log("Error en singleton LifeUI.");
+            Debug.Log("Error en singleton PointsCollider.");
             return;
         }
 
         instance = this;
-    }
-
-    void Update()
-    {
-        if (Input.GetMouseButtonUp(0))
-        {
-            hit = false;
-        }
     }
 
     /// <summary>
@@ -38,41 +31,31 @@ public class PointsCollider : MonoBehaviour
     {
         if (collision.gameObject.tag == "Bullet")
         {
+            //Compruebo si la lata ha sido golpeada para restar o no vidas
             if (hit == false)
             {
                 LifeUI.instance.decreaseLife();
-                Destroy(collision.gameObject);
 
                 if (LifeUI.instance.numLifes == 0)
                 {
                     HighScore.instance.showHighScores(PointsSystem.instance.points);
-                    //DataPersitence.instance.saveGame();
-                    //SceneManager.LoadScene("Hub");
                 }
             }
+
+            Destroy(collision.gameObject);
         }
 
         if (collision.gameObject.tag == "OnePoint")
         {
-            LifeUI.instance.increaseLife();
+            //LifeUI.instance.increaseLife();
             Destroy(collision.gameObject);
             PointsSystem.instance.addPoints(1);
-            if (PointsSystem.instance.points >= 7)
-            {
-                DataPersitence.instance.saveGame();
-                SceneManager.LoadScene("Hub");
-            }
         }
         else if (collision.gameObject.tag == "TwoPoints")
         {
-            LifeUI.instance.increaseLife();
+            //LifeUI.instance.increaseLife();
             Destroy(collision.gameObject);
             PointsSystem.instance.addPoints(2);
-            if (PointsSystem.instance.points >= 7)
-            {
-                DataPersitence.instance.saveGame();
-                SceneManager.LoadScene("Hub");
-            }
         }
         else
         {

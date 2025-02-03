@@ -42,14 +42,16 @@ public class HighScore : MonoBehaviour, IDataPersistence
     {
         Time.timeScale = 0;
 
-        scoresTitleText.SetActive(true);
-        scoresText.SetActive(true);
-        tryAgainButton.gameObject.SetActive(true);
-        exitButton.gameObject.SetActive(true);
+        UIManager.Instance.DisableObject("LifesText");
+        UIManager.Instance.DisableObject("Tutorial");
+        UIManager.Instance.EnableObject("ScoresTitle");
+        UIManager.Instance.EnableObject("Scores");
+        UIManager.Instance.EnableObject("BotonReintentar");
+        UIManager.Instance.EnableObject("BotonSalir");
         
         if (addNewScore(newScore) == true)
         {
-            newRecordText.SetActive(true);
+            UIManager.Instance.EnableObject("NewRecord");
 
             TextMeshProUGUI records = scoresText.GetComponent<TextMeshProUGUI>();
             records.text = "";
@@ -74,10 +76,8 @@ public class HighScore : MonoBehaviour, IDataPersistence
             }
         }
 
-        exitButton.onClick.RemoveAllListeners();
-        exitButton.onClick.AddListener(exitMiniGame);
-        tryAgainButton.onClick.RemoveAllListeners();
-        tryAgainButton.onClick.AddListener(retryMiniGame);
+        UIManager.Instance.AddListenerToButton("BotonSalir", exitMiniGame);
+        UIManager.Instance.AddListenerToButton("BotonReintentar", retryMiniGame);
     }
 
     bool addNewScore(int score)
@@ -87,10 +87,13 @@ public class HighScore : MonoBehaviour, IDataPersistence
         if (scores.Count > 0)
         {
             high = scores.Max();
+        }
+        if (scores.Count >= numScores)
+        {
             low = scores.Min();
         }
         Debug.Log("Antes: " + string.Join(", ", scores));
-        if (score > low)
+        if (score >= low)
         {
             if (scores.Count == numScores)
             {

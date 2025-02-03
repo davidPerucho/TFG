@@ -32,6 +32,11 @@ public class click_spawn_editor : Editor
             myScript.onPressed = false;
         }
 
+        if (myScript.continuousSpawn == false)
+        {
+            myScript.timeBetweenSpawns = EditorGUILayout.FloatField("Minimum time between spawns", myScript.timeBetweenSpawns);
+        }
+
         //Saves changes
         if (GUI.changed)
         {

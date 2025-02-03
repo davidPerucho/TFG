@@ -474,7 +474,6 @@ GameObject:
   - component: {fileID: 735405974}
   - component: {fileID: 735405977}
   - component: {fileID: 735405976}
-  - component: {fileID: 735405978}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -598,18 +597,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 735405973}
   m_CullTransparentMesh: 0
---- !u!114 &735405978
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 735405973}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bb2bd060b5faca47a785b9b6370bb7b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1072112800
 GameObject:
   m_ObjectHideFlags: 0
@@ -690,6 +677,55 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.025, y: -0.2126, z: 0}
   m_LocalScale: {x: 3.6046014, y: 5.283671, z: 1.1343}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1142385996
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1142385998}
+  - component: {fileID: 1142385997}
+  m_Layer: 0
+  m_Name: Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1142385997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1142385996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0bb2bd060b5faca47a785b9b6370bb7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  frasesTutorial:
+  - Mueve el avion para esquivar los obstaculos y aguantar el mayor tiempo posible.
+  - Manten pulsada la pantalla para subir.
+  - Deja de pulsar la pantalla para bajar.
+  text: {fileID: 735405976}
+--- !u!4 &1142385998
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1142385996}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.02688355, y: 0.23087756, z: 0.031231899}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -943,8 +979,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0905b0dcc6d73a841ba3df1312ba6752, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementX: 0
-  movementY: 1
+  movementDirection: {x: 0, y: 0}
   maxSpeed: 100
   force: 30
 --- !u!114 &1421614035
@@ -1409,3 +1444,4 @@ SceneRoots:
   - {fileID: 2063167161}
   - {fileID: 1848035650}
   - {fileID: 1719373581}
+  - {fileID: 1142385998}

@@ -19,7 +19,7 @@ public class rotate_towards : MonoBehaviour
     void Update()
     {
         //Rotar en dirección a un objeto
-        if (toObject == true)
+        if (toObject == true && Time.timeScale != 0)
         {
             float anguloRad = Mathf.Atan2(rotationObject.transform.position.y - transform.position.y, rotationObject.transform.position.x - transform.position.x);
             float anguloDeg = (180 / Mathf.PI) * anguloRad;
@@ -28,19 +28,22 @@ public class rotate_towards : MonoBehaviour
         //Rotar en dirección al ratón
         else
         {
-            Vector3 mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            if (fixedX == true)
+            if (Time.timeScale != 0)
             {
-                mouseScreenPosition.x = fixedXValue;
-            }
-            else if (fixedY == true)
-            {
-                mouseScreenPosition.y = fixedYValue;
-            }
+                Vector3 mouseScreenPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                if (fixedX == true)
+                {
+                    mouseScreenPosition.x = fixedXValue;
+                }
+                else if (fixedY == true)
+                {
+                    mouseScreenPosition.y = fixedYValue;
+                }
 
-            float anguloRad = Mathf.Atan2(mouseScreenPosition.y - transform.position.y, mouseScreenPosition.x - transform.position.x);
-            float anguloDeg = (180 / Mathf.PI) * anguloRad;
-            transform.rotation = Quaternion.Euler(0, 0, anguloDeg);
+                float anguloRad = Mathf.Atan2(mouseScreenPosition.y - transform.position.y, mouseScreenPosition.x - transform.position.x);
+                float anguloDeg = (180 / Mathf.PI) * anguloRad;
+                transform.rotation = Quaternion.Euler(0, 0, anguloDeg);
+            }
         }
     }
 }

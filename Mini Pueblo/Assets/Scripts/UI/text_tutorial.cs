@@ -3,23 +3,32 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class text_tutorial : MonoBehaviour
+public class TextTutorial : MonoBehaviour
 {
-    string[] frasesTutorial;
-    TextMeshProUGUI text;
-    int textIndex = 0;
+    [SerializeField]
+    string[] frasesTutorial; //Array de frases que se mostrarán en el tutorial
+
+    [SerializeField]
+    public TextMeshProUGUI text; //Componente de texto en el que se mostraran las frases
+
+    int textIndex = 0; //Indice actual del texto que se está mostrando
+    public static TextTutorial instance { get; private set; } //Instancia de la clase
+
+    //Singleton
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Debug.Log("Error en singleton TextTutorial.");
+            return;
+        }
+
+        instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        frasesTutorial = new string[]{
-            "Mueve el avion para esquivar los obstaculos y aguantar el mayor tiempo posible.",
-            "Manten pulsada la pantalla para subir.",
-            "Deja de pulsar la pantalla para bajar."
-        };
-
-        text = GetComponent<TextMeshProUGUI>();
-
         text.text = frasesTutorial[textIndex];
     }
 
@@ -29,9 +38,21 @@ public class text_tutorial : MonoBehaviour
 
         if (textIndex >= frasesTutorial.Length)
         {
-            textIndex = 1;
+            textIndex = 0;
         }
 
         text.text = frasesTutorial[textIndex];
+    }
+
+    public void goToIndex(int index)
+    {
+        if (index < frasesTutorial.Length && index >= 0)
+        {
+            text.text = frasesTutorial[index];
+        }
+        else
+        {
+            Debug.LogError("No existe ese índice en las frases.");
+        }
     }
 }
