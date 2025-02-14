@@ -16,6 +16,8 @@ public class CharacterTalk : MonoBehaviour
     public float rotationSpeed = 2; //Velocidad de rotación del NPC
     bool rotateBack = false; //True si el personaje está volviendo a la rotación orignal
     bool rotatePlayer = false; //True si el NPC está rotando en dirección al jugador
+    public string characterSex; //Sexo del NPC
+    AudioClip characterVoice; //Audio con la frase del NPC
 
     void Start()
     {

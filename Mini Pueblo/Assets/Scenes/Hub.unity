@@ -1266,8 +1266,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2fb7c10c7a24584bbb1c68314f25d16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  apiURL: https://api-inference.huggingface.co/models/hexgrad/Kokoro-82M
-  apiKey: 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
 --- !u!1 &1757689943
 GameObject:
   m_ObjectHideFlags: 0
@@ -2743,6 +2741,7 @@ MonoBehaviour:
   characterPhrase: "\xBFQuieres lanzar un avi\xF3n de papel?"
   sceneName: TutorialPaperPlane
   rotationSpeed: 2
+  characterSex: H
 --- !u!65 &1042206292514942405
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7778,6 +7777,7 @@ MonoBehaviour:
   characterPhrase: "\xBFQuieres probar a disparar?"
   sceneName: ShootingGame
   rotationSpeed: 2
+  characterSex: H
 --- !u!65 &5716631548906794348
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8988,6 +8988,7 @@ MonoBehaviour:
   characterPhrase: "\xBFTe apetece pintar un mandala?"
   sceneName: MandalaPainting
   rotationSpeed: 2
+  characterSex: M
 --- !u!4 &6720054645808832416
 Transform:
   m_ObjectHideFlags: 0
