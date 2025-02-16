@@ -51,7 +51,7 @@ public class SoundManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Crea una fuente de audio para reproducir los efectos de sonido.
+    /// Crea una fuente de audio para reproducir los efectos de en bucle.
     /// </summary>
     /// <param name="audioPosition">Posicion en la que se va a crear la fuente de audio.</param>
     /// <param name="audioClip">Clip de audio que de va a reproducir.</param>
@@ -61,6 +61,26 @@ public class SoundManager : MonoBehaviour
     {
         AudioSource sfx = Instantiate(audioSFX, audioPosition);
 
+        sfx.loop = true;
+        sfx.clip = audioClip;
+        sfx.volume = volume;
+        sfx.Play();
+
+        return sfx;
+    }
+
+    /// <summary>
+    /// Crea una fuente de audio para reproducir los efectos de sonido.
+    /// </summary>
+    /// <param name="audioPosition">Posicion en la que se va a crear la fuente de audio.</param>
+    /// <param name="audioClip">Clip de audio que de va a reproducir.</param>
+    /// <param name="volume">Volumen que tendrá la fuente de audio.</param>
+    /// <returns>Instancia de la furnte de audio.</returns>
+    public AudioSource addSFX(Transform audioPosition, AudioClip audioClip, float volume)
+    {
+        AudioSource sfx = Instantiate(audioSFX, audioPosition);
+
+        sfx.loop = false;
         sfx.clip = audioClip;
         sfx.volume = volume;
         sfx.Play();
