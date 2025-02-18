@@ -38,7 +38,7 @@ async function generateAudio(phrase, characterType, name) {
     
     const wav = new wavefile.WaveFile();
     wav.fromScratch(1, result.sampling_rate, '32f', result.audio);
-    fs.writeFileSync(name + '.wav', wav.toBuffer());
+    fs.writeFileSync(name + '.mp3', wav.toBuffer());
 
     return model
 }

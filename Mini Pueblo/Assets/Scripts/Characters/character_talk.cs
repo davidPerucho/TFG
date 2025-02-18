@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
 /// <summary>
@@ -21,7 +22,6 @@ public class CharacterTalk : MonoBehaviour
     public string characterSex; //Sexo del NPC
     AudioClip characterVoice = null; //Audio con la frase del NPC
     string voicePath; //Ruta hacia el archivo .wav con el audio del personaje
-    AudioSource voiceSource; //Fuente de origen de la voz del personaje
 
     void Start()
     {
@@ -30,6 +30,19 @@ public class CharacterTalk : MonoBehaviour
         characterAnimator = GetComponent<Animator>();
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         playerTransform = player.transform;
+
+        //Si el audio no esta cargado lo cargamos
+        if (characterVoice == null)
+        {
+            if (File.Exists(voicePath))
+            {
+                StartCoroutine(getVoiceAudioClip());
+            }
+            else
+            {
+                Debug.LogWarning("No se ha generado el archivo " + gameObject.name + ".wav");
+            }
+        }
     }
 
     void Update()
@@ -66,19 +79,6 @@ public class CharacterTalk : MonoBehaviour
     /// </summary>
     public void talk()
     {
-        //Si el audio no esta cargado lo cargamos
-        if (characterVoice == null)
-        {   
-            if (File.Exists(voicePath))
-            {
-                getVoiceAudioClip();
-            }
-            else
-            {
-                Debug.LogWarning("No se ha generado el archivo " + gameObject.name + ".wav");
-            }
-        }
-
         //Baja el volumen de la música de fondo
         SoundManager.instance.volumeMusicDown();
 
@@ -98,7 +98,7 @@ public class CharacterTalk : MonoBehaviour
         StartCoroutine(FindAnyObjectByType<dialog_manager>().showUIWithDelay(characterPhrase, loadScene, cancelTalk));
 
         //Lanza el audio con la frase del personaje
-        voiceSource = SoundManager.instance.addSFX(transform, characterVoice, 0.9f);
+        SoundManager.instance.addSFX(transform, characterVoice, 0.9f);
     }
 
     /// <summary>
@@ -134,31 +134,21 @@ public class CharacterTalk : MonoBehaviour
     /// <summary>
     /// Crea un objeto AudioClip a partir del wav almacenado en la ruta voicePath.
     /// </summary>
-    private void getVoiceAudioClip()
+    IEnumerator getVoiceAudioClip()
     {
-        //Cargamos los bytes
-        byte[] voiceBytes = File.ReadAllBytes(voicePath);
-
-        //Leemos los bytes del archivo
-        using (MemoryStream streamMemory = new MemoryStream(voiceBytes))
-        using (BinaryReader readerBynary = new BinaryReader(streamMemory))
+        using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip("file://" + voicePath, AudioType.WAV))
         {
-            //Salta los bytes del encabezado del wav
-            readerBynary.ReadBytes(44);
+            yield return www.SendWebRequest();
 
-            /*
-             * Creamos un array con el tamaño de los datos del audio quitando el encabezado (44 bytes) y teniendo en cuenta que el reader
-             * lee los bytes de dos en dos
-            */
-            float[] voiceFloat = new float[(voiceBytes.Length - 44) / 2];
-
-            //Pasamos los datos a byte a float y los almacenamos en audioData
-            for (int i = 0; i < voiceFloat.Length; i++)
-                voiceFloat[i] = readerBynary.ReadInt16() / Int16.MaxValue;
-
-            //Creamos el objeto audio clip y le insertamos los datos
-            characterVoice = AudioClip.Create(gameObject.name, voiceFloat.Length, 1, 44100, false);
-            characterVoice.SetData(voiceFloat, 0);
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                characterVoice = DownloadHandlerAudioClip.GetContent(www);
+                characterVoice.LoadAudioData();
+            }
+            else
+            {
+                Debug.LogError("Error cargando audio: " + www.error);
+            }
         }
     }
 }

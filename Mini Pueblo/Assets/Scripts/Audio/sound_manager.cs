@@ -11,7 +11,7 @@ public class SoundManager : MonoBehaviour
     AudioSource audioSourceMusic; //Fuente de audio para la música del juego
 
     [SerializeField]
-    AudioSource audioSFX; //Fuente de audio para los efectos de sonido del juego
+    GameObject audioSFX; //Fuente de audio para los efectos de sonido del juego
 
     public float increaseDecrase = 0.4f; //Cuanto se modifica el volumen al subir o bajar
 
@@ -57,34 +57,34 @@ public class SoundManager : MonoBehaviour
     /// <param name="audioClip">Clip de audio que de va a reproducir.</param>
     /// <param name="volume">Volumen que tendrá la fuente de audio.</param>
     /// <returns>Instancia de la furnte de audio.</returns>
-    public AudioSource addSFXLoop(Transform audioPosition, AudioClip audioClip, float volume)
+    public GameObject addSFXLoop(Transform audioPosition, AudioClip audioClip, float volume)
     {
-        AudioSource sfx = Instantiate(audioSFX, audioPosition);
+        GameObject sfx = Instantiate(audioSFX, audioPosition);
 
-        sfx.loop = true;
-        sfx.clip = audioClip;
-        sfx.volume = volume;
-        sfx.Play();
+        sfx.GetComponent<AudioSource>().loop = true;
+        sfx.GetComponent<AudioSource>().clip = audioClip;
+        sfx.GetComponent<AudioSource>().volume = volume;
+        sfx.GetComponent<AudioSource>().Play();
 
         return sfx;
     }
 
     /// <summary>
-    /// Crea una fuente de audio para reproducir los efectos de sonido.
+    /// Crea una fuente de audio para reproducir los efectos de sonido, una vez terminado el audio la fuente se destrulle.
     /// </summary>
     /// <param name="audioPosition">Posicion en la que se va a crear la fuente de audio.</param>
     /// <param name="audioClip">Clip de audio que de va a reproducir.</param>
     /// <param name="volume">Volumen que tendrá la fuente de audio.</param>
-    /// <returns>Instancia de la furnte de audio.</returns>
-    public AudioSource addSFX(Transform audioPosition, AudioClip audioClip, float volume)
+    public void addSFX(Transform audioPosition, AudioClip audioClip, float volume)
     {
-        AudioSource sfx = Instantiate(audioSFX, audioPosition);
+        GameObject sfx = Instantiate(audioSFX, audioPosition);
 
-        sfx.loop = false;
-        sfx.clip = audioClip;
-        sfx.volume = volume;
-        sfx.Play();
+        sfx.GetComponent<AudioSource>().loop = false;
+        sfx.GetComponent<AudioSource>().clip = audioClip;
+        sfx.GetComponent<AudioSource>().volume = volume;
+        sfx.GetComponent<AudioSource>().Play();
 
-        return sfx;
+        //Se destruye el objeto tras reproducir el audio
+        Destroy(sfx, audioClip.length);
     }
 }

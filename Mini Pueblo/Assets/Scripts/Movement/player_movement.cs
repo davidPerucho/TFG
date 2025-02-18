@@ -27,7 +27,7 @@ public class player_movement : MonoBehaviour, IDataPersistence
     bool talking = false; //True si el jugador está en una conversación
     Vector3 posicionNPC; //Almacena la posición de el NPC en el que se ha hecho click
 
-    AudioSource playerAudio; //Reproductor de los sonidos del jugador
+    GameObject playerAudio; //Reproductor de los sonidos del jugador
 
     [SerializeField]
     AudioClip runningAudio; //Running audio of the player
