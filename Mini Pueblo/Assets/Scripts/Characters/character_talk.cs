@@ -25,7 +25,7 @@ public class CharacterTalk : MonoBehaviour
 
     void Start()
     {
-        voicePath = Path.Combine(Application.persistentDataPath, "Voices/" + gameObject.name + ".wav");
+        voicePath = Path.Combine(Application.dataPath, "Voices/" + gameObject.name + ".wav");
         initialRotation = transform.rotation;
         characterAnimator = GetComponent<Animator>();
         GameObject player = GameObject.FindGameObjectWithTag("Player");

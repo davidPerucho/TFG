@@ -19,7 +19,7 @@ public class voice_manager : MonoBehaviour
     void generateVoices()
     {
         scriptPath = Path.Combine(Application.dataPath, "Scripts/TTS/TextToSpeach.js");
-        voicesDirectory = Path.Combine(Application.persistentDataPath, "Voices");
+        voicesDirectory = Application.persistentDataPath + "/Voices/";
 
         //Comprobar que el directorio existe
         if (!Directory.Exists(voicesDirectory))
