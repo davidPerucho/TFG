@@ -6,22 +6,19 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    public GameObject buttonPlay;
-    public GameObject buttonNewGame;
-    public Button buttonOptions;
     FileDataManager fileDataManager;
 
     // Start is called before the first frame update
     void Start()
     {
-        buttonPlay.GetComponent<Button>().onClick.AddListener(play);
-        buttonOptions.onClick.AddListener(options);
+        UIManager.Instance.AddListenerToButton("Jugar", play);
+        UIManager.Instance.AddListenerToButton("Volver", returnToMenu);
+        UIManager.Instance.AddListenerToButton("CrearMenu", openCreateSceneinterface);
         fileDataManager = new FileDataManager(Application.persistentDataPath, "datos.json");
-        buttonNewGame.GetComponent<Button>().onClick.AddListener(new_game);
+        UIManager.Instance.AddListenerToButton("Nueva", newGame);
         if (fileDataManager.file_exists() == false) 
         {
-            buttonPlay.SetActive(false);
-            
+            UIManager.Instance.DisableObject("Jugar");
         }
     }
 
@@ -31,23 +28,50 @@ public class MainMenu : MonoBehaviour
         SceneManager.LoadSceneAsync("Hub");
     }
 
-    void new_game()
+    void newGame()
     {
         disableButtons();
         DataPersitence.instance.newGame();
         SceneManager.LoadSceneAsync("Hub");
-    }    
+    }
 
-    void options()
+    void openCreateSceneinterface()
     {
-        disableButtons();
-        SceneManager.LoadSceneAsync("AnimalPainting");
+        UIManager.Instance.DisableObject("Nueva");
+        UIManager.Instance.DisableObject("Jugar");
+        UIManager.Instance.DisableObject("TextoMenu");
+        UIManager.Instance.DisableObject("CrearMenu");
+        UIManager.Instance.DisableObject("Opciones");
+
+        UIManager.Instance.EnableObject("Crear");
+        UIManager.Instance.EnableObject("Volver");
+        UIManager.Instance.EnableObject("InputNombre");
+        UIManager.Instance.EnableObject("TextoCrear");
+    }
+
+    void returnToMenu()
+    {
+        UIManager.Instance.DisableObject("Crear");
+        UIManager.Instance.DisableObject("Volver");
+        UIManager.Instance.DisableObject("InputNombre");
+        UIManager.Instance.DisableObject("TextoCrear");
+
+        UIManager.Instance.EnableObject("Nueva");
+        UIManager.Instance.EnableObject("Jugar");
+        UIManager.Instance.EnableObject("TextoMenu");
+        UIManager.Instance.EnableObject("CrearMenu");
+        UIManager.Instance.EnableObject("Opciones");
+
+        if (fileDataManager.file_exists() == false)
+        {
+            UIManager.Instance.DisableObject("Jugar");
+        }
     }
 
     void disableButtons()
     {
-        buttonNewGame.SetActive(false);
-        buttonPlay.SetActive(false);
-        buttonOptions.enabled = false;
+        UIManager.Instance.DisableObject("Nueva");
+        UIManager.Instance.DisableObject("Jugar");
+        UIManager.Instance.DisableObject("CrearMenu");
     }
 }

@@ -20,6 +20,9 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI[] textsUI; //Array con los textos de la interfaz de usuario
 
+    [SerializeField]
+    TMP_InputField[] inputsUI; //Array con los inputs de texto de la interfaz de usuario
+
     //Singleton
     private void Awake()
     {
@@ -114,7 +117,19 @@ public class UIManager : MonoBehaviour
             {
                 if (text.name == objectName)
                 {
+                    found = true;
                     text.gameObject.SetActive(false);
+                }
+            }
+        }
+
+        if (found == false)
+        {
+            foreach (TMP_InputField input in inputsUI)
+            {
+                if (input.name == objectName)
+                {
+                    input.gameObject.SetActive(false);
                 }
             }
         }
@@ -143,7 +158,19 @@ public class UIManager : MonoBehaviour
             {
                 if (text.name == objectName)
                 {
+                    found = true;
                     text.gameObject.SetActive(true);
+                }
+            }
+        }
+
+        if (found == false)
+        {
+            foreach (TMP_InputField input in inputsUI)
+            {
+                if (input.name == objectName)
+                {
+                    input.gameObject.SetActive(true);
                 }
             }
         }
