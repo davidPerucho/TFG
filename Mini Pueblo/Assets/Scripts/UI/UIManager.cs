@@ -207,4 +207,21 @@ public class UIManager : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// Devuelve el texto que se ha escrito en el input.
+    /// </summary>
+    /// <param name="name">Nombre del elemento input.</param>
+    public string GetInputValue(string name)
+    {
+        foreach (TMP_InputField input in inputsUI)
+        {
+            if (input.name == name)
+            {
+                return input.text;
+            }
+        }
+
+        return "";
+    }
 }

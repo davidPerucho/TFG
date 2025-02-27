@@ -6,7 +6,10 @@ using UnityEngine.Networking;
 using System.IO;
 using System.Diagnostics;
 
-public class voice_manager : MonoBehaviour
+/// <summary>
+/// Script encargado de la creación de voces mediante un TTS.
+/// </summary>
+public class VoiceManager : MonoBehaviour
 {
     string nodePath = @"C:\Program Files\nodejs\node.exe";
     string scriptPath;
