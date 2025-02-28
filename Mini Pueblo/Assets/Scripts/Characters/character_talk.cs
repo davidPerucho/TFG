@@ -106,6 +106,9 @@ public class CharacterTalk : MonoBehaviour
     /// </summary>
     public void loadScene()
     {
+        PlayerPrefs.SetString("SceneToLoad", sceneName);
+        PlayerPrefs.Save();
+
         DataPersitence.instance.saveGame();
         SceneManager.LoadScene(sceneName);
     }

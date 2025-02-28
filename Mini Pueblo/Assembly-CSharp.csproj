@@ -70,7 +70,9 @@
     <Compile Include="Assets\Scripts\camera_movement.cs" />
     <Compile Include="Assets\Scripts\PaperPlane\Tutorial\block_spawnUP_tutorial.cs" />
     <Compile Include="Assets\Scripts\UI\MainMenu.cs" />
+    <Compile Include="Assets\Scripts\tutorial\ShootingTutorial.cs" />
     <Compile Include="Assets\Scripts\SaveGame\file_data_manager.cs" />
+    <Compile Include="Assets\Scripts\UI\HighScore.cs" />
     <Compile Include="Assets\Scripts\tutorial\Hub\hub_tutorial_phrase1.cs" />
     <Compile Include="Assets\Scripts\tutorial\square_limits.cs" />
     <Compile Include="Assets\Scripts\UI\draw_parable.cs" />
@@ -83,9 +85,9 @@
     <Compile Include="Assets\Scripts\difficulty_manager.cs" />
     <Compile Include="Assets\Scripts\Spawner\click_spawner.cs" />
     <Compile Include="Assets\Scripts\Spawner\random_object_spawner.cs" />
-    <Compile Include="Assets\ShootingTutorial.cs" />
     <Compile Include="Assets\Scripts\Colliders\plane_collisions.cs" />
     <Compile Include="Assets\Scripts\ImageGenarator\ImageGenerator.cs" />
+    <Compile Include="Assets\Scripts\SceneCreation\CreationManager.cs" />
     <Compile Include="Assets\Scripts\ImageGenarator\SelectImage.cs" />
     <Compile Include="Assets\Scripts\SaveGame\data_persistence.cs" />
     <Compile Include="Assets\Scripts\ImageGenarator\PaintImage.cs" />
@@ -97,10 +99,10 @@
     <Compile Include="Assets\Scripts\Audio\voice_manager.cs" />
     <Compile Include="Assets\Scripts\SaveGame\game_data.cs" />
     <Compile Include="Assets\Scripts\Audio\sound_manager.cs" />
+    <Compile Include="Assets\Scripts\SceneCreation\DynamicLoading.cs" />
     <Compile Include="Assets\Scripts\Characters\character_talk.cs" />
     <Compile Include="Assets\Scripts\UI\text_tutorial.cs" />
     <Compile Include="Assets\Scripts\Movement\initial_force.cs" />
-    <Compile Include="Assets\HighScore.cs" />
     <Compile Include="Assets\Scripts\tutorial\Hub\hub_tutorial_phrase2.cs" />
     <Compile Include="Assets\Scripts\UI\hand_animation.cs" />
     <Compile Include="Assets\Scripts\ImageGenarator\ShowImages.cs" />
