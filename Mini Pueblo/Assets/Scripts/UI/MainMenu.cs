@@ -14,11 +14,19 @@ public class MainMenu : MonoBehaviour
 {
     FileDataManager fileDataManager; //Manejador de datos guardados del juego
     RawImage[] characters; //Almacena las imágenes de los personajes
+    Image[] locations; //Almacena el color del boton de los personajes
     int screenindex = 0; //Index que indica la parte del menu que se está mostrando
-    int characterIndex = 0;
+    int characterIndex = 0; //Index del personaje seleccionado
+    int locationIndex = 0; //Index de la localización
 
     [SerializeField]
     GameObject characterSelection; //Selector de personajes
+
+    [SerializeField]
+    GameObject locationSelection; //Selector de personajes
+
+    [SerializeField]
+    GameObject terrainImage; //Imagen del terreno
 
     // Start is called before the first frame update
     void Start()
@@ -104,7 +112,8 @@ public class MainMenu : MonoBehaviour
                 //Guardo el nombre de la escena para su posterior creación y cargo la escena de creación de minijuegos/actividades
                 PlayerPrefs.SetString("SceneName", inputText);
                 PlayerPrefs.Save();
-                SceneManager.LoadScene("SceneCreation");
+                //SceneManager.LoadScene("SceneCreation");
+                SceneManager.LoadScene("DynamicScene");
             }
         }
         else if (screenindex == 1) //Selección del personaje
@@ -119,11 +128,24 @@ public class MainMenu : MonoBehaviour
                 Debug.Log("Se ha seleccionado la imagen: " + characterIndex);
                 PlayerPrefs.SetString("SelectedNPC", characterIndex.ToString());
                 PlayerPrefs.Save();
+                startLocationSelection();
             }
         }
         else //Selección de la localización
         {
-
+            if (locationIndex == 0)
+            {
+                UIManager.Instance.SetText("Error", "Tienes que seleccionar una localización");
+                UIManager.Instance.EnableObject("Error");
+            }
+            else
+            {
+                Debug.Log("Se ha seleccionado la localización: " + locationIndex);
+                PlayerPrefs.SetString("SelectedLocation", locationIndex.ToString());
+                PlayerPrefs.Save();
+                //SceneManager.LoadScene("SceneCreation");
+                SceneManager.LoadScene("DynamicScene");
+            }
         }
     }
 
@@ -134,6 +156,7 @@ public class MainMenu : MonoBehaviour
     {
         UIManager.Instance.SetText("TextoMenu", "SELECCIONAR PERSONAJE");
         UIManager.Instance.DisableObject("InputNombre");
+        UIManager.Instance.DisableObject("Error");
         characterSelection.SetActive(true);
 
         //Obtengo las imágenes de los personajes
@@ -159,7 +182,19 @@ public class MainMenu : MonoBehaviour
     void startLocationSelection()
     {
         UIManager.Instance.SetText("TextoMenu", "SELECCIONAR LOCALIZACIÓN");
+        UIManager.Instance.DisableObject("Error");
         characterSelection.SetActive(false);
+
+        terrainImage.SetActive(true);
+        locationSelection.SetActive(true);
+
+        Button[] buttons = locationSelection.GetComponentsInChildren<Button>();
+        foreach (Button button in buttons)
+        {
+            button.onClick.AddListener(() => locationSelected(button.gameObject));
+        }
+
+        locations = locationSelection.GetComponentsInChildren<Image>();
 
         screenindex++;
     }
@@ -233,13 +268,15 @@ public class MainMenu : MonoBehaviour
             UIManager.Instance.DisableObject("Jugar");
         }
 
-        characterSelection.gameObject.SetActive(false);
+        characterSelection.SetActive(false);
         if (characterIndex != 0)
         {
             characters[characterIndex - 1].color = new Color(characters[characterIndex - 1].color.r, characters[characterIndex - 1].color.g, characters[characterIndex - 1].color.b, 0.5f);
         }
         characterIndex = 0;
         screenindex = 0;
+        locationSelection.SetActive(false);
+        terrainImage.SetActive(false);
         UIManager.Instance.SetText("TextoMenu", "MINI PUEBLO");
     }
 
@@ -257,15 +294,30 @@ public class MainMenu : MonoBehaviour
     /// <summary>
     /// Elimina la selección anterior de personaje y realiza la nueva.
     /// </summary>
-    /// <param name="gameObject">Objeto sobre el que se ha hecho click.</param>
-    void characterSelected(GameObject gameObject)
+    /// <param name="characterObject">Objeto sobre el que se ha hecho click.</param>
+    void characterSelected(GameObject characterObject)
     {
         int imageIndex = characterIndex - 1;
         if (characterIndex != 0) 
             characters[imageIndex].color = new Color(characters[imageIndex].color.r, characters[imageIndex].color.g, characters[imageIndex].color.b, 0.5f);
 
-        imageIndex = int.Parse(gameObject.name) - 1;
+        imageIndex = int.Parse(characterObject.name) - 1;
         characters[imageIndex].color = new Color(characters[imageIndex].color.r, characters[imageIndex].color.g, characters[imageIndex].color.b, 1);
         characterIndex = imageIndex + 1;
+    }
+
+    /// <summary>
+    /// Elimina la selección anterior de personaje y realiza la nueva.
+    /// </summary>
+    /// <param name="locationObject">Objeto sobre el que se ha hecho click.</param>
+    void locationSelected(GameObject locationObject)
+    {
+        int index = locationIndex - 1;
+        if (locationIndex != 0)
+            locations[index].color = Color.white;
+
+        index = int.Parse(locationObject.name) - 1;
+        locations[index].color = Color.blue;
+        locationIndex = index + 1;
     }
 }
