@@ -112,8 +112,7 @@ public class MainMenu : MonoBehaviour
                 //Guardo el nombre de la escena para su posterior creación y cargo la escena de creación de minijuegos/actividades
                 PlayerPrefs.SetString("SceneName", inputText);
                 PlayerPrefs.Save();
-                //SceneManager.LoadScene("SceneCreation");
-                SceneManager.LoadScene("DynamicScene");
+                SceneManager.LoadScene("SceneCreation");
             }
         }
         else if (screenindex == 1) //Selección del personaje
@@ -143,8 +142,7 @@ public class MainMenu : MonoBehaviour
                 Debug.Log("Se ha seleccionado la localización: " + locationIndex);
                 PlayerPrefs.SetString("SelectedLocation", locationIndex.ToString());
                 PlayerPrefs.Save();
-                //SceneManager.LoadScene("SceneCreation");
-                SceneManager.LoadScene("DynamicScene");
+                SceneManager.LoadScene("SceneCreation");
             }
         }
     }

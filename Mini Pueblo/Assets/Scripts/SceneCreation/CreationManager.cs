@@ -8,11 +8,18 @@ using UnityEngine.SceneManagement;
 
 public class CreationManager : MonoBehaviour
 {
+    [SerializeField]
+    GameObject yesNoUI;
+
     Scene createdScene;
     string sceneSavePath;
 
     void Awake()
     {
+        //Agrego funciones de UI
+        UIManager.Instance.AddListenerToButton("returnButton", () => { yesNoUI.SetActive(true); });
+        UIManager.Instance.AddListenerToButton("No", () => { SceneManager.LoadScene("MainMenu"); });
+
         //Creo la nueva escena con el nombre insertado en el menu de creación
         string sceneName = PlayerPrefs.GetString("SceneName", "Minijuego");
         createdScene = SceneManager.CreateScene(sceneName);
@@ -24,6 +31,11 @@ public class CreationManager : MonoBehaviour
             Debug.Log($"El directorio no existía, pero se ha creado");
         }
         sceneSavePath = Path.Combine(Application.persistentDataPath, "Scenes/" + sceneName + ".json");
+
+        string characterIndex = PlayerPrefs.GetString("SelectedNPC", "1");
+        string locationIndex = PlayerPrefs.GetString("SelectedLocation", "1");
+
+        Debug.Log("Nombre escena: " + sceneName + ", Index personaje: " + characterIndex + ", Index localización: " + locationIndex);
     }
 
     // Update is called once per frame
