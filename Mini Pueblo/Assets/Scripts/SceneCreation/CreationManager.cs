@@ -14,6 +14,7 @@ public class CreationManager : MonoBehaviour
 
     Scene createdScene;
     string sceneSavePath;
+    (float,float)[] characterCoordinates = { (-4.985f, 9.2435f), (18.265f, 11.573f), (27.105f, 5.383f), (-12.32f, 4.47f), (0.915f, -9.537f), (12.705f, -5.847f), (27.315f, -12.407f) };
 
     void Awake()
     {
