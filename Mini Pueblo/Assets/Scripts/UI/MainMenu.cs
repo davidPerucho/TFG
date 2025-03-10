@@ -18,6 +18,7 @@ public class MainMenu : MonoBehaviour
     int screenindex = 0; //Index que indica la parte del menu que se está mostrando
     int characterIndex = 0; //Index del personaje seleccionado
     int locationIndex = 0; //Index de la localización
+    List<string> sceneList = new List<string> { "DynamicScene", "Hub", "MainMenu", "MandalaPainting", "PaperPlane", "SceneCreation", "ShootingGame", "TutorialPaperPlane" }; //Lista de nombres de escenas ya existentes
 
     [SerializeField]
     GameObject characterSelection; //Selector de personajes
@@ -204,18 +205,7 @@ public class MainMenu : MonoBehaviour
     /// <returns>True si existe la escena false si no</returns>
     bool sceneExists(string sceneName)
     {
-        string scenesPath = Path.Combine(Application.dataPath, "Scenes/");
-        string[] sceneFiles = Directory.GetFiles(scenesPath, "*.unity", SearchOption.AllDirectories);
-
-        foreach (string scene in sceneFiles)
-        {
-            if (Path.GetFileNameWithoutExtension(scene) == sceneName)
-            {
-                return true; 
-            }
-        }
-
-        return false;
+        return sceneList.Contains(sceneName);
     }
 
     /// <summary>
@@ -230,8 +220,10 @@ public class MainMenu : MonoBehaviour
         {
             Directory.CreateDirectory(scenesPath);
             Debug.Log($"El directorio no existía, pero se ha creado: {scenesPath}");
-        }
 
+            return false;
+        }
+        
         string[] sceneFiles = Directory.GetFiles(scenesPath, "*.json", SearchOption.AllDirectories);
 
         foreach (string scene in sceneFiles)
