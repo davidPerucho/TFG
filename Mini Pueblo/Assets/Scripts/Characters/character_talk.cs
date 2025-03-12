@@ -22,6 +22,7 @@ public class CharacterTalk : MonoBehaviour
     public string characterSex; //Sexo del NPC
     AudioClip characterVoice = null; //Audio con la frase del NPC
     string voicePath; //Ruta hacia el archivo .wav con el audio del personaje
+    static readonly List<string> sceneList = new List<string> { "DynamicScene", "Hub", "MainMenu", "MandalaPainting", "PaperPlane", "SceneCreation", "ShootingGame", "TutorialPaperPlane" }; //Lista de nombres de escenas ya existentes
 
     void Start()
     {
@@ -106,11 +107,19 @@ public class CharacterTalk : MonoBehaviour
     /// </summary>
     public void loadScene()
     {
-        PlayerPrefs.SetString("SceneToLoad", sceneName);
-        PlayerPrefs.Save();
+        if (sceneList.Contains(sceneName) == false)
+        {
+            PlayerPrefs.SetString("SceneToLoad", sceneName);
+            PlayerPrefs.Save();
 
-        DataPersitence.instance.saveGame();
-        SceneManager.LoadScene(sceneName);
+            DataPersitence.instance.saveGame();
+            SceneManager.LoadScene("DynamicScene");
+        }
+        else
+        {
+            DataPersitence.instance.saveGame();
+            SceneManager.LoadScene(sceneName);
+        }
     }
 
     /// <summary>

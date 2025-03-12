@@ -11,16 +11,29 @@ public class CreationManager : MonoBehaviour
     [SerializeField]
     GameObject yesNoUI;
 
-    Scene createdScene;
-    string sceneSavePath;
-    (float,float)[] characterCoordinates = { (-4.985f, 9.2435f), (18.265f, 11.573f), (27.105f, 5.383f), (-12.32f, 4.47f), (0.915f, -9.537f), (12.705f, -5.847f), (27.315f, -12.407f) };
+    [SerializeField]
+    GameObject[] characterPrefabs;
+
+    Scene createdScene; //Escena creada
+    string sceneSavePath; //Dirección donde guardar la escena
+    Vector3[] locationCoordinates = { new Vector3(-4.985f, -0.11f, 9.2435f), new Vector3(18.265f, -0.11f, 11.573f), new Vector3(27.105f, 0.49f, 5.383f), new Vector3(-12.32f, -0.11f, 4.47f), new Vector3(0.915f, 0.28f, -9.537f), new Vector3(12.705f, 0.47f, -5.847f), new Vector3(27.315f, 0.29f, -12.407f) }; //Coordenadas de las localizaciones
+    Dictionary<string, float> characterYCoordinate = new Dictionary<string, float> //Almacenamiento de las coordenadas Y de los personajes
+    {
+        { "1", 0f },
+        { "2", 0.05f }, //Gnomo
+        { "3", 0.11f }, //Hombre normal
+        { "4", 0f },
+        { "5", 0f },
+        { "6", 0f },
+        { "7", 0f }
+    };
 
     void Awake()
     {
         //Creo la nueva escena con el nombre insertado en el menu de creación
         string sceneName = PlayerPrefs.GetString("SceneName", "Minijuego");
         createdScene = SceneManager.CreateScene(sceneName);
-        addCamera(); //Añado una cámara a la escena
+        addCamera();
 
         //Creo la ruta de guardado para la escena
         if (!Directory.Exists(Path.Combine(Application.persistentDataPath, "Scenes/"))) //Comprobar que el directorio existe
@@ -33,7 +46,10 @@ public class CreationManager : MonoBehaviour
         string characterIndex = PlayerPrefs.GetString("SelectedNPC", "1");
         string locationIndex = PlayerPrefs.GetString("SelectedLocation", "1");
 
-        Debug.Log("Nombre escena: " + sceneName + ", Index personaje: " + characterIndex + ", Index localización: " + locationIndex);
+        if (jsonExists(sceneName) == false)
+        {
+            createCharacter(characterIndex, int.Parse(locationIndex), PlayerPrefs.GetString("CharacterPhrase", "Vamos a jugar."), characterPrefabs[int.Parse(characterIndex) - 1]);
+        }
     }
 
     void Start()
@@ -50,6 +66,9 @@ public class CreationManager : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Guarda un json que representa la escena creada.
+    /// </summary>
     void saveScene()
     {
         try
@@ -73,6 +92,9 @@ public class CreationManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Añade una cámara a la escena.
+    /// </summary>
     void addCamera()
     {
         //Creo la cámara
@@ -85,5 +107,52 @@ public class CreationManager : MonoBehaviour
         cameraObject.tag = "MainCamera"; //Añado un tag para que Unity la reconozca como la cámara principal
 
         SceneManager.MoveGameObjectToScene(cameraObject, createdScene); //Añado la cámara a la escena
+    }
+
+    /// <summary>
+    /// Devuelve true si ya existe un json de una escena con el nombre pasado por argumento.
+    /// </summary>
+    /// <param name="sceneName">Nombre de la escena que se quiere crear.</param>
+    /// <returns>True si existe el json de la escena false si no</returns>
+    bool jsonExists(string sceneName)
+    {
+        string scenesPath = Path.Combine(Application.persistentDataPath, "Scenes/");
+        if (!Directory.Exists(scenesPath))
+        {
+            Directory.CreateDirectory(scenesPath);
+            Debug.Log($"El directorio no existía, pero se ha creado: {scenesPath}");
+
+            return false;
+        }
+
+        string[] sceneFiles = Directory.GetFiles(scenesPath, "*.json", SearchOption.AllDirectories);
+
+        foreach (string scene in sceneFiles)
+        {
+            if (Path.GetFileNameWithoutExtension(scene) == sceneName)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Crea el personaje seleccionado en el menú dentro del entorno 3D.
+    /// </summary>
+    /// <param name="cIndex">Index del personaje.</param>
+    /// <param name="lIndex">Index de la localización.</param>
+    /// <param name="characterPhrase">Frase del personaje.</param>
+    /// <param name="characterPrefab">Instancia del personaje.</param>
+    void createCharacter(string cIndex, int lIndex, string characterPhrase, GameObject characterPrefab)
+    {
+        //Obtengo la posición del personaje
+        Vector3 characterPosition = new Vector3(locationCoordinates[lIndex].x, locationCoordinates[lIndex].y + characterYCoordinate[cIndex], locationCoordinates[lIndex].z);
+
+        //Creo el personaje en el entorno 3D
+        Debug.Log(characterPhrase + " " + PlayerPrefs.GetString("SceneName", "Minijuego"));
+
+        //Asigno la frase y la escena al personaje
     }
 }

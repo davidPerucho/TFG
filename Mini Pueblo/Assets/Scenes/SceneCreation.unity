@@ -919,7 +919,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 677, y: -362}
+  m_AnchoredPosition: {x: 600, y: -362}
   m_SizeDelta: {x: 160, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1353073395
@@ -1035,6 +1035,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   yesNoUI: {fileID: 421680638}
+  characterPrefabs:
+  - {fileID: 0}
+  - {fileID: 1540213274654384140, guid: 1afc84c13597d6b4e9fee63e6f14fff2, type: 3}
+  - {fileID: 3876453244708337090, guid: 07748f6110a68ac4d9a32b3347ea7f4b, type: 3}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!4 &1678623995
 Transform:
   m_ObjectHideFlags: 0

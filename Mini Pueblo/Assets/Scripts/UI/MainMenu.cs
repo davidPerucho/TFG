@@ -18,7 +18,7 @@ public class MainMenu : MonoBehaviour
     int screenindex = 0; //Index que indica la parte del menu que se está mostrando
     int characterIndex = 0; //Index del personaje seleccionado
     int locationIndex = 0; //Index de la localización
-    List<string> sceneList = new List<string> { "DynamicScene", "Hub", "MainMenu", "MandalaPainting", "PaperPlane", "SceneCreation", "ShootingGame", "TutorialPaperPlane" }; //Lista de nombres de escenas ya existentes
+    static readonly List<string> sceneList = new List<string> { "DynamicScene", "Hub", "MainMenu", "MandalaPainting", "PaperPlane", "SceneCreation", "ShootingGame", "TutorialPaperPlane" }; //Lista de nombres de escenas ya existentes
 
     [SerializeField]
     GameObject characterSelection; //Selector de personajes
@@ -131,7 +131,7 @@ public class MainMenu : MonoBehaviour
                 startLocationSelection();
             }
         }
-        else //Selección de la localización
+        else if (screenindex == 2) //Selección de la localización
         {
             if (locationIndex == 0)
             {
@@ -142,6 +142,22 @@ public class MainMenu : MonoBehaviour
             {
                 Debug.Log("Se ha seleccionado la localización: " + locationIndex);
                 PlayerPrefs.SetString("SelectedLocation", locationIndex.ToString());
+                PlayerPrefs.Save();
+                startPhraseSelection();
+            }
+        }
+        else
+        {
+            string inputText = UIManager.Instance.GetInputValue("InputNombre");
+
+            if (inputText == "") //En caso de que el jugador no introduzca ningún texto muestro un error
+            {
+                UIManager.Instance.SetText("Error", "Tienes que introducir una frase");
+                UIManager.Instance.EnableObject("Error");
+            }
+            else
+            {
+                PlayerPrefs.SetString("CharacterPhrase", inputText);
                 PlayerPrefs.Save();
                 SceneManager.LoadScene("SceneCreation");
             }
@@ -194,6 +210,22 @@ public class MainMenu : MonoBehaviour
         }
 
         locations = locationSelection.GetComponentsInChildren<Image>();
+
+        screenindex++;
+    }
+
+    /// <summary>
+    /// Inicializa los elementos de la selección de frase para el personaje.
+    /// </summary>
+    void startPhraseSelection()
+    {
+        UIManager.Instance.SetText("TextoMenu", "INTRODUCE LA FRASE");
+        UIManager.Instance.DisableObject("Error");
+
+        UIManager.Instance.EnableObject("InputNombre");
+        UIManager.Instance.SetInputValue("InputNombre", "");
+        terrainImage.SetActive(false);
+        locationSelection.SetActive(false);
 
         screenindex++;
     }
