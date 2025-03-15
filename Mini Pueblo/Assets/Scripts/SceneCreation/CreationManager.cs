@@ -14,6 +14,7 @@ public class CreationManager : MonoBehaviour
     Scene createdScene; //Escena creada
     string sceneSavePath; //Dirección donde guardar la escena
     Vector3[] locationCoordinates = { new Vector3(-4.985f, -0.11f, 9.2435f), new Vector3(18.265f, -0.11f, 11.573f), new Vector3(27.105f, 0.49f, 5.383f), new Vector3(-12.32f, -0.11f, 4.47f), new Vector3(0.915f, 0.28f, -9.537f), new Vector3(12.705f, 0.47f, -5.847f), new Vector3(27.315f, 0.29f, -12.407f) }; //Coordenadas de las localizaciones
+    float[] characterYRotation = { 180f, 180f, 180f, 137f, 137f, 180f, 275f }; //Rotación de los personajes en el eje Y
     Dictionary<string, float> characterYCoordinate = new Dictionary<string, float> //Almacenamiento de las coordenadas Y de los personajes
     {
         { "1", 0f },
@@ -23,6 +24,16 @@ public class CreationManager : MonoBehaviour
         { "5", 0f },
         { "6", 0f },
         { "7", 0f }
+    };
+    Dictionary<string, string> characterSex = new Dictionary<string, string> //Almacenamiento de el sexo de los personajes
+    {
+        { "1", "H" },
+        { "2", "H" }, //Gnomo
+        { "3", "H" }, //Hombre normal
+        { "4", "H" },
+        { "5", "H" },
+        { "6", "H" },
+        { "7", "H" }
     };
 
     void Awake()
@@ -145,7 +156,7 @@ public class CreationManager : MonoBehaviour
     void createCharacter(string cIndex, int lIndex, string characterPhrase, string sceneName)
     {
         //Obtengo la posición del personaje
-        Vector3 characterPosition = new Vector3(locationCoordinates[lIndex].x, locationCoordinates[lIndex].y + characterYCoordinate[cIndex], locationCoordinates[lIndex].z);
+        Vector3 characterPosition = new Vector3(locationCoordinates[lIndex - 1].x, locationCoordinates[lIndex - 1].y + characterYCoordinate[cIndex], locationCoordinates[lIndex - 1].z);
 
         //Guardo los datos del personaje en un json para inicializarlo más tarde
         CharacterData character = new CharacterData
@@ -154,6 +165,8 @@ public class CreationManager : MonoBehaviour
             phrase = characterPhrase,
             cIndex = int.Parse(cIndex) - 1,
             lIndex = lIndex,
+            sex = characterSex[cIndex],
+            yRotation = characterYRotation[lIndex - 1],
             scene = sceneName
         };
 
@@ -163,7 +176,7 @@ public class CreationManager : MonoBehaviour
             Debug.Log($"El directorio no existía, pero se ha creado");
         }
 
-        string filePath = Path.Combine(Application.persistentDataPath, "Managers/" + "NewCharacter.json");
+        string filePath = Path.Combine(Application.persistentDataPath, "Managers/" + "NewCharacters.json");
         CharacterList characterList = new CharacterList();
         string json = "";
         if (File.Exists(filePath))

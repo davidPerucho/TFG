@@ -99,7 +99,10 @@ public class CharacterTalk : MonoBehaviour
         StartCoroutine(FindAnyObjectByType<dialog_manager>().showUIWithDelay(characterPhrase, loadScene, cancelTalk));
 
         //Lanza el audio con la frase del personaje
-        SoundManager.instance.addSFX(transform, characterVoice, 0.9f);
+        if (characterVoice != null)
+        {
+            SoundManager.instance.addSFX(transform, characterVoice, 0.9f);
+        }
     }
 
     /// <summary>

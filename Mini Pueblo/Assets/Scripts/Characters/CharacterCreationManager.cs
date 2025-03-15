@@ -11,29 +11,22 @@ public class CharacterCreationManager : MonoBehaviour
     void Awake()
     {
         //En de que exista el fichero NewCharacter.json creo un personaje con la información del fichero
-        string filePath = Path.Combine(Application.persistentDataPath, "Managers/" + "NewCharacter.json");
+        string filePath = Path.Combine(Application.persistentDataPath, "Managers/" + "NewCharacters.json");
         if (File.Exists(filePath))
         {
-            //Leo la información del personaje y elimimino el fichero
+            //Leo la información de los personajes y los creo en la escena
             string json = File.ReadAllText(filePath);
             CharacterList characterList = JsonUtility.FromJson<CharacterList>(json);
 
-            foreach (CharacterData character in characterList.characters)
+            foreach (CharacterData characterData in characterList.characters)
             {
-                //Instanciar los personajes
+                Debug.Log(characterData.yRotation);
+                GameObject character = Instantiate(characterPrefabs[characterData.cIndex], characterData.coordinates, Quaternion.Euler(0, characterData.yRotation, 0));
+                CharacterTalk characterTalk = character.GetComponent<CharacterTalk>();
+                characterTalk.characterPhrase = characterData.phrase;
+                characterTalk.sceneName = characterData.scene;
+                characterTalk.characterSex = characterData.sex;
             }
         }
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

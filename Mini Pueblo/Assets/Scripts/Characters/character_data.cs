@@ -12,6 +12,8 @@ public struct CharacterData
     public string phrase; //Frase del NPC
     public int cIndex; //Index del NPC
     public int lIndex; //Index de la localización del NPC
+    public float yRotation; //Rotación en el eje Y del NPC
+    public string sex; //Sexo del NPC
     public string scene; //Escena del NPC
 }
 
