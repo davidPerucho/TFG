@@ -6,13 +6,15 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class CreationManager : MonoBehaviour
 {
     [SerializeField]
     GameObject yesNoUI;
 
-    Scene createdScene; //Escena creada
+    string sceneName; //Nombre de la escena que se está creando
     string sceneSavePath; //Dirección donde guardar la escena
+    string creationSavePath; //Dirección donde se guardan los datos de creación de la escena
     Vector3[] locationCoordinates = { new Vector3(-4.985f, -0.11f, 9.2435f), new Vector3(18.265f, -0.11f, 11.573f), new Vector3(27.105f, 0.49f, 5.383f), new Vector3(-12.32f, -0.11f, 4.47f), new Vector3(0.915f, 0.28f, -9.537f), new Vector3(12.705f, 0.47f, -5.847f), new Vector3(27.315f, 0.29f, -12.407f) }; //Coordenadas de las localizaciones
     float[] characterYRotation = { 180f, 180f, 180f, 137f, 137f, 180f, 275f }; //Rotación de los personajes en el eje Y
     Dictionary<string, float> characterYCoordinate = new Dictionary<string, float> //Almacenamiento de las coordenadas Y de los personajes
@@ -35,13 +37,15 @@ public class CreationManager : MonoBehaviour
         { "6", "H" },
         { "7", "H" }
     };
+    SceneType sceneType; //Tipo de escena
+    string characterIndex; //Indice del personaje
+    string locationIndex; //Localización del personaje
 
     void Awake()
     {
         //Creo la nueva escena con el nombre insertado en el menu de creación
-        string sceneName = PlayerPrefs.GetString("SceneName", "Minijuego");
-        createdScene = SceneManager.CreateScene(sceneName);
-        addCamera();
+        sceneName = PlayerPrefs.GetString("SceneName", "Minijuego");
+        //createdScene = SceneManager.CreateScene(sceneName);
 
         //Creo la ruta de guardado para la escena
         if (!Directory.Exists(Path.Combine(Application.persistentDataPath, "Scenes/"))) //Comprobar que el directorio existe
@@ -50,22 +54,50 @@ public class CreationManager : MonoBehaviour
             Debug.Log($"El directorio no existía, pero se ha creado");
         }
         sceneSavePath = Path.Combine(Application.persistentDataPath, "Scenes/" + sceneName + ".json");
+        creationSavePath = Path.Combine(Application.persistentDataPath, "Managers/" + "ScenesOnCreation.json");
 
-        string characterIndex = PlayerPrefs.GetString("SelectedNPC", "1");
-        string locationIndex = PlayerPrefs.GetString("SelectedLocation", "1");
-
-        if (jsonExists(sceneName) == false)
-        {
-            createCharacter(characterIndex, int.Parse(locationIndex), PlayerPrefs.GetString("CharacterPhrase", "Vamos a jugar."), sceneName);
-        }
+        characterIndex = PlayerPrefs.GetString("SelectedNPC", "1");
+        locationIndex = PlayerPrefs.GetString("SelectedLocation", "1");
     }
 
     void Start()
     {
-        //Agrego funciones de UI
+        //cargo los datos e inicializo los elementos de la UI
+        if (jsonExists() == true)
+        {
+            string sceneTheme = "";
+
+            if (File.Exists(creationSavePath))
+            {
+                string json = File.ReadAllText(creationSavePath);
+                CreatedScenes createdScenesList = JsonUtility.FromJson<CreatedScenes>(json);
+
+                foreach (PaintingSceneData p in createdScenesList.paintingScenes)
+                {
+                    if (p.sceneName == sceneName)
+                    {
+                        characterIndex = p.characterIndex;
+                        locationIndex = p.locationIndex;
+                        sceneTheme = p.sceneThemeEnglish;
+                    }
+                }
+            }
+
+            sceneType = SceneType.PAINTING;
+
+            UIManager.Instance.DisableObject("Pintar");
+            UIManager.Instance.DisableObject("TextoSeleccion");
+
+            UIManager.Instance.EnableObject("TextoPrompt");
+            UIManager.Instance.EnableObject("InputPrompt");
+            UIManager.Instance.SetInputValue("InputPrompt", sceneTheme);
+        }
+
         UIManager.Instance.AddListenerToButton("returnButton", () => { yesNoUI.SetActive(true); });
         UIManager.Instance.AddListenerToButton("No", () => { SceneManager.LoadScene("MainMenu"); });
         UIManager.Instance.AddListenerToButton("Si", saveScene);
+        UIManager.Instance.AddListenerToButton("Pintar", paintSceneOptions);
+        UIManager.Instance.AddListenerToButton("Crear", createScene);
     }
 
     // Update is called once per frame
@@ -79,67 +111,65 @@ public class CreationManager : MonoBehaviour
     /// </summary>
     void saveScene()
     {
-        try
+        if (sceneType == SceneType.PAINTING)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(sceneSavePath));
-            string dataToStore = JsonUtility.ToJson(createdScene, true);
-
-            using (FileStream stream = new FileStream(sceneSavePath, FileMode.Create))
+            try
             {
-                using (StreamWriter writer = new StreamWriter(stream))
+                PaintingSceneData sceneData = new PaintingSceneData();
+                sceneData.sceneName = sceneName;
+                sceneData.sceneThemeEnglish = UIManager.Instance.GetInputValue("InputPrompt");
+                sceneData.characterIndex = characterIndex;
+                sceneData.locationIndex = locationIndex;
+                CreatedScenes createdScenesList = new CreatedScenes();
+                string json;
+
+                if (File.Exists(creationSavePath))
                 {
-                    writer.Write(dataToStore);
+                    json = File.ReadAllText(creationSavePath);
+                    createdScenesList = JsonUtility.FromJson<CreatedScenes>(json);
+
+                    foreach (PaintingSceneData p in createdScenesList.paintingScenes)
+                    {
+                        if (p.sceneName == sceneName)
+                        {
+                            createdScenesList.paintingScenes.Remove(p);
+                        }
+                    }
                 }
+                else
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(creationSavePath));
+                }
+
+                createdScenesList.paintingScenes.Add(sceneData);
+                json = JsonUtility.ToJson(createdScenesList, true);
+                File.WriteAllText(creationSavePath, json);
+                Debug.Log("Datos guardados en: " + creationSavePath);
             }
-
-            SceneManager.LoadScene("MainMenu");
-        }
-        catch (Exception e)
-        {
-            Debug.LogException(e);
-        }
-    }
-
-    /// <summary>
-    /// Añade una cámara a la escena.
-    /// </summary>
-    void addCamera()
-    {
-        //Creo la cámara
-        GameObject cameraObject = new GameObject("Camera");
-        Camera cameraComponent = cameraObject.AddComponent<Camera>();
-
-        cameraComponent.clearFlags = CameraClearFlags.Skybox; //Configuro la vista
-        cameraComponent.backgroundColor = Color.blue; //Configuro el color de fondo
-        cameraComponent.orthographic = false;
-        cameraObject.tag = "MainCamera"; //Añado un tag para que Unity la reconozca como la cámara principal
-
-        SceneManager.MoveGameObjectToScene(cameraObject, createdScene); //Añado la cámara a la escena
-    }
-
-    /// <summary>
-    /// Devuelve true si ya existe un json de una escena con el nombre pasado por argumento.
-    /// </summary>
-    /// <param name="sceneName">Nombre de la escena que se quiere crear.</param>
-    /// <returns>True si existe el json de la escena false si no</returns>
-    bool jsonExists(string sceneName)
-    {
-        string scenesPath = Path.Combine(Application.persistentDataPath, "Scenes/");
-        if (!Directory.Exists(scenesPath))
-        {
-            Directory.CreateDirectory(scenesPath);
-            Debug.Log($"El directorio no existía, pero se ha creado: {scenesPath}");
-
-            return false;
-        }
-
-        string[] sceneFiles = Directory.GetFiles(scenesPath, "*.json", SearchOption.AllDirectories);
-
-        foreach (string scene in sceneFiles)
-        {
-            if (Path.GetFileNameWithoutExtension(scene) == sceneName)
+            catch (Exception e)
             {
-                return true;
+                Debug.LogException(e);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Devuelve true si ya existe un json de la escena.
+    /// </summary>
+    /// <returns>True si existe el json de la escena false si no.</returns>
+    bool jsonExists()
+    {
+        if (File.Exists(creationSavePath))
+        {
+            string json = File.ReadAllText(creationSavePath);
+            CreatedScenes createdScenesList = JsonUtility.FromJson<CreatedScenes>(json);
+
+            foreach (PaintingSceneData p in createdScenesList.paintingScenes)
+            {
+                if (p.sceneName == sceneName)
+                {
+                    return true;
+                }
             }
         }
 
@@ -202,5 +232,21 @@ public class CreationManager : MonoBehaviour
         json = JsonUtility.ToJson(characterList, true);
         File.WriteAllText(filePath, json);
         Debug.Log("Datos guardados en: " + filePath);
+    }
+
+    void paintSceneOptions()
+    {
+        sceneType = SceneType.PAINTING;
+
+        UIManager.Instance.DisableObject("Pintar");
+        UIManager.Instance.DisableObject("TextoSeleccion");
+
+        UIManager.Instance.EnableObject("TextoPrompt");
+        UIManager.Instance.EnableObject("InputPrompt");
+    }
+
+    void createScene()
+    {
+        createCharacter(characterIndex, int.Parse(locationIndex), PlayerPrefs.GetString("CharacterPhrase", "Vamos a jugar."), sceneName);
     }
 }
