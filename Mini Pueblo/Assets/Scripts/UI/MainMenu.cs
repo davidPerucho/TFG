@@ -79,7 +79,7 @@ public class MainMenu : MonoBehaviour
         UIManager.Instance.EnableObject("InputNombre");
         UIManager.Instance.EnableObject("TextoCrear");
 
-        UIManager.Instance.SetText("TextoMenu", "CREAR MINIJUEGO");
+        UIManager.Instance.SetText("TextoMenu", "NOMBRE DE LA ESCENA");
     }
 
     /// <summary>
@@ -237,16 +237,10 @@ public class MainMenu : MonoBehaviour
     /// <returns>True si existe la escena false si no</returns>
     bool sceneExists(string sceneName)
     {
-        return sceneList.Contains(sceneName);
-    }
+        if (sceneList.Contains(sceneName)) {
+            return true;
+        }
 
-    /// <summary>
-    /// Devuelve true si ya existe un json de una escena con el nombre pasado por argumento.
-    /// </summary>
-    /// <param name="sceneName">Nombre de la escena que se quiere crear.</param>
-    /// <returns>True si existe el json de la escena false si no</returns>
-    bool jsonExists(string sceneName)
-    {
         string scenesPath = Path.Combine(Application.persistentDataPath, "Scenes/");
         if (!Directory.Exists(scenesPath))
         {
@@ -255,7 +249,7 @@ public class MainMenu : MonoBehaviour
 
             return false;
         }
-        
+
         string[] sceneFiles = Directory.GetFiles(scenesPath, "*.json", SearchOption.AllDirectories);
 
         foreach (string scene in sceneFiles)
@@ -263,6 +257,32 @@ public class MainMenu : MonoBehaviour
             if (Path.GetFileNameWithoutExtension(scene) == sceneName)
             {
                 return true;
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Devuelve true si ya existe un json de la creación de una escena con el nombre pasado por argumento.
+    /// </summary>
+    /// <param name="sceneName">Nombre de la escena que se quiere crear.</param>
+    /// <returns>True si existe el json de la escena false si no</returns>
+    bool jsonExists(string sceneName)
+    {
+        string creationSavePath = Path.Combine(Application.persistentDataPath, "Managers/" + "ScenesOnCreation.json");
+
+        if (File.Exists(creationSavePath))
+        {
+            string json = File.ReadAllText(creationSavePath);
+            CreatedScenes createdScenesList = JsonUtility.FromJson<CreatedScenes>(json);
+
+            foreach (PaintingSceneData p in createdScenesList.paintingScenes)
+            {
+                if (p.sceneName == sceneName)
+                {
+                    return true;
+                }
             }
         }
 

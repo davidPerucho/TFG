@@ -7,6 +7,9 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
+/// <summary>
+/// Clase encargada de la creación de nuevas escenas.
+/// </summary>
 public class CreationManager : MonoBehaviour
 {
     [SerializeField]
@@ -90,6 +93,7 @@ public class CreationManager : MonoBehaviour
 
             UIManager.Instance.EnableObject("TextoPrompt");
             UIManager.Instance.EnableObject("InputPrompt");
+            UIManager.Instance.EnableObject("Crear");
             UIManager.Instance.SetInputValue("InputPrompt", sceneTheme);
         }
 
@@ -150,6 +154,8 @@ public class CreationManager : MonoBehaviour
             {
                 Debug.LogException(e);
             }
+
+            SceneManager.LoadScene("MainMenu");
         }
     }
 
@@ -234,6 +240,9 @@ public class CreationManager : MonoBehaviour
         Debug.Log("Datos guardados en: " + filePath);
     }
 
+    /// <summary>
+    /// Muestra la interfaz para crear una actividad de pintura.
+    /// </summary>
     void paintSceneOptions()
     {
         sceneType = SceneType.PAINTING;
@@ -243,10 +252,30 @@ public class CreationManager : MonoBehaviour
 
         UIManager.Instance.EnableObject("TextoPrompt");
         UIManager.Instance.EnableObject("InputPrompt");
+        UIManager.Instance.EnableObject("Crear");
     }
 
+    /// <summary>
+    /// Crea la escena y almacena los datos.
+    /// </summary>
     void createScene()
     {
         createCharacter(characterIndex, int.Parse(locationIndex), PlayerPrefs.GetString("CharacterPhrase", "Vamos a jugar."), sceneName);
+
+        if (sceneType == SceneType.PAINTING)
+        {
+            PaintingSceneData data = new PaintingSceneData();
+            data.characterIndex = characterIndex;
+            data.locationIndex = locationIndex;
+            data.sceneType = sceneType;
+            data.sceneName = sceneName;
+            data.sceneThemeEnglish = UIManager.Instance.GetInputValue("InputPrompt");
+
+            string json = JsonUtility.ToJson(data, true);
+            File.WriteAllText(sceneSavePath, json);
+            Debug.Log("Datos guardados en: " + sceneSavePath);
+        }
+
+        SceneManager.LoadScene("MainMenu");
     }
 }
