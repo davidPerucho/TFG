@@ -114,9 +114,22 @@ public class CharacterTalk : MonoBehaviour
         {
             PlayerPrefs.SetString("SceneToLoad", sceneName);
             PlayerPrefs.Save();
+            
+            string typesPath = Path.Combine(Application.persistentDataPath, "Scenes/ScenesTypes.json");
+            string jsonTypes = File.ReadAllText(typesPath);
+            ScenesTypes scenesTypes = JsonUtility.FromJson<ScenesTypes>(jsonTypes);
 
-            DataPersitence.instance.saveGame();
-            SceneManager.LoadScene("DynamicScene");
+            foreach (SceneTuple scene in scenesTypes.scenes)
+            {
+                if (scene.name == sceneName)
+                {
+                    if (scene.type == SceneType.PAINTING)
+                    {
+                        DataPersitence.instance.saveGame();
+                        SceneManager.LoadScene("NormalPainting");
+                    }
+                }
+            }
         }
         else
         {

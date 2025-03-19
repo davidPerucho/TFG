@@ -37,3 +37,22 @@ public class CreatedScenes
 {
     public List<PaintingSceneData> paintingScenes = new List<PaintingSceneData>();
 }
+
+[System.Serializable]
+/// <summary>
+/// Clase encargada de almacenar el nombre y el tipo de una escena.
+/// </summary>
+public class SceneTuple
+{
+    public string name; //Nombre de la escena
+    public SceneType type; //Tipo de la escena
+}
+
+[System.Serializable]
+/// <summary>
+/// Clase encargada de representar una lista de escenas creadas.
+/// </summary>
+public class ScenesTypes
+{
+    public List<SceneTuple> scenes = new List<SceneTuple>();
+}

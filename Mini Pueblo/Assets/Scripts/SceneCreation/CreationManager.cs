@@ -276,6 +276,21 @@ public class CreationManager : MonoBehaviour
             Debug.Log("Datos guardados en: " + sceneSavePath);
         }
 
+        string typesPath = Path.Combine(Application.persistentDataPath, "Scenes/ScenesTypes.json");
+        ScenesTypes scenesTypes = new ScenesTypes();
+        string jsonTypes = "";
+        if (File.Exists(typesPath))
+        {
+            jsonTypes = File.ReadAllText(typesPath);
+            scenesTypes = JsonUtility.FromJson<ScenesTypes>(jsonTypes);
+        }
+        SceneTuple tuple = new SceneTuple();
+        tuple.name = sceneName;
+        tuple.type = sceneType;
+        scenesTypes.scenes.Add(tuple);
+        jsonTypes = JsonUtility.ToJson(scenesTypes, true);
+        File.WriteAllText(typesPath, jsonTypes);
+
         SceneManager.LoadScene("MainMenu");
     }
 }
