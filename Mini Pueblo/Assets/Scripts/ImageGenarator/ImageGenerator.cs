@@ -13,8 +13,7 @@ public class ImageGenerator : MonoBehaviour
     [SerializeField]
     string baseUrl = "https://image.pollinations.ai/prompt/"; //Ruta de la api
 
-    [SerializeField]
-    string prompt; //Prompt utilizado para generar la imagen
+    public string prompt; //Prompt utilizado para generar la imagen
 
     public int width; //Ancho deseado para la imagen generada
     public int height; //Alto deseado para la imagen generada
@@ -35,7 +34,15 @@ public class ImageGenerator : MonoBehaviour
     {
         UIManager.Instance.AddListenerToButton("ButtonGenerateImage", GenerateAndLoad);
         seed = Random.Range(0, int.MaxValue);
-        imagesDirectory = Path.Combine(Application.persistentDataPath, "GeneratedImages");
+
+        if (GetComponent<DynamicPainting>().sceneData.sceneThemeEnglish == "mandala")
+        {
+            imagesDirectory = Path.Combine(Application.persistentDataPath, "GeneratedImages");
+        }
+        else
+        {
+            imagesDirectory = Path.Combine(Application.persistentDataPath, $"{GetComponent<DynamicPainting>().sceneData.sceneName}Images");
+        }
 
         //Comprobar que el directorio existe
         if (!Directory.Exists(imagesDirectory))
@@ -71,7 +78,7 @@ public class ImageGenerator : MonoBehaviour
         {
             //Si hay un error se muestra con un texto rojo por pantalla
             loading = false;
-            UIManager.Instance.SetText("TextImageGeneration", "Error al generar el mandala, comprueba la conexión a internet.");
+            UIManager.Instance.SetText("TextImageGeneration", $"Error al generar {GetComponent<DynamicPainting>().sceneData.sceneThemeSpanish.ToLower()}, comprueba la conexión a internet.");
             UIManager.Instance.SetTextColor("TextImageGeneration", Color.red);
             Debug.LogError($"Error al generar la imagen: {request.error}");
         }
@@ -90,7 +97,7 @@ public class ImageGenerator : MonoBehaviour
 
             //Vuelvo a activar los botones
             loading = false;
-            UIManager.Instance.SetText("TextImageGeneration", "Mandala generado correctamente.");
+            UIManager.Instance.SetText("TextImageGeneration", $"{GetComponent<DynamicPainting>().sceneData.sceneThemeSpanish} generado correctamente.");
             UIManager.Instance.SetTextColor("TextImageGeneration", Color.green);
 
             UIManager.Instance.EnableButton("ButtonGenerateImage");
@@ -113,7 +120,7 @@ public class ImageGenerator : MonoBehaviour
         //Desactivo otras funcionalidades mientras se genera la imagen
         loading = true;
         UIManager.Instance.EnableObject("TextImageGeneration");
-        UIManager.Instance.SetText("TextImageGeneration", "Generando mandala...");
+        UIManager.Instance.SetText("TextImageGeneration", $"Generando {GetComponent<DynamicPainting>().sceneData.sceneThemeSpanish}...");
 
         //Genero la imagen
         StartCoroutine(GenerateAndSaveImage());

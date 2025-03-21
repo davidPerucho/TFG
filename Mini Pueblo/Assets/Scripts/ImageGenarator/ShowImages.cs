@@ -36,7 +36,14 @@ public class ShowImages : MonoBehaviour
         UIManager.Instance.AddListenerToButton("ButtonExit", () => { SceneManager.LoadScene("Hub"); });
 
         //Ruta al directorio donde se guardan las imágenes
-        imagesDirectory = Path.Combine(Application.persistentDataPath, "GeneratedImages");
+        if (GetComponent<DynamicPainting>().sceneData.sceneThemeEnglish == "mandala")
+        {
+            imagesDirectory = Path.Combine(Application.persistentDataPath, "GeneratedImages");
+        }
+        else
+        {
+            imagesDirectory = Path.Combine(Application.persistentDataPath, $"{GetComponent<DynamicPainting>().sceneData.sceneName}Images");
+        }
 
         //Obtener todos los archivos PNG en el directorio
         imageFiles = Directory.GetFiles(imagesDirectory, "*.png");
@@ -70,11 +77,11 @@ public class ShowImages : MonoBehaviour
         //Cambio el texto del tutorial segun corresponda
         if (numImages > 0)
         {
-            UIManager.Instance.SetText("TextTutorial", "Pulsa sobre un mandala para seleccionarlo");
+            UIManager.Instance.SetText("TextTutorial", $"Pulsa sobre una imagen para seleccionarla.");
         }
         else
         {
-            UIManager.Instance.SetText("TextTutorial", "Pulsa el boton de la parte superior para crear un nuevo mandala");
+            UIManager.Instance.SetText("TextTutorial", "Pulsa el boton de la parte superior para crear una nueva imagen.");
         }
 
         if (FindAnyObjectByType<ImageGenerator>().loading == true)

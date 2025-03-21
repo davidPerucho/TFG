@@ -1,10 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DynamicPainting : MonoBehaviour
 {
+    [HideInInspector]
+    public PaintingSceneData sceneData; //Información de la escena
+
+    [SerializeField]
+    TextMeshProUGUI botonCrear;
+
     void Awake()
     {
         //Obtengo el json con la información de la escena que se quiere cargar
@@ -13,20 +21,20 @@ public class DynamicPainting : MonoBehaviour
 
         //Leo la información de los personajes y los creo en la escena
         string json = File.ReadAllText(filePath);
-        PaintingSceneData characterList = JsonUtility.FromJson<PaintingSceneData>(json);
+        sceneData = JsonUtility.FromJson<PaintingSceneData>(json);
 
-        Debug.Log(characterList.sceneThemeEnglish);
-    }
+        //Mandala como tema por defecto
+        if (sceneData == null || sceneData.sceneThemeEnglish == "")
+        {
+            sceneData = new PaintingSceneData();
+            sceneData.sceneThemeEnglish = "mandala";
+            sceneData.sceneThemeSpanish = "mandala";
+        }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+        //Cambio el prompt para la generación de imágenes
+        string newPrompt = $"Create a simple colorbook page of a {sceneData.sceneThemeEnglish} with black lines that are fully closed";
+        GetComponent<ImageGenerator>().prompt = newPrompt;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        botonCrear.text = $"CREAR {sceneData.sceneThemeSpanish.ToUpper()}";
     }
 }
