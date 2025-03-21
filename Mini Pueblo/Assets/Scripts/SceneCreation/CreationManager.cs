@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 
 
@@ -15,6 +16,7 @@ public class CreationManager : MonoBehaviour
     [SerializeField]
     GameObject yesNoUI;
 
+    private readonly string apiKey = "AIzaSyCt94fTBRR6J-kO3XHo8WkC8aAGKIyqedI";
     string sceneName; //Nombre de la escena que se está creando
     string sceneSavePath; //Dirección donde guardar la escena
     string creationSavePath; //Dirección donde se guardan los datos de creación de la escena
@@ -101,7 +103,7 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.AddListenerToButton("No", () => { SceneManager.LoadScene("MainMenu"); });
         UIManager.Instance.AddListenerToButton("Si", saveScene);
         UIManager.Instance.AddListenerToButton("Pintar", paintSceneOptions);
-        UIManager.Instance.AddListenerToButton("Crear", createScene);
+        UIManager.Instance.AddListenerToButton("Crear", () => { StartCoroutine(createScene()); });
     }
 
     // Update is called once per frame
@@ -258,10 +260,45 @@ public class CreationManager : MonoBehaviour
     /// <summary>
     /// Crea la escena y almacena los datos.
     /// </summary>
-    void createScene()
+    IEnumerator createScene()
     {
+        string responseText = "Animal"; //Tema por defecto de la escena
+
+        //URL de la API de Google Translate
+        string url = $"https://translation.googleapis.com/language/translate/v2?key={apiKey}";
+
+        // Cuerpo de la petición
+        string jsonData = $"{{\"q\": \"{UIManager.Instance.GetInputValue("InputPrompt")}\", \"source\": \"es\", \"target\": \"en\"}}";
+
+        //Creo la solicitud HTTP
+        UnityWebRequest request = new UnityWebRequest(url, "POST");
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+
+        yield return request.SendWebRequest();
+
+        //Verifico la respuesta
+        if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+        {
+            Debug.LogError("Error: " + request.error);
+        }
+        else
+        {
+            responseText = request.downloadHandler.text;
+
+            TranslateResponse response = JsonUtility.FromJson<TranslateResponse>(responseText);
+            if (response != null && response.data.translations.Length > 0)
+            {
+                responseText = response.data.translations[0].translatedText;
+            }
+        }
+
+        //Creo el personaje
         createCharacter(characterIndex, int.Parse(locationIndex), PlayerPrefs.GetString("CharacterPhrase", "Vamos a jugar."), sceneName);
 
+        //Guardo los datos de la escena creada
         if (sceneType == SceneType.PAINTING)
         {
             PaintingSceneData data = new PaintingSceneData();
@@ -269,13 +306,15 @@ public class CreationManager : MonoBehaviour
             data.locationIndex = locationIndex;
             data.sceneType = sceneType;
             data.sceneName = sceneName;
-            data.sceneThemeEnglish = UIManager.Instance.GetInputValue("InputPrompt");
+            data.sceneThemeSpanish = UIManager.Instance.GetInputValue("InputPrompt");
+            data.sceneThemeEnglish = responseText;
 
             string json = JsonUtility.ToJson(data, true);
             File.WriteAllText(sceneSavePath, json);
             Debug.Log("Datos guardados en: " + sceneSavePath);
         }
 
+        //Guardo el tipo de escena y vuelvo al menu principal
         string typesPath = Path.Combine(Application.persistentDataPath, "Scenes/ScenesTypes.json");
         ScenesTypes scenesTypes = new ScenesTypes();
         string jsonTypes = "";
@@ -292,5 +331,24 @@ public class CreationManager : MonoBehaviour
         File.WriteAllText(typesPath, jsonTypes);
 
         SceneManager.LoadScene("MainMenu");
+    }
+
+    //Clases necesarias para obtener el texto traducido
+    [System.Serializable]
+    private class TranslateResponse
+    {
+        public TranslationData data;
+    }
+
+    [System.Serializable]
+    private class TranslationData
+    {
+        public Translation[] translations;
+    }
+
+    [System.Serializable]
+    private class Translation
+    {
+        public string translatedText;
     }
 }
