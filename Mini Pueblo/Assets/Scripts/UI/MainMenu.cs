@@ -125,7 +125,6 @@ public class MainMenu : MonoBehaviour
             }
             else
             {
-                Debug.Log("Se ha seleccionado la imagen: " + characterIndex);
                 PlayerPrefs.SetString("SelectedNPC", characterIndex.ToString());
                 PlayerPrefs.Save();
                 startLocationSelection();
@@ -140,7 +139,6 @@ public class MainMenu : MonoBehaviour
             }
             else
             {
-                Debug.Log("Se ha seleccionado la localización: " + locationIndex);
                 PlayerPrefs.SetString("SelectedLocation", locationIndex.ToString());
                 PlayerPrefs.Save();
                 startPhraseSelection();

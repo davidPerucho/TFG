@@ -29,11 +29,25 @@ public class DynamicPainting : MonoBehaviour
             sceneData = new PaintingSceneData();
             sceneData.sceneThemeEnglish = "mandala";
             sceneData.sceneThemeSpanish = "mandala";
+            sceneData.paintingStyle = PaintingStyle.COLORBOOK;
         }
 
         //Cambio el prompt para la generación de imágenes
-        string newPrompt = $"Create a simple colorbook page of a {sceneData.sceneThemeEnglish} with black lines that are fully closed";
-        GetComponent<ImageGenerator>().prompt = newPrompt;
+        if (sceneData.paintingStyle == PaintingStyle.COLORBOOK)
+        {
+            string newPrompt = $"Create a simple colorbook page of a {sceneData.sceneThemeEnglish} with black lines that are fully closed";
+            GetComponent<ImageGenerator>().prompt = newPrompt;
+        }
+        else if (sceneData.paintingStyle == PaintingStyle.ABSTRACT)
+        {
+            string newPrompt = $"Create a simple abstract page of a {sceneData.sceneThemeEnglish} with black lines that are fully closed";
+            GetComponent<ImageGenerator>().prompt = newPrompt;
+        }
+        else
+        {
+            string newPrompt = $"Create a simple cubist page of a {sceneData.sceneThemeEnglish} with black lines that are fully closed";
+            GetComponent<ImageGenerator>().prompt = newPrompt;
+        }
 
         botonCrear.text = $"CREAR {sceneData.sceneThemeSpanish.ToUpper()}";
     }

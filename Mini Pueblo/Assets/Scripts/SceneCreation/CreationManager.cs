@@ -6,6 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 /// <summary>
@@ -15,6 +16,15 @@ public class CreationManager : MonoBehaviour
 {
     [SerializeField]
     GameObject yesNoUI;
+
+    [SerializeField]
+    GameObject colorBook;
+
+    [SerializeField]
+    GameObject abstractStyle;
+
+    [SerializeField]
+    GameObject cubist;
 
     private readonly string apiKey = "AIzaSyCt94fTBRR6J-kO3XHo8WkC8aAGKIyqedI";
     string sceneName; //Nombre de la escena que se está creando
@@ -45,6 +55,7 @@ public class CreationManager : MonoBehaviour
     SceneType sceneType; //Tipo de escena
     string characterIndex; //Indice del personaje
     string locationIndex; //Localización del personaje
+    PaintingStyle paintingStyle; //Estilo que se deasea que tengan las imágenes generadas
 
     void Awake()
     {
@@ -81,29 +92,68 @@ public class CreationManager : MonoBehaviour
                 {
                     if (p.sceneName == sceneName)
                     {
+                        sceneType = SceneType.PAINTING;
                         characterIndex = p.characterIndex;
                         locationIndex = p.locationIndex;
                         sceneTheme = p.sceneThemeEnglish;
+                        paintingStyle = p.paintingStyle;
                     }
                 }
             }
 
-            sceneType = SceneType.PAINTING;
+            //Cargo la interfaz que corresponda según el tipo de escena que se está creando
+            if (sceneType == SceneType.PAINTING) {
+                UIManager.Instance.DisableObject("Pintar");
+                UIManager.Instance.DisableObject("TextoSeleccion");
 
-            UIManager.Instance.DisableObject("Pintar");
-            UIManager.Instance.DisableObject("TextoSeleccion");
+                UIManager.Instance.EnableObject("TextoPrompt");
+                UIManager.Instance.EnableObject("InputPrompt");
+                UIManager.Instance.EnableObject("Crear");
+                UIManager.Instance.SetInputValue("InputPrompt", sceneTheme);
 
-            UIManager.Instance.EnableObject("TextoPrompt");
-            UIManager.Instance.EnableObject("InputPrompt");
-            UIManager.Instance.EnableObject("Crear");
-            UIManager.Instance.SetInputValue("InputPrompt", sceneTheme);
+                if (paintingStyle == PaintingStyle.COLORBOOK)
+                {
+                    colorBook.GetComponent<RawImage>().color = Color.green;
+                }
+                else if (paintingStyle == PaintingStyle.CUBIST)
+                {
+                    cubist.GetComponent<RawImage>().color = Color.green;
+                }
+                else if (paintingStyle == PaintingStyle.ABSTRACT)
+                {
+                    abstractStyle.GetComponent<RawImage>().color = Color.green;
+                }
+            }
         }
 
+        //Añado la funcionalidad a los botones
         UIManager.Instance.AddListenerToButton("returnButton", () => { yesNoUI.SetActive(true); });
         UIManager.Instance.AddListenerToButton("No", () => { SceneManager.LoadScene("MainMenu"); });
         UIManager.Instance.AddListenerToButton("Si", saveScene);
         UIManager.Instance.AddListenerToButton("Pintar", paintSceneOptions);
         UIManager.Instance.AddListenerToButton("Crear", () => { StartCoroutine(createScene()); });
+
+        colorBook.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            paintingStyle = PaintingStyle.COLORBOOK;
+            colorBook.GetComponent<RawImage>().color = Color.green;
+            abstractStyle.GetComponent<RawImage>().color = Color.white;
+            cubist.GetComponent<RawImage>().color = Color.white;
+        });
+        abstractStyle.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            paintingStyle = PaintingStyle.ABSTRACT;
+            abstractStyle.GetComponent<RawImage>().color = Color.green;
+            colorBook.GetComponent<RawImage>().color = Color.white;
+            cubist.GetComponent<RawImage>().color = Color.white;
+        });
+        cubist.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            paintingStyle = PaintingStyle.CUBIST;
+            cubist.GetComponent<RawImage>().color = Color.green;
+            abstractStyle.GetComponent<RawImage>().color = Color.white;
+            colorBook.GetComponent<RawImage>().color = Color.white;
+        });
     }
 
     // Update is called once per frame
@@ -126,6 +176,7 @@ public class CreationManager : MonoBehaviour
                 sceneData.sceneThemeEnglish = UIManager.Instance.GetInputValue("InputPrompt");
                 sceneData.characterIndex = characterIndex;
                 sceneData.locationIndex = locationIndex;
+                sceneData.paintingStyle = paintingStyle;
                 CreatedScenes createdScenesList = new CreatedScenes();
                 string json;
 
@@ -254,6 +305,13 @@ public class CreationManager : MonoBehaviour
 
         UIManager.Instance.EnableObject("TextoPrompt");
         UIManager.Instance.EnableObject("InputPrompt");
+        UIManager.Instance.EnableObject("ColorBook");
+        UIManager.Instance.EnableObject("ColorBookText");
+        UIManager.Instance.EnableObject("Cubist");
+        UIManager.Instance.EnableObject("CubistText");
+        UIManager.Instance.EnableObject("Realistict");
+        UIManager.Instance.EnableObject("RealistictText");
+        UIManager.Instance.EnableObject("TextoEstilo");
         UIManager.Instance.EnableObject("Crear");
     }
 
@@ -308,6 +366,7 @@ public class CreationManager : MonoBehaviour
             data.sceneName = sceneName;
             data.sceneThemeSpanish = UIManager.Instance.GetInputValue("InputPrompt");
             data.sceneThemeEnglish = responseText;
+            data.paintingStyle = paintingStyle;
 
             string json = JsonUtility.ToJson(data, true);
             File.WriteAllText(sceneSavePath, json);
