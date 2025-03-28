@@ -26,17 +26,27 @@ public enum PaintingStyle
 
 [System.Serializable]
 /// <summary>
+/// Enumeración encargada de representar los diferentes tipos de escenas en las que pintar.
+/// </summary>
+public enum PaintingSceneType
+{
+    NORMAL,
+    NUMBERS
+}
+
+[System.Serializable]
+/// <summary>
 /// Clase encargada de representar los datos para una actividad de pintar.
 /// </summary>
 public class PaintingSceneData
 {
     public string sceneName; //Nombre de la escena
     public SceneType sceneType; //Tipo de escena
+    public PaintingSceneType paintingSceneType; //Tipo de actividad de pintura
     public string sceneThemeEnglish; //Tema de las imágenes en inglés
     public string sceneThemeSpanish; //Tema de las imágenes en español
     public string characterIndex; //Indice del personaje
     public string locationIndex; //Localización del personaje
-    public List<PaintingTools> paintingTools; //Herramientas para pintar de las que dispone la escena
     public PaintingStyle paintingStyle; //Estilo de las imágenes generadas
 }
 

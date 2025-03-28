@@ -3,16 +3,16 @@ using UnityEngine.Networking;
 using System.Collections;
 using System.IO;
 using UnityEngine.UI;
+using System.Text;
+using System;
 
 /// <summary>
 /// Clase que se encarga de la funcionalidad a la hora de generar imágenes.
 /// </summary>
 public class ImageGenerator : MonoBehaviour
 {
-    // Parámetros de la API
-    [SerializeField]
-    string baseUrl = "https://image.pollinations.ai/prompt/"; //Ruta de la api
-
+    string baseUrl = "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key="; //Ruta de la api para generar imágenes
+    string apiKey = "AIzaSyCt94fTBRR6J-kO3XHo8WkC8aAGKIyqedI"; //Clave API
     public string prompt; //Prompt utilizado para generar la imagen
 
     public int width; //Ancho deseado para la imagen generada
@@ -20,9 +20,6 @@ public class ImageGenerator : MonoBehaviour
 
     [HideInInspector]
     public bool loading = false; //True cuando se está creando una nueva imagen
-
-    [SerializeField]
-    bool noLogo = true; //True cuando no se quiere que el logo de la IA aparezca en la imagen
 
     [SerializeField]
     Button generateImageButton; //Botón encargado de activar la generación de imágenes
@@ -33,7 +30,8 @@ public class ImageGenerator : MonoBehaviour
     void Start()
     {
         UIManager.Instance.AddListenerToButton("ButtonGenerateImage", GenerateAndLoad);
-        seed = Random.Range(0, int.MaxValue);
+        
+        seed = UnityEngine.Random.Range(0, int.MaxValue);
 
         if (GetComponent<DynamicPainting>().sceneData.sceneThemeEnglish == "mandala")
         {
@@ -58,7 +56,7 @@ public class ImageGenerator : MonoBehaviour
     IEnumerator GenerateAndSaveImage()
     {
         //Genero una semilla aleatoria
-        seed = Random.Range(0, int.MaxValue);
+        seed = UnityEngine.Random.Range(0, int.MaxValue);
 
         //Desactivo los botones
         UIManager.Instance.DisableButton("ButtonGenerateImage");
@@ -67,48 +65,70 @@ public class ImageGenerator : MonoBehaviour
         UIManager.Instance.DisableButton("ButtonExit");
 
         //Construyo la URL con sus parámetros
-        string apiUrl = $"{baseUrl}{UnityWebRequest.EscapeURL(prompt)}?width={width}&height={height}&nologo={(noLogo ? 1 : 0)}&seed={seed}";
+        string url = baseUrl + apiKey;
 
-        //Realizo la solicitud GET
-        UnityWebRequest request = UnityWebRequestTexture.GetTexture(apiUrl);
+        //Creo el json con el prompt
+        string jsonData = "{\"instances\":[{\"prompt\":\"" + prompt + "\"}],\"parameters\":{\"sampleCount\":1}}";
+        byte[] postData = Encoding.UTF8.GetBytes(jsonData);
 
-        yield return request.SendWebRequest(); //Espero la respuesta
-
-        if (request.result != UnityWebRequest.Result.Success)
+        using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
         {
-            //Si hay un error se muestra con un texto rojo por pantalla
-            loading = false;
-            UIManager.Instance.SetText("TextImageGeneration", $"Error al generar {GetComponent<DynamicPainting>().sceneData.sceneThemeSpanish.ToLower()}, comprueba la conexión a internet.");
-            UIManager.Instance.SetTextColor("TextImageGeneration", Color.red);
-            Debug.LogError($"Error al generar la imagen: {request.error}");
-        }
-        else
-        {
-            //Obtengo la textura de la respuesta
-            Texture2D texture = DownloadHandlerTexture.GetContent(request);
+            request.uploadHandler = new UploadHandlerRaw(postData);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
 
-            //Convierto la textura en bytes PNG
-            byte[] imageData = texture.EncodeToPNG();
+            yield return request.SendWebRequest(); //Espero la respuesta
 
-            string filePath = Path.Combine(imagesDirectory, $"Image_{seed}.png");
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                //Si hay un error se muestra con un texto rojo por pantalla
+                loading = false;
+                UIManager.Instance.SetText("TextImageGeneration", $"Error al generar {GetComponent<DynamicPainting>().sceneData.sceneThemeSpanish.ToLower()}, comprueba la conexión a internet.");
+                UIManager.Instance.SetTextColor("TextImageGeneration", Color.red);
+                Debug.LogError($"Error al generar la imagen: {request.error}");
+            }
+            else
+            {
+                //Obtengo la imagen de la respuesta en base64
+                string responseText = request.downloadHandler.text;
+                string image64 = "";
+                string filePath = Path.Combine(imagesDirectory, $"Image_{seed}.png");
 
-            //Guardo la imagen en el disco
-            File.WriteAllBytes(filePath, imageData);
+                try
+                {
+                    var json = JsonUtility.FromJson<ImageResponseWrapper>(responseText);
+                    image64 = json.predictions[0].bytesBase64Encoded;
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Error extrallendo la imagen de la respuesta: " + e.Message);
+                }
 
-            //Vuelvo a activar los botones
-            loading = false;
-            UIManager.Instance.SetText("TextImageGeneration", $"{GetComponent<DynamicPainting>().sceneData.sceneThemeSpanish} generado correctamente.");
-            UIManager.Instance.SetTextColor("TextImageGeneration", Color.green);
+                //Guardo la imagen como png
+                try
+                {
+                    byte[] imageBytes = Convert.FromBase64String(image64);
+                    File.WriteAllBytes(filePath, imageBytes);
+                    Debug.Log($"Imagen guardada en: {filePath}");
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError("Error al guardar la imagen: " + e.Message);
+                }
 
-            UIManager.Instance.EnableButton("ButtonGenerateImage");
-            UIManager.Instance.EnableButton("ButtonListLeft");
-            UIManager.Instance.EnableButton("ButtonListRight");
-            UIManager.Instance.EnableButton("ButtonExit");
+                //Vuelvo a activar los botones
+                loading = false;
+                UIManager.Instance.SetText("TextImageGeneration", $"{GetComponent<DynamicPainting>().sceneData.sceneThemeSpanish} generado correctamente.");
+                UIManager.Instance.SetTextColor("TextImageGeneration", Color.green);
 
-            //Vuelvo a cargar la lista
-            FindAnyObjectByType<ShowImages>().ReloadImages();
+                UIManager.Instance.EnableButton("ButtonGenerateImage");
+                UIManager.Instance.EnableButton("ButtonListLeft");
+                UIManager.Instance.EnableButton("ButtonListRight");
+                UIManager.Instance.EnableButton("ButtonExit");
 
-            Debug.Log($"Imagen guardada en: {filePath}");
+                //Vuelvo a cargar la lista
+                FindAnyObjectByType<ShowImages>().ReloadImages();
+            }
         }
     }
 
@@ -124,5 +144,18 @@ public class ImageGenerator : MonoBehaviour
 
         //Genero la imagen
         StartCoroutine(GenerateAndSaveImage());
+    }
+
+    //Clases para extraer la imagen del json
+    [Serializable]
+    private class ImageResponseWrapper
+    {
+        public ImageResponse[] predictions;
+    }
+
+    [Serializable]
+    private class ImageResponse
+    {
+        public string bytesBase64Encoded;
     }
 }

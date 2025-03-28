@@ -26,6 +26,12 @@ public class CreationManager : MonoBehaviour
     [SerializeField]
     GameObject cubist;
 
+    [SerializeField]
+    GameObject freePainting;
+
+    [SerializeField]
+    GameObject numberPainting;
+
     private readonly string apiKey = "AIzaSyCt94fTBRR6J-kO3XHo8WkC8aAGKIyqedI";
     string sceneName; //Nombre de la escena que se está creando
     string sceneSavePath; //Dirección donde guardar la escena
@@ -56,6 +62,7 @@ public class CreationManager : MonoBehaviour
     string characterIndex; //Indice del personaje
     string locationIndex; //Localización del personaje
     PaintingStyle paintingStyle; //Estilo que se deasea que tengan las imágenes generadas
+    PaintingSceneType paintingSceneType; //Tipo de actividad de pintar
 
     void Awake()
     {
@@ -97,12 +104,14 @@ public class CreationManager : MonoBehaviour
                         locationIndex = p.locationIndex;
                         sceneTheme = p.sceneThemeEnglish;
                         paintingStyle = p.paintingStyle;
+                        paintingSceneType = p.paintingSceneType;
                     }
                 }
             }
 
             //Cargo la interfaz que corresponda según el tipo de escena que se está creando
             if (sceneType == SceneType.PAINTING) {
+                paintSceneOptions();
                 UIManager.Instance.DisableObject("Pintar");
                 UIManager.Instance.DisableObject("TextoSeleccion");
 
@@ -122,6 +131,15 @@ public class CreationManager : MonoBehaviour
                 else if (paintingStyle == PaintingStyle.ABSTRACT)
                 {
                     abstractStyle.GetComponent<RawImage>().color = Color.green;
+                }
+
+                if (paintingSceneType == PaintingSceneType.NORMAL)
+                {
+                    freePainting.GetComponent<RawImage>().color = Color.green;
+                }
+                else if (paintingSceneType == PaintingSceneType.NUMBERS)
+                {
+                    numberPainting.GetComponent<RawImage>().color = Color.green;
                 }
             }
         }
@@ -154,6 +172,18 @@ public class CreationManager : MonoBehaviour
             abstractStyle.GetComponent<RawImage>().color = Color.white;
             colorBook.GetComponent<RawImage>().color = Color.white;
         });
+        freePainting.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            paintingSceneType = PaintingSceneType.NORMAL;
+            freePainting.GetComponent<RawImage>().color = Color.green;
+            numberPainting.GetComponent<RawImage>().color = Color.white;
+        });
+        numberPainting.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            paintingSceneType = PaintingSceneType.NUMBERS;
+            numberPainting.GetComponent<RawImage>().color = Color.green;
+            freePainting.GetComponent<RawImage>().color = Color.white;
+        });
     }
 
     // Update is called once per frame
@@ -177,6 +207,7 @@ public class CreationManager : MonoBehaviour
                 sceneData.characterIndex = characterIndex;
                 sceneData.locationIndex = locationIndex;
                 sceneData.paintingStyle = paintingStyle;
+                sceneData.paintingSceneType = paintingSceneType;
                 CreatedScenes createdScenesList = new CreatedScenes();
                 string json;
 
@@ -309,9 +340,13 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.EnableObject("ColorBookText");
         UIManager.Instance.EnableObject("Cubist");
         UIManager.Instance.EnableObject("CubistText");
-        UIManager.Instance.EnableObject("Realistict");
-        UIManager.Instance.EnableObject("RealistictText");
+        UIManager.Instance.EnableObject("Abstract");
+        UIManager.Instance.EnableObject("AbstractText");
         UIManager.Instance.EnableObject("TextoEstilo");
+        UIManager.Instance.EnableObject("TextoLibre");
+        UIManager.Instance.EnableObject("Libre");
+        UIManager.Instance.EnableObject("TextoNumeros");
+        UIManager.Instance.EnableObject("Numeros");
         UIManager.Instance.EnableObject("Crear");
     }
 
@@ -367,6 +402,7 @@ public class CreationManager : MonoBehaviour
             data.sceneThemeSpanish = UIManager.Instance.GetInputValue("InputPrompt");
             data.sceneThemeEnglish = responseText;
             data.paintingStyle = paintingStyle;
+            data.paintingSceneType = paintingSceneType;
 
             string json = JsonUtility.ToJson(data, true);
             File.WriteAllText(sceneSavePath, json);

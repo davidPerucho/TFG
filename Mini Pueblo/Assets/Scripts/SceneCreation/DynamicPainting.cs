@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Palmmedia.ReportGenerator.Core;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -30,23 +31,45 @@ public class DynamicPainting : MonoBehaviour
             sceneData.sceneThemeEnglish = "mandala";
             sceneData.sceneThemeSpanish = "mandala";
             sceneData.paintingStyle = PaintingStyle.COLORBOOK;
+            sceneData.paintingSceneType = PaintingSceneType.NORMAL;
         }
 
-        //Cambio el prompt para la generación de imágenes
-        if (sceneData.paintingStyle == PaintingStyle.COLORBOOK)
+        //Cambio el prompt para la generación de imágenes en función de los datos de la escena
+        if (sceneData.paintingSceneType == PaintingSceneType.NORMAL)
         {
-            string newPrompt = $"Create a simple colorbook page of a {sceneData.sceneThemeEnglish} with black lines that are fully closed";
-            GetComponent<ImageGenerator>().prompt = newPrompt;
-        }
-        else if (sceneData.paintingStyle == PaintingStyle.ABSTRACT)
-        {
-            string newPrompt = $"Create a simple abstract page of a {sceneData.sceneThemeEnglish} with black lines that are fully closed";
-            GetComponent<ImageGenerator>().prompt = newPrompt;
+            if (sceneData.paintingStyle == PaintingStyle.COLORBOOK)
+            {
+                string newPrompt = $"Create a simple colorbook page of a {sceneData.sceneThemeEnglish} with black lines that are fully closed";
+                GetComponent<ImageGenerator>().prompt = newPrompt;
+            }
+            else if (sceneData.paintingStyle == PaintingStyle.ABSTRACT)
+            {
+                string newPrompt = $"Create a simple abstract page of a {sceneData.sceneThemeEnglish} with black lines that are fully closed";
+                GetComponent<ImageGenerator>().prompt = newPrompt;
+            }
+            else
+            {
+                string newPrompt = $"Create a simple cubist page of a {sceneData.sceneThemeEnglish} with black lines that are fully closed";
+                GetComponent<ImageGenerator>().prompt = newPrompt;
+            }
         }
         else
         {
-            string newPrompt = $"Create a simple cubist page of a {sceneData.sceneThemeEnglish} with black lines that are fully closed";
-            GetComponent<ImageGenerator>().prompt = newPrompt;
+            if (sceneData.paintingStyle == PaintingStyle.COLORBOOK)
+            {
+                string newPrompt = $"Generate a colorbook picture of a {sceneData.sceneThemeEnglish} in black and white with black lines that are fully closed and with little numbers from one to ten inside the center of each white region";
+                GetComponent<ImageGenerator>().prompt = newPrompt;
+            }
+            else if (sceneData.paintingStyle == PaintingStyle.ABSTRACT)
+            {
+                string newPrompt = $"Generate a abstract picture of a {sceneData.sceneThemeEnglish} in black and white with black lines that are fully closed and with little numbers from one to ten inside the center of each white region";
+                GetComponent<ImageGenerator>().prompt = newPrompt;
+            }
+            else
+            {
+                string newPrompt = $"Generate a cubist picture of a {sceneData.sceneThemeEnglish} in black and white with black lines that are fully closed and with little numbers from one to ten inside the center of each white region";
+                GetComponent<ImageGenerator>().prompt = newPrompt;
+            }
         }
 
         botonCrear.text = $"CREAR {sceneData.sceneThemeSpanish.ToUpper()}";

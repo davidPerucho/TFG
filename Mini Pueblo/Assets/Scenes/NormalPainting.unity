@@ -2462,6 +2462,7 @@ GameObject:
   - component: {fileID: 1727319113}
   - component: {fileID: 1727319111}
   - component: {fileID: 1727319114}
+  - component: {fileID: 1727319115}
   m_Layer: 0
   m_Name: Managers
   m_TagString: Untagged
@@ -2592,12 +2593,25 @@ MonoBehaviour:
   sceneData:
     sceneName: 
     sceneType: 0
+    paintingSceneType: 0
     sceneThemeEnglish: 
     sceneThemeSpanish: 
     characterIndex: 
     locationIndex: 
-    paintingTools: 
+    paintingStyle: 0
   botonCrear: {fileID: 1813727636}
+--- !u!114 &1727319115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1727319107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 275af86edb2034943bc8dcba5204ba84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1771766717
 GameObject:
   m_ObjectHideFlags: 0
