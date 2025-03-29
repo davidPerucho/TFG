@@ -33,10 +33,20 @@ public class PaintImage : MonoBehaviour
     [SerializeField]
     int colorSelectorHeight; //Alto del selector de color
 
+    [SerializeField]
+    GameObject numbers; //Elemento utilizado para mostrar los números del selector de color
+
     // Start is called before the first frame update
     void Start()
     {
-        savePath = Path.Combine(Application.persistentDataPath, "GeneratedImages");
+        if (GetComponent<DynamicPainting>().sceneData.sceneThemeEnglish == "mandala")
+        {
+            savePath = Path.Combine(Application.persistentDataPath, "GeneratedImages");
+        }
+        else
+        {
+            savePath = Path.Combine(Application.persistentDataPath, $"{GetComponent<DynamicPainting>().sceneData.sceneName}Images");
+        }
         UIManager.Instance.AddListenerToButton("ButtonSave", Save);
     }
 
@@ -205,20 +215,55 @@ public class PaintImage : MonoBehaviour
         Texture2D colorWheelTexture = new Texture2D(colorSelectorWidth, colorSelectorHeight);
         colorWheelTexture.wrapMode = TextureWrapMode.Clamp;
 
-        //Genero los colores del selector usando HSV
-        for (int y = 0; y < colorSelectorHeight; y++)
+        if (GetComponent<DynamicPainting>().sceneData.paintingSceneType == PaintingSceneType.NUMBERS)
         {
-            for (int x = 0; x < colorSelectorWidth; x++)
+            numbers.SetActive(true);
+
+            int squareSize = Mathf.RoundToInt(650f / 6f);
+            int numSquares = 6;
+
+            //Genero una lista de colores para usar en los cuadrados
+            List<Color> colors = new List<Color>();
+            for (int i = 0; i < numSquares * numSquares; i++)
             {
-                //Convierto las coordenadas de los pixeles en valores HUE
-                float hue = (float)x / colorSelectorWidth;
-                float saturation = (float)y / colorSelectorHeight; 
-                float value = 1.0f; 
+                float hue = (float)i / (numSquares * numSquares);
+                colors.Add(Color.HSVToRGB(hue, 1f, 1f));
+            }
 
-                //Creo el color basado en los valores HUE
-                Color color = Color.HSVToRGB(hue, saturation, value);
+            //Creo la cuadrícula con los colores anteriores
+            for (int row = 0; row < numSquares; row++)
+            {
+                for (int col = 0; col < numSquares; col++)
+                {
+                    Color color = colors[row * numSquares + col];
 
-                colorWheelTexture.SetPixel(x, y, color);
+                    for (int y = row * squareSize; y < (row + 1) * squareSize; y++)
+                    {
+                        for (int x = col * squareSize; x < (col + 1) * squareSize; x++)
+                        {
+                            colorWheelTexture.SetPixel(x, y, color);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            //Genero los colores del selector usando HSV
+            for (int y = 0; y < colorSelectorHeight; y++)
+            {
+                for (int x = 0; x < colorSelectorWidth; x++)
+                {
+                    //Convierto las coordenadas de los pixeles en valores HUE
+                    float hue = (float)x / colorSelectorWidth;
+                    float saturation = (float)y / colorSelectorHeight;
+                    float value = 1.0f;
+
+                    //Creo el color basado en los valores HUE
+                    Color color = Color.HSVToRGB(hue, saturation, value);
+
+                    colorWheelTexture.SetPixel(x, y, color);
+                }
             }
         }
 
@@ -266,6 +311,7 @@ public class PaintImage : MonoBehaviour
         colorWheel.gameObject.SetActive(false);
         colorOutput.gameObject.SetActive(false);
         cursor.SetActive(false);
+        numbers.SetActive(false);
 
         //Inicio la funcionalidad del selector de imagen
         FindAnyObjectByType<ShowImages>().ReloadImages();
