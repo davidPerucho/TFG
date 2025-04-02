@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class PauseController : MonoBehaviour
 {
-    [SerializeField]
     Button pauseButton; //Botón de pausa
 
     [SerializeField]
@@ -22,6 +21,7 @@ public class PauseController : MonoBehaviour
     void Start()
     {
         //Añado las funciones a los botones
+        pauseButton = GetComponent<Button>();
         pauseButton.onClick.AddListener(pauseGame);
         mainMenu.onClick.AddListener(() => { DataPersitence.instance.saveGame(); SceneManager.LoadScene("MainMenu"); });
         resume.onClick.AddListener(resumeGame);
@@ -34,6 +34,10 @@ public class PauseController : MonoBehaviour
     {
         Time.timeScale = 0;
         pauseUI.SetActive(true);
+        if (SoundManager.instance != null)
+        {
+            SoundManager.instance.volumeMusicDown();
+        }
     }
 
     /// <summary>
@@ -43,5 +47,9 @@ public class PauseController : MonoBehaviour
     {
         Time.timeScale = 1;
         pauseUI.SetActive(false);
+        if (SoundManager.instance != null)
+        {
+            SoundManager.instance.volumeMusicUp();
+        }
     }
 }

@@ -107,12 +107,22 @@ public class CreationManager : MonoBehaviour
                         paintingSceneType = p.paintingSceneType;
                     }
                 }
+                foreach (TableSceneData t in createdScenesList.tableScenes)
+                {
+                    if (t.sceneName == sceneName)
+                    {
+                        sceneType = SceneType.TABLE;
+                        characterIndex = t.characterIndex;
+                        locationIndex = t.locationIndex;
+                    }
+                }
             }
 
             //Cargo la interfaz que corresponda según el tipo de escena que se está creando
             if (sceneType == SceneType.PAINTING) {
                 paintSceneOptions();
                 UIManager.Instance.DisableObject("Pintar");
+                UIManager.Instance.DisableObject("JuegoDeMesa");
                 UIManager.Instance.DisableObject("TextoSeleccion");
 
                 UIManager.Instance.EnableObject("TextoPrompt");
@@ -141,6 +151,47 @@ public class CreationManager : MonoBehaviour
                 {
                     numberPainting.GetComponent<RawImage>().color = Color.green;
                 }
+
+                colorBook.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    paintingStyle = PaintingStyle.COLORBOOK;
+                    colorBook.GetComponent<RawImage>().color = Color.green;
+                    abstractStyle.GetComponent<RawImage>().color = Color.white;
+                    cubist.GetComponent<RawImage>().color = Color.white;
+                });
+                abstractStyle.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    paintingStyle = PaintingStyle.ABSTRACT;
+                    abstractStyle.GetComponent<RawImage>().color = Color.green;
+                    colorBook.GetComponent<RawImage>().color = Color.white;
+                    cubist.GetComponent<RawImage>().color = Color.white;
+                });
+                cubist.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    paintingStyle = PaintingStyle.CUBIST;
+                    cubist.GetComponent<RawImage>().color = Color.green;
+                    abstractStyle.GetComponent<RawImage>().color = Color.white;
+                    colorBook.GetComponent<RawImage>().color = Color.white;
+                });
+                freePainting.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    paintingSceneType = PaintingSceneType.NORMAL;
+                    freePainting.GetComponent<RawImage>().color = Color.green;
+                    numberPainting.GetComponent<RawImage>().color = Color.white;
+                });
+                numberPainting.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    paintingSceneType = PaintingSceneType.NUMBERS;
+                    numberPainting.GetComponent<RawImage>().color = Color.green;
+                    freePainting.GetComponent<RawImage>().color = Color.white;
+                });
+            }
+            else if (sceneType == SceneType.TABLE)
+            {
+                tableSceneOptions();
+                UIManager.Instance.DisableObject("Pintar");
+                UIManager.Instance.DisableObject("JuegoDeMesa");
+                UIManager.Instance.DisableObject("TextoSeleccion");
             }
         }
 
@@ -149,41 +200,8 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.AddListenerToButton("No", () => { SceneManager.LoadScene("MainMenu"); });
         UIManager.Instance.AddListenerToButton("Si", saveScene);
         UIManager.Instance.AddListenerToButton("Pintar", paintSceneOptions);
+        UIManager.Instance.AddListenerToButton("JuegoDeMesa", tableSceneOptions);
         UIManager.Instance.AddListenerToButton("Crear", () => { StartCoroutine(createScene()); });
-
-        colorBook.GetComponent<Button>().onClick.AddListener(() =>
-        {
-            paintingStyle = PaintingStyle.COLORBOOK;
-            colorBook.GetComponent<RawImage>().color = Color.green;
-            abstractStyle.GetComponent<RawImage>().color = Color.white;
-            cubist.GetComponent<RawImage>().color = Color.white;
-        });
-        abstractStyle.GetComponent<Button>().onClick.AddListener(() =>
-        {
-            paintingStyle = PaintingStyle.ABSTRACT;
-            abstractStyle.GetComponent<RawImage>().color = Color.green;
-            colorBook.GetComponent<RawImage>().color = Color.white;
-            cubist.GetComponent<RawImage>().color = Color.white;
-        });
-        cubist.GetComponent<Button>().onClick.AddListener(() =>
-        {
-            paintingStyle = PaintingStyle.CUBIST;
-            cubist.GetComponent<RawImage>().color = Color.green;
-            abstractStyle.GetComponent<RawImage>().color = Color.white;
-            colorBook.GetComponent<RawImage>().color = Color.white;
-        });
-        freePainting.GetComponent<Button>().onClick.AddListener(() =>
-        {
-            paintingSceneType = PaintingSceneType.NORMAL;
-            freePainting.GetComponent<RawImage>().color = Color.green;
-            numberPainting.GetComponent<RawImage>().color = Color.white;
-        });
-        numberPainting.GetComponent<Button>().onClick.AddListener(() =>
-        {
-            paintingSceneType = PaintingSceneType.NUMBERS;
-            numberPainting.GetComponent<RawImage>().color = Color.green;
-            freePainting.GetComponent<RawImage>().color = Color.white;
-        });
     }
 
     // Update is called once per frame
@@ -241,6 +259,47 @@ public class CreationManager : MonoBehaviour
 
             SceneManager.LoadScene("MainMenu");
         }
+        if (sceneType == SceneType.TABLE)
+        {
+            try
+            {
+                TableSceneData sceneData = new TableSceneData();
+                sceneData.sceneName = sceneName;
+                sceneData.characterIndex = characterIndex;
+                sceneData.locationIndex = locationIndex;
+                CreatedScenes createdScenesList = new CreatedScenes();
+                string json;
+
+                if (File.Exists(creationSavePath))
+                {
+                    json = File.ReadAllText(creationSavePath);
+                    createdScenesList = JsonUtility.FromJson<CreatedScenes>(json);
+
+                    foreach (TableSceneData t in createdScenesList.tableScenes)
+                    {
+                        if (t.sceneName == sceneName)
+                        {
+                            createdScenesList.tableScenes.Remove(t);
+                        }
+                    }
+                }
+                else
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(creationSavePath));
+                }
+
+                createdScenesList.tableScenes.Add(sceneData);
+                json = JsonUtility.ToJson(createdScenesList, true);
+                File.WriteAllText(creationSavePath, json);
+                Debug.Log("Datos guardados en: " + creationSavePath);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+
+            SceneManager.LoadScene("MainMenu");
+        }
     }
 
     /// <summary>
@@ -257,6 +316,13 @@ public class CreationManager : MonoBehaviour
             foreach (PaintingSceneData p in createdScenesList.paintingScenes)
             {
                 if (p.sceneName == sceneName)
+                {
+                    return true;
+                }
+            }
+            foreach (TableSceneData t in createdScenesList.tableScenes)
+            {
+                if (t.sceneName == sceneName)
                 {
                     return true;
                 }
@@ -351,6 +417,14 @@ public class CreationManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Muestra la interfaz para crear un juego de mesa.
+    /// </summary>
+    void tableSceneOptions()
+    {
+        sceneType = SceneType.TABLE;
+    }
+
+    /// <summary>
     /// Crea la escena y almacena los datos.
     /// </summary>
     IEnumerator createScene()
@@ -403,6 +477,18 @@ public class CreationManager : MonoBehaviour
             data.sceneThemeEnglish = responseText;
             data.paintingStyle = paintingStyle;
             data.paintingSceneType = paintingSceneType;
+
+            string json = JsonUtility.ToJson(data, true);
+            File.WriteAllText(sceneSavePath, json);
+            Debug.Log("Datos guardados en: " + sceneSavePath);
+        }
+        else if (sceneType == SceneType.TABLE)
+        {
+            TableSceneData data = new TableSceneData();
+            data.characterIndex = characterIndex;
+            data.locationIndex = locationIndex;
+            data.sceneType = sceneType;
+            data.sceneName = sceneName;
 
             string json = JsonUtility.ToJson(data, true);
             File.WriteAllText(sceneSavePath, json);

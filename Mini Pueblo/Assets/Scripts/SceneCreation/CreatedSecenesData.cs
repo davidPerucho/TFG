@@ -36,6 +36,31 @@ public enum PaintingSceneType
 
 [System.Serializable]
 /// <summary>
+/// Enumeración encargada de representar los diferentes tipos de escenas de juegos de mesa.
+/// </summary>
+public enum TableSceneType
+{
+    IA,
+    MULTIPLAYER
+}
+
+[System.Serializable]
+/// <summary>
+/// Clase encargada de representar los datos para un minijuego de pintar.
+/// </summary>
+public class TableSceneData
+{
+    public string sceneName; //Nombre de la escena
+    public SceneType sceneType; //Tipo de escena
+    public TableSceneType tableSceneType; //Tipo de escena de juego de mesa
+    public int numPlayers; //Número de jugadores
+    public int numBoxes; //Número de casillas del tablero
+    public string characterIndex; //Indice del personaje
+    public string locationIndex; //Localización del personaje
+}
+
+[System.Serializable]
+/// <summary>
 /// Clase encargada de representar los datos para una actividad de pintar.
 /// </summary>
 public class PaintingSceneData
@@ -58,6 +83,7 @@ public class PaintingSceneData
 public class CreatedScenes
 {
     public List<PaintingSceneData> paintingScenes = new List<PaintingSceneData>();
+    public List<TableSceneData> tableScenes = new List<TableSceneData>();
 }
 
 [System.Serializable]
