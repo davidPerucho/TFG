@@ -36,12 +36,73 @@ public enum PaintingSceneType
 
 [System.Serializable]
 /// <summary>
-/// Enumeración encargada de representar los diferentes tipos de escenas de juegos de mesa.
+/// Enumeración encargada de representar los diferentes tipos de jugadores de juegos de mesa.
 /// </summary>
-public enum TableSceneType
+public enum TablePlayerType
 {
     IA,
-    MULTIPLAYER
+    LOCAL
+}
+
+[System.Serializable]
+/// <summary>
+/// Enumeración encargada de representar los diferentes tipos de escenas de juegos de mesa.
+/// </summary>
+public enum TableConditionType
+{
+    DICENUMBER,
+    PLAYERTYPE
+}
+
+[System.Serializable]
+/// <summary>
+/// Clase encargada de representar las condiciones de movimiento entre casillas
+/// </summary>
+public class TableLinkData
+{
+    public int toId; //Id de la casilla a la que se quiere ir
+    public TableConditionType conditionTipe; //Tipo de condición para moverse
+    public int minNum; //Número minimo que tiene que sacar el dado en caso de que esa sea la condición
+    public List<int> playerId; //Id de los jugadores en caso de que esa se la condición
+}
+
+[System.Serializable]
+/// <summary>
+/// Clase encargada de representar los datos de las casillas del tablero
+/// </summary>
+public class TableBoxData
+{
+    public int id; //Número de la casilla
+    public List<TableLinkData> links; //Links con otras casillas
+    public int backLinkId; //Link con la casilla de atrás -1 si no existe
+    public int maxTokens; //Máximo número de jugadores en la casilla -1 si es infinito
+    public bool eat; //True si se comen las fichas
+    public int tokensToWin; //Número de fichas que se necesitan en la casilla para ganar
+    public bool winner; //True si es la casilla de la victoria
+    public bool pushBack; //True si la casilla de la victoria tiene rebote
+}
+
+[System.Serializable]
+/// <summary>
+/// Clase encargada de representar los datos de los jugadores
+/// </summary>
+public class TablePlayerData
+{
+    public int id; //Número de la casilla en la que se encuentra el token -1 si no se ha colocado
+    public int numTokens; //Número de fichas del jugador
+    public List<TableTokenData> tokens; //Lista de fichas
+    public Color tokenColor; //Color de las fichas del jugador
+    public TablePlayerType tableSceneType; //Tipo de jugador
+}
+
+[System.Serializable]
+/// <summary>
+/// Clase encargada de representar los datos de las fichas del jugador
+/// </summary>
+public class TableTokenData
+{
+    public int boxId; //Número de la casilla en la que se encuentra el token
+    public int startingBoxId; //Número de la casilla de salida del token
 }
 
 [System.Serializable]
@@ -52,9 +113,10 @@ public class TableSceneData
 {
     public string sceneName; //Nombre de la escena
     public SceneType sceneType; //Tipo de escena
-    public TableSceneType tableSceneType; //Tipo de escena de juego de mesa
     public int numPlayers; //Número de jugadores
     public int numBoxes; //Número de casillas del tablero
+    public List<TableBoxData> boxes; //Casillas del tablero
+    public List<TablePlayerData> players; //Jugadores
     public string characterIndex; //Indice del personaje
     public string locationIndex; //Localización del personaje
 }

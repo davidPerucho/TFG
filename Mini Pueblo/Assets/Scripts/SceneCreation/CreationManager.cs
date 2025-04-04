@@ -151,40 +151,6 @@ public class CreationManager : MonoBehaviour
                 {
                     numberPainting.GetComponent<RawImage>().color = Color.green;
                 }
-
-                colorBook.GetComponent<Button>().onClick.AddListener(() =>
-                {
-                    paintingStyle = PaintingStyle.COLORBOOK;
-                    colorBook.GetComponent<RawImage>().color = Color.green;
-                    abstractStyle.GetComponent<RawImage>().color = Color.white;
-                    cubist.GetComponent<RawImage>().color = Color.white;
-                });
-                abstractStyle.GetComponent<Button>().onClick.AddListener(() =>
-                {
-                    paintingStyle = PaintingStyle.ABSTRACT;
-                    abstractStyle.GetComponent<RawImage>().color = Color.green;
-                    colorBook.GetComponent<RawImage>().color = Color.white;
-                    cubist.GetComponent<RawImage>().color = Color.white;
-                });
-                cubist.GetComponent<Button>().onClick.AddListener(() =>
-                {
-                    paintingStyle = PaintingStyle.CUBIST;
-                    cubist.GetComponent<RawImage>().color = Color.green;
-                    abstractStyle.GetComponent<RawImage>().color = Color.white;
-                    colorBook.GetComponent<RawImage>().color = Color.white;
-                });
-                freePainting.GetComponent<Button>().onClick.AddListener(() =>
-                {
-                    paintingSceneType = PaintingSceneType.NORMAL;
-                    freePainting.GetComponent<RawImage>().color = Color.green;
-                    numberPainting.GetComponent<RawImage>().color = Color.white;
-                });
-                numberPainting.GetComponent<Button>().onClick.AddListener(() =>
-                {
-                    paintingSceneType = PaintingSceneType.NUMBERS;
-                    numberPainting.GetComponent<RawImage>().color = Color.green;
-                    freePainting.GetComponent<RawImage>().color = Color.white;
-                });
             }
             else if (sceneType == SceneType.TABLE)
             {
@@ -395,10 +361,13 @@ public class CreationManager : MonoBehaviour
     /// </summary>
     void paintSceneOptions()
     {
+        //Añado el tipo de escena
         sceneType = SceneType.PAINTING;
 
+        //Muestro los elementos de UI
         UIManager.Instance.DisableObject("Pintar");
         UIManager.Instance.DisableObject("TextoSeleccion");
+        UIManager.Instance.DisableObject("JuegoDeMesa");
 
         UIManager.Instance.EnableObject("TextoPrompt");
         UIManager.Instance.EnableObject("InputPrompt");
@@ -414,6 +383,41 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.EnableObject("TextoNumeros");
         UIManager.Instance.EnableObject("Numeros");
         UIManager.Instance.EnableObject("Crear");
+
+        //Añado la funcionalidad de los botones
+        colorBook.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            paintingStyle = PaintingStyle.COLORBOOK;
+            colorBook.GetComponent<RawImage>().color = Color.green;
+            abstractStyle.GetComponent<RawImage>().color = Color.white;
+            cubist.GetComponent<RawImage>().color = Color.white;
+        });
+        abstractStyle.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            paintingStyle = PaintingStyle.ABSTRACT;
+            abstractStyle.GetComponent<RawImage>().color = Color.green;
+            colorBook.GetComponent<RawImage>().color = Color.white;
+            cubist.GetComponent<RawImage>().color = Color.white;
+        });
+        cubist.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            paintingStyle = PaintingStyle.CUBIST;
+            cubist.GetComponent<RawImage>().color = Color.green;
+            abstractStyle.GetComponent<RawImage>().color = Color.white;
+            colorBook.GetComponent<RawImage>().color = Color.white;
+        });
+        freePainting.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            paintingSceneType = PaintingSceneType.NORMAL;
+            freePainting.GetComponent<RawImage>().color = Color.green;
+            numberPainting.GetComponent<RawImage>().color = Color.white;
+        });
+        numberPainting.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            paintingSceneType = PaintingSceneType.NUMBERS;
+            numberPainting.GetComponent<RawImage>().color = Color.green;
+            freePainting.GetComponent<RawImage>().color = Color.white;
+        });
     }
 
     /// <summary>
@@ -421,6 +425,10 @@ public class CreationManager : MonoBehaviour
     /// </summary>
     void tableSceneOptions()
     {
+        UIManager.Instance.DisableObject("Pintar");
+        UIManager.Instance.DisableObject("TextoSeleccion");
+        UIManager.Instance.DisableObject("Pintar");
+        UIManager.Instance.DisableObject("JuegoDeMesa");
         sceneType = SceneType.TABLE;
     }
 
