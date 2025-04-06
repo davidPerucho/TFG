@@ -116,6 +116,7 @@ public class TableSceneData
     public int numPlayers; //Número de jugadores
     public int numBoxes; //Número de casillas del tablero
     public int numTokens; //Número de fichas de cada jugador
+    public bool dice = true; //True si el juego cuenta con un dado
     public List<TableBoxData> boxes; //Casillas del tablero
     public List<TablePlayerData> players; //Jugadores
     public string characterIndex; //Indice del personaje

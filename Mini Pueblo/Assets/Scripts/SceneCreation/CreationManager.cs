@@ -42,6 +42,12 @@ public class CreationManager : MonoBehaviour
     [SerializeField]
     GameObject scrollPlayers;
 
+    [SerializeField]
+    GameObject scrollBoxes;
+
+    [SerializeField]
+    Image diceImage;
+
     private readonly string apiKey = "AIzaSyCt94fTBRR6J-kO3XHo8WkC8aAGKIyqedI";
     string sceneName; //Nombre de la escena que se está creando
     string sceneSavePath; //Dirección donde guardar la escena
@@ -75,6 +81,8 @@ public class CreationManager : MonoBehaviour
     PaintingSceneType paintingSceneType; //Tipo de actividad de pintar
     int numPlayers = 0; //Numero de jugadores en caso de que la escena creada sea un juego de mesa
     int numTokens = 1; //Numero de fichas en caso de que la escena creada sea un juego de mesa
+    int numBoxes = 0; //Numero de casillas en caso de que la escena creada sea un juego de mesa
+    bool dice = true; //True si el juego de mesa creado tiene dado
     List<TablePlayerData> players; //Datos de los jugadores
     List<GameObject> playersUI; //Elementos UI de los jugadores
 
@@ -153,6 +161,33 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.AddListenerToButton("Pintar", paintSceneOptions);
         UIManager.Instance.AddListenerToButton("JuegoDeMesa", tableSceneOptions);
         UIManager.Instance.AddListenerToButton("Crear", () => { StartCoroutine(createScene()); });
+        UIManager.Instance.AddListenerToButton("VolverTablero", () => {
+            UIManager.Instance.DisableObject("NumJugadoresText");
+            UIManager.Instance.DisableObject("NumJugadores");
+            UIManager.Instance.DisableObject("AddJugadores");
+            UIManager.Instance.DisableObject("RemoveJugadores");
+            UIManager.Instance.DisableObject("NumFichasText");
+            UIManager.Instance.DisableObject("NumFichas");
+            UIManager.Instance.DisableObject("AddFichas");
+            UIManager.Instance.DisableObject("RemoveFichas");
+            UIManager.Instance.DisableObject("VolverTablero");
+            scrollPlayers.gameObject.SetActive(false);
+
+            UIManager.Instance.EnableObject("Jugadores");
+            UIManager.Instance.EnableObject("Tablero");
+        });
+        UIManager.Instance.AddListenerToButton("VolverCasillas", () => {
+            UIManager.Instance.DisableObject("NumCasillasText");
+            UIManager.Instance.DisableObject("NumCasillas");
+            UIManager.Instance.DisableObject("AddCasillas");
+            UIManager.Instance.DisableObject("RemoveCasillas");
+            UIManager.Instance.DisableObject("VolverCasillas");
+            UIManager.Instance.DisableObject("Dado");
+            scrollBoxes.gameObject.SetActive(false);
+
+            UIManager.Instance.EnableObject("Jugadores");
+            UIManager.Instance.EnableObject("Tablero");
+        });
     }
 
     /// <summary>
@@ -453,7 +488,40 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.DisableObject("Jugadores");
         UIManager.Instance.DisableObject("Tablero");
 
+        UIManager.Instance.EnableObject("NumCasillasText");
+        UIManager.Instance.EnableObject("NumCasillas");
+        UIManager.Instance.EnableObject("AddCasillas");
+        UIManager.Instance.EnableObject("RemoveCasillas");
+        UIManager.Instance.EnableObject("VolverCasillas");
+        UIManager.Instance.EnableObject("Dado");
+        scrollBoxes.gameObject.SetActive(true);
+
         //Añado la funcionalidad de los botones
+        //Añado la funcionalidad de los botones
+        UIManager.Instance.AddListenerToButton("AddCasillas", () => {
+            numBoxes++;
+            UIManager.Instance.SetText("NumCasillas", numBoxes.ToString());
+        });
+        UIManager.Instance.AddListenerToButton("RemoveCasillas", () => {
+            if (numBoxes > 0)
+            {
+                numBoxes--;
+            }
+            UIManager.Instance.SetText("NumCasillas", numBoxes.ToString());
+        });
+        UIManager.Instance.AddListenerToButton("Dado", () =>
+        {
+            if (dice == true)
+            {
+                diceImage.color = Color.white;
+                dice = false;
+            }
+            else
+            {
+                diceImage.color = Color.green;
+                dice = true;
+            }
+        });
     }
 
     /// <summary>
@@ -473,6 +541,7 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.EnableObject("NumFichas");
         UIManager.Instance.EnableObject("AddFichas");
         UIManager.Instance.EnableObject("RemoveFichas");
+        UIManager.Instance.EnableObject("VolverTablero");
         scrollPlayers.gameObject.SetActive(true);
 
         //Posibles datos guardados
