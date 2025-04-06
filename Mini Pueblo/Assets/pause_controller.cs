@@ -23,7 +23,7 @@ public class PauseController : MonoBehaviour
         //Añado las funciones a los botones
         pauseButton = GetComponent<Button>();
         pauseButton.onClick.AddListener(pauseGame);
-        mainMenu.onClick.AddListener(() => { DataPersitence.instance.saveGame(); SceneManager.LoadScene("MainMenu"); });
+        mainMenu.onClick.AddListener(() => { DataPersitence.instance.saveGame(); Time.timeScale = 1; SceneManager.LoadScene("MainMenu"); });
         resume.onClick.AddListener(resumeGame);
     }
 

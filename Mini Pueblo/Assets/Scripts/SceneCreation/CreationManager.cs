@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -31,6 +32,15 @@ public class CreationManager : MonoBehaviour
 
     [SerializeField]
     GameObject numberPainting;
+
+    [SerializeField]
+    GameObject playerItemUI;
+
+    [SerializeField]
+    Transform playerContentPosition; //Posición en la que mostrar los datos del jugador
+
+    [SerializeField]
+    GameObject scrollPlayers;
 
     private readonly string apiKey = "AIzaSyCt94fTBRR6J-kO3XHo8WkC8aAGKIyqedI";
     string sceneName; //Nombre de la escena que se está creando
@@ -63,12 +73,15 @@ public class CreationManager : MonoBehaviour
     string locationIndex; //Localización del personaje
     PaintingStyle paintingStyle; //Estilo que se deasea que tengan las imágenes generadas
     PaintingSceneType paintingSceneType; //Tipo de actividad de pintar
+    int numPlayers = 0; //Numero de jugadores en caso de que la escena creada sea un juego de mesa
+    int numTokens = 1; //Numero de fichas en caso de que la escena creada sea un juego de mesa
+    List<TablePlayerData> players; //Datos de los jugadores
+    List<GameObject> playersUI; //Elementos UI de los jugadores
 
     void Awake()
     {
         //Creo la nueva escena con el nombre insertado en el menu de creación
         sceneName = PlayerPrefs.GetString("SceneName", "Minijuego");
-        //createdScene = SceneManager.CreateScene(sceneName);
 
         //Creo la ruta de guardado para la escena
         if (!Directory.Exists(Path.Combine(Application.persistentDataPath, "Scenes/"))) //Comprobar que el directorio existe
@@ -81,6 +94,9 @@ public class CreationManager : MonoBehaviour
 
         characterIndex = PlayerPrefs.GetString("SelectedNPC", "1");
         locationIndex = PlayerPrefs.GetString("SelectedLocation", "1");
+
+        players = new List<TablePlayerData>();
+        playersUI = new List<GameObject>();
     }
 
     void Start()
@@ -114,6 +130,8 @@ public class CreationManager : MonoBehaviour
                         sceneType = SceneType.TABLE;
                         characterIndex = t.characterIndex;
                         locationIndex = t.locationIndex;
+                        numPlayers = t.numPlayers;
+                        numTokens = t.numTokens;
                     }
                 }
             }
@@ -121,43 +139,10 @@ public class CreationManager : MonoBehaviour
             //Cargo la interfaz que corresponda según el tipo de escena que se está creando
             if (sceneType == SceneType.PAINTING) {
                 paintSceneOptions();
-                UIManager.Instance.DisableObject("Pintar");
-                UIManager.Instance.DisableObject("JuegoDeMesa");
-                UIManager.Instance.DisableObject("TextoSeleccion");
-
-                UIManager.Instance.EnableObject("TextoPrompt");
-                UIManager.Instance.EnableObject("InputPrompt");
-                UIManager.Instance.EnableObject("Crear");
-                UIManager.Instance.SetInputValue("InputPrompt", sceneTheme);
-
-                if (paintingStyle == PaintingStyle.COLORBOOK)
-                {
-                    colorBook.GetComponent<RawImage>().color = Color.green;
-                }
-                else if (paintingStyle == PaintingStyle.CUBIST)
-                {
-                    cubist.GetComponent<RawImage>().color = Color.green;
-                }
-                else if (paintingStyle == PaintingStyle.ABSTRACT)
-                {
-                    abstractStyle.GetComponent<RawImage>().color = Color.green;
-                }
-
-                if (paintingSceneType == PaintingSceneType.NORMAL)
-                {
-                    freePainting.GetComponent<RawImage>().color = Color.green;
-                }
-                else if (paintingSceneType == PaintingSceneType.NUMBERS)
-                {
-                    numberPainting.GetComponent<RawImage>().color = Color.green;
-                }
             }
             else if (sceneType == SceneType.TABLE)
             {
                 tableSceneOptions();
-                UIManager.Instance.DisableObject("Pintar");
-                UIManager.Instance.DisableObject("JuegoDeMesa");
-                UIManager.Instance.DisableObject("TextoSeleccion");
             }
         }
 
@@ -168,12 +153,6 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.AddListenerToButton("Pintar", paintSceneOptions);
         UIManager.Instance.AddListenerToButton("JuegoDeMesa", tableSceneOptions);
         UIManager.Instance.AddListenerToButton("Crear", () => { StartCoroutine(createScene()); });
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     /// <summary>
@@ -384,6 +363,29 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.EnableObject("Numeros");
         UIManager.Instance.EnableObject("Crear");
 
+        //Posibles datos guardados
+        if (paintingStyle == PaintingStyle.COLORBOOK)
+        {
+            colorBook.GetComponent<RawImage>().color = Color.green;
+        }
+        else if (paintingStyle == PaintingStyle.CUBIST)
+        {
+            cubist.GetComponent<RawImage>().color = Color.green;
+        }
+        else if (paintingStyle == PaintingStyle.ABSTRACT)
+        {
+            abstractStyle.GetComponent<RawImage>().color = Color.green;
+        }
+
+        if (paintingSceneType == PaintingSceneType.NORMAL)
+        {
+            freePainting.GetComponent<RawImage>().color = Color.green;
+        }
+        else if (paintingSceneType == PaintingSceneType.NUMBERS)
+        {
+            numberPainting.GetComponent<RawImage>().color = Color.green;
+        }
+
         //Añado la funcionalidad de los botones
         colorBook.GetComponent<Button>().onClick.AddListener(() =>
         {
@@ -425,11 +427,171 @@ public class CreationManager : MonoBehaviour
     /// </summary>
     void tableSceneOptions()
     {
+        //Cambio el tipo de escenas
+        sceneType = SceneType.TABLE;
+
+        //Muestro los elementos de UI
         UIManager.Instance.DisableObject("Pintar");
         UIManager.Instance.DisableObject("TextoSeleccion");
         UIManager.Instance.DisableObject("Pintar");
         UIManager.Instance.DisableObject("JuegoDeMesa");
-        sceneType = SceneType.TABLE;
+
+        UIManager.Instance.EnableObject("Jugadores");
+        UIManager.Instance.EnableObject("Tablero");
+
+        //Añado la funcionalidad de los botones
+        UIManager.Instance.AddListenerToButton("Jugadores", tablePlayerSceneOptions);
+        UIManager.Instance.AddListenerToButton("Tablero", tableBoardSceneOptions);
+    }
+
+    /// <summary>
+    /// Muestra la interfaz para editar el tablero.
+    /// </summary>
+    void tableBoardSceneOptions()
+    {
+        //Muestro los elementos de UI
+        UIManager.Instance.DisableObject("Jugadores");
+        UIManager.Instance.DisableObject("Tablero");
+
+        //Añado la funcionalidad de los botones
+    }
+
+    /// <summary>
+    /// Muestra la interfaz para editar los jugadores del juego de mesa.
+    /// </summary>
+    void tablePlayerSceneOptions()
+    {
+        //Muestro los elementos de UI
+        UIManager.Instance.DisableObject("Jugadores");
+        UIManager.Instance.DisableObject("Tablero");
+
+        UIManager.Instance.EnableObject("NumJugadoresText");
+        UIManager.Instance.EnableObject("NumJugadores");
+        UIManager.Instance.EnableObject("AddJugadores");
+        UIManager.Instance.EnableObject("RemoveJugadores");
+        UIManager.Instance.EnableObject("NumFichasText");
+        UIManager.Instance.EnableObject("NumFichas");
+        UIManager.Instance.EnableObject("AddFichas");
+        UIManager.Instance.EnableObject("RemoveFichas");
+        scrollPlayers.gameObject.SetActive(true);
+
+        //Posibles datos guardados
+        UIManager.Instance.SetText("NumJugadores", numPlayers.ToString());
+        UIManager.Instance.SetText("NumFichas", numTokens.ToString());
+
+        //Añado la funcionalidad de los botones
+        UIManager.Instance.AddListenerToButton("AddJugadores", () => { 
+            TablePlayerData p = new TablePlayerData();
+            p.playerType = TablePlayerType.LOCAL;
+            p.id = numPlayers;
+            p.tokenColor = getPlayerColor();
+            players.Add(p);
+
+            GameObject newItem = Instantiate(playerItemUI, playerContentPosition);
+            int playerId = p.id;
+            newItem.name = p.id.ToString();
+            newItem.transform.Find("Ficha").GetComponent<RawImage>().color = p.tokenColor;
+            newItem.transform.Find("TextoJugador").GetComponent<TextMeshProUGUI>().SetText($"Jugador {playerId}:");
+            Transform buttonLocal = newItem.transform.Find("ButtonLocal");
+            Transform buttonAI = newItem.transform.Find("ButtonIA");
+            buttonLocal.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                buttonLocal.GetComponent<Image>().color = Color.green;
+                buttonAI.GetComponent<Image>().color = Color.white;
+
+                foreach (TablePlayerData player in players)
+                {
+                    if (player.id == playerId)
+                    {
+                        player.playerType = TablePlayerType.LOCAL;
+                    }
+                }
+            });
+            buttonAI.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                buttonAI.GetComponent<Image>().color = Color.green;
+                buttonLocal.GetComponent<Image>().color = Color.white;
+
+                foreach (TablePlayerData player in players)
+                {
+                    if (player.id == playerId)
+                    {
+                        player.playerType = TablePlayerType.IA;
+                    }
+                }
+            });
+            playersUI.Add(newItem);
+
+            numPlayers++;
+            UIManager.Instance.SetText("NumJugadores", numPlayers.ToString());
+        });
+        UIManager.Instance.AddListenerToButton("RemoveJugadores", () => { 
+            if (numPlayers > 0)
+            {
+                numPlayers--;
+                Destroy(playersUI[numPlayers]);
+                playersUI.RemoveAt(numPlayers);
+                players.RemoveAt(numPlayers);
+            }
+            UIManager.Instance.SetText("NumJugadores", numPlayers.ToString());
+        });
+        UIManager.Instance.AddListenerToButton("AddFichas", () => { numTokens++; UIManager.Instance.SetText("NumFichas", numTokens.ToString()); });
+        UIManager.Instance.AddListenerToButton("RemoveFichas", () => {
+            if (numTokens > 1)
+                numTokens--;
+            UIManager.Instance.SetText("NumFichas", numTokens.ToString());
+        });
+    }
+
+    /// <summary>
+    /// Devuelve un color aleatorio para las fichas de los jugadores.
+    /// </summary>
+    /// <returns>Color aleatorio.</returns>
+    Color getPlayerColor()
+    {
+        if (numPlayers == 0)
+            return new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value, 1f);
+
+        Color randomColor = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value, 1f);
+        bool changed = false;
+        bool repeat = true;
+
+        while (repeat == true)
+        {
+            changed = false;
+            foreach (TablePlayerData p in players)
+            {
+                if (similarColors(p.tokenColor, randomColor) == true)
+                {
+                    randomColor = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value, 1f);
+                    changed = true; 
+                    break;
+                }
+            }
+            if (changed == false)
+            {
+                repeat = false;
+            }
+        }
+
+        return randomColor;
+    }
+
+    /// <summary>
+    /// Indica si dos colores son parecidos.
+    /// </summary>
+    /// <param name="a">Primer color.</param>
+    /// <param name="b">Segundo color.</param>
+    /// <returns>True si los dos colores se parecen, false en caso contrario.</returns>
+    bool similarColors(Color a, Color b)
+    {
+        float tolerancia = 0.3f;
+        float diferencia = Vector3.Distance(
+            new Vector3(a.r, a.g, a.b),
+            new Vector3(b.r, b.g, b.b)
+        );
+
+        return diferencia < tolerancia;
     }
 
     /// <summary>

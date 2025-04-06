@@ -80,6 +80,7 @@ public class TableBoxData
     public int tokensToWin; //Número de fichas que se necesitan en la casilla para ganar
     public bool winner; //True si es la casilla de la victoria
     public bool pushBack; //True si la casilla de la victoria tiene rebote
+    public bool starter; //True si la casilla es una posible casilla de salida
 }
 
 [System.Serializable]
@@ -89,10 +90,9 @@ public class TableBoxData
 public class TablePlayerData
 {
     public int id; //Número de la casilla en la que se encuentra el token -1 si no se ha colocado
-    public int numTokens; //Número de fichas del jugador
     public List<TableTokenData> tokens; //Lista de fichas
     public Color tokenColor; //Color de las fichas del jugador
-    public TablePlayerType tableSceneType; //Tipo de jugador
+    public TablePlayerType playerType; //Tipo de jugador
 }
 
 [System.Serializable]
@@ -115,6 +115,7 @@ public class TableSceneData
     public SceneType sceneType; //Tipo de escena
     public int numPlayers; //Número de jugadores
     public int numBoxes; //Número de casillas del tablero
+    public int numTokens; //Número de fichas de cada jugador
     public List<TableBoxData> boxes; //Casillas del tablero
     public List<TablePlayerData> players; //Jugadores
     public string characterIndex; //Indice del personaje
