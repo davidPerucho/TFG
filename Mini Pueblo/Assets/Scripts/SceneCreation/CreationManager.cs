@@ -40,6 +40,12 @@ public class CreationManager : MonoBehaviour
     Transform playerContentPosition; //Posición en la que mostrar los datos del jugador
 
     [SerializeField]
+    GameObject boxItemUI;
+
+    [SerializeField]
+    Transform boxesContentPosition; //Posición en la que mostrar las casillas al crearlas
+
+    [SerializeField]
     GameObject scrollPlayers;
 
     [SerializeField]
@@ -85,6 +91,8 @@ public class CreationManager : MonoBehaviour
     bool dice = true; //True si el juego de mesa creado tiene dado
     List<TablePlayerData> players; //Datos de los jugadores
     List<GameObject> playersUI; //Elementos UI de los jugadores
+    List<TableBoxData> boxes; //Datos de los jugadores
+    List<GameObject> boxesUI; //Elementos UI de los jugadores
 
     void Awake()
     {
@@ -105,6 +113,8 @@ public class CreationManager : MonoBehaviour
 
         players = new List<TablePlayerData>();
         playersUI = new List<GameObject>();
+        boxes = new List<TableBoxData>();
+        boxesUI = new List<GameObject>();
     }
 
     void Start()
@@ -497,8 +507,22 @@ public class CreationManager : MonoBehaviour
         scrollBoxes.gameObject.SetActive(true);
 
         //Añado la funcionalidad de los botones
-        //Añado la funcionalidad de los botones
         UIManager.Instance.AddListenerToButton("AddCasillas", () => {
+            TableBoxData b = new TableBoxData();
+            b.id = numBoxes;
+            b.starter = false;
+            b.winner = false;
+            b.eat = false;
+            b.tokensToWin = -1;
+            b.pushBack = false;
+            boxes.Add(b);
+
+            GameObject newItem = Instantiate(boxItemUI, boxesContentPosition);
+            int boxId = b.id;
+            newItem.name = b.id.ToString();
+            newItem.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text = boxId.ToString();
+            boxesUI.Add(newItem);
+
             numBoxes++;
             UIManager.Instance.SetText("NumCasillas", numBoxes.ToString());
         });
@@ -506,6 +530,9 @@ public class CreationManager : MonoBehaviour
             if (numBoxes > 0)
             {
                 numBoxes--;
+                Destroy(boxesUI[numBoxes]);
+                boxesUI.RemoveAt(numBoxes);
+                boxes.RemoveAt(numBoxes);
             }
             UIManager.Instance.SetText("NumCasillas", numBoxes.ToString());
         });
