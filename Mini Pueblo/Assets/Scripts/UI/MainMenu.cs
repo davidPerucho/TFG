@@ -282,6 +282,13 @@ public class MainMenu : MonoBehaviour
                     return true;
                 }
             }
+            foreach (TableSceneData t in createdScenesList.tableScenes)
+            {
+                if (t.sceneName == sceneName)
+                {
+                    return true;
+                }
+            }
         }
 
         return false;

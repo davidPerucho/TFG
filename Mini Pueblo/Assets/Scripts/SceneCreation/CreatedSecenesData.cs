@@ -102,6 +102,7 @@ public class TablePlayerData
 /// </summary>
 public class TableTokenData
 {
+    public int id; //Id del token
     public int boxId; //Número de la casilla en la que se encuentra el token
     public int startingBoxId; //Número de la casilla de salida del token
 }

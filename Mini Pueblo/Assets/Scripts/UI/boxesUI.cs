@@ -6,10 +6,10 @@ using UnityEngine.EventSystems;
 public class BoxesUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler
 {
     RectTransform dropArea;
-
     Transform originalParent;
     Vector2 originalPosition;
     CanvasGroup canvasGroup;
+    GameObject addPlayersUI;
 
     void Start()
     {

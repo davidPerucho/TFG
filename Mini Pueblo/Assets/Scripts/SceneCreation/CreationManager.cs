@@ -93,6 +93,7 @@ public class CreationManager : MonoBehaviour
     List<GameObject> playersUI; //Elementos UI de los jugadores
     List<TableBoxData> boxes; //Datos de los jugadores
     List<GameObject> boxesUI; //Elementos UI de los jugadores
+    List<TableTokenData> tokens; //Datos de las fichas
 
     void Awake()
     {
@@ -150,7 +151,50 @@ public class CreationManager : MonoBehaviour
                         locationIndex = t.locationIndex;
                         numPlayers = t.numPlayers;
                         numTokens = t.numTokens;
+                        numBoxes = t.numBoxes;
+                        players = t.players;
+                        boxes = t.boxes;
+                        dice = t.dice;
                     }
+                }
+            }
+
+            //Cargo datos si hay tablero
+            if (numPlayers > 0)
+            {
+                foreach (TablePlayerData p in players)
+                {
+                    GameObject newItem = Instantiate(playerItemUI, playerContentPosition);
+                    int playerId = p.id;
+                    newItem.name = p.id.ToString();
+                    newItem.transform.Find("Ficha").GetComponent<RawImage>().color = p.tokenColor;
+                    newItem.transform.Find("TextoJugador").GetComponent<TextMeshProUGUI>().SetText($"Jugador {playerId}:");
+                    Transform buttonLocal = newItem.transform.Find("ButtonLocal");
+                    Transform buttonAI = newItem.transform.Find("ButtonIA");
+
+                    if (p.playerType == TablePlayerType.LOCAL)
+                    {
+                        buttonLocal.GetComponent<Image>().color = Color.green;
+                        buttonAI.GetComponent<Image>().color = Color.white;
+                    }
+                    else
+                    {
+                        buttonLocal.GetComponent<Image>().color = Color.white;
+                        buttonAI.GetComponent<Image>().color = Color.green;
+                    }
+                    playersUI.Add(newItem);
+                }
+            }
+            if (numBoxes > 0)
+            {
+                foreach (TableBoxData b in boxes)
+                {
+                    GameObject newItem = Instantiate(boxItemUI, boxesContentPosition);
+                    newItem.transform.position = b.position;
+                    int boxId = b.id;
+                    newItem.name = b.id.ToString();
+                    newItem.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text = boxId.ToString();
+                    boxesUI.Add(newItem);
                 }
             }
 
@@ -185,6 +229,7 @@ public class CreationManager : MonoBehaviour
 
             UIManager.Instance.EnableObject("Jugadores");
             UIManager.Instance.EnableObject("Tablero");
+            UIManager.Instance.EnableObject("Links");
         });
         UIManager.Instance.AddListenerToButton("VolverCasillas", () => {
             UIManager.Instance.DisableObject("NumCasillasText");
@@ -197,6 +242,7 @@ public class CreationManager : MonoBehaviour
 
             UIManager.Instance.EnableObject("Jugadores");
             UIManager.Instance.EnableObject("Tablero");
+            UIManager.Instance.EnableObject("Links");
         });
     }
 
@@ -253,10 +299,22 @@ public class CreationManager : MonoBehaviour
         {
             try
             {
+                int i;
+                for (i = 0; i < numBoxes; i++)
+                {
+                    boxes.ElementAt(i).position = boxesUI.ElementAt(i).transform.position;
+                }
                 TableSceneData sceneData = new TableSceneData();
                 sceneData.sceneName = sceneName;
                 sceneData.characterIndex = characterIndex;
+                sceneData.dice = dice;
                 sceneData.locationIndex = locationIndex;
+                sceneData.sceneType = SceneType.TABLE;
+                sceneData.numTokens = numTokens;
+                sceneData.numPlayers = numPlayers;
+                sceneData.numBoxes = numBoxes;
+                sceneData.players = players;
+                sceneData.boxes = boxes;
                 CreatedScenes createdScenesList = new CreatedScenes();
                 string json;
 
@@ -483,6 +541,7 @@ public class CreationManager : MonoBehaviour
 
         UIManager.Instance.EnableObject("Jugadores");
         UIManager.Instance.EnableObject("Tablero");
+        UIManager.Instance.EnableObject("Links");
 
         //Añado la funcionalidad de los botones
         UIManager.Instance.AddListenerToButton("Jugadores", tablePlayerSceneOptions);
@@ -497,6 +556,7 @@ public class CreationManager : MonoBehaviour
         //Muestro los elementos de UI
         UIManager.Instance.DisableObject("Jugadores");
         UIManager.Instance.DisableObject("Tablero");
+        UIManager.Instance.DisableObject("Links");
 
         UIManager.Instance.EnableObject("NumCasillasText");
         UIManager.Instance.EnableObject("NumCasillas");
@@ -505,6 +565,9 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.EnableObject("VolverCasillas");
         UIManager.Instance.EnableObject("Dado");
         scrollBoxes.gameObject.SetActive(true);
+
+        //Posibles datos guardados
+        UIManager.Instance.SetText("NumCasillas", numBoxes.ToString());
 
         //Añado la funcionalidad de los botones
         UIManager.Instance.AddListenerToButton("AddCasillas", () => {
@@ -559,6 +622,7 @@ public class CreationManager : MonoBehaviour
         //Muestro los elementos de UI
         UIManager.Instance.DisableObject("Jugadores");
         UIManager.Instance.DisableObject("Tablero");
+        UIManager.Instance.DisableObject("Links");
 
         UIManager.Instance.EnableObject("NumJugadoresText");
         UIManager.Instance.EnableObject("NumJugadores");
@@ -597,7 +661,7 @@ public class CreationManager : MonoBehaviour
 
                 foreach (TablePlayerData player in players)
                 {
-                    if (player.id == playerId)
+                    if (player.id == int.Parse(buttonLocal.parent.gameObject.name))
                     {
                         player.playerType = TablePlayerType.LOCAL;
                     }
@@ -610,7 +674,7 @@ public class CreationManager : MonoBehaviour
 
                 foreach (TablePlayerData player in players)
                 {
-                    if (player.id == playerId)
+                    if (player.id == int.Parse(buttonAI.parent.gameObject.name))
                     {
                         player.playerType = TablePlayerType.IA;
                     }
@@ -631,10 +695,20 @@ public class CreationManager : MonoBehaviour
             }
             UIManager.Instance.SetText("NumJugadores", numPlayers.ToString());
         });
-        UIManager.Instance.AddListenerToButton("AddFichas", () => { numTokens++; UIManager.Instance.SetText("NumFichas", numTokens.ToString()); });
+        UIManager.Instance.AddListenerToButton("AddFichas", () => { 
+            TableTokenData t = new TableTokenData();
+            t.id = numTokens;
+            tokens.Add(t);
+
+            numTokens++;
+            UIManager.Instance.SetText("NumFichas", numTokens.ToString()); 
+        });
         UIManager.Instance.AddListenerToButton("RemoveFichas", () => {
             if (numTokens > 1)
+            {
                 numTokens--;
+                tokens.RemoveAt(numTokens);
+            }
             UIManager.Instance.SetText("NumFichas", numTokens.ToString());
         });
     }
