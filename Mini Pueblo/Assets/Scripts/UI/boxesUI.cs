@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -10,16 +11,19 @@ public class BoxesUI : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     Vector2 originalPosition;
     CanvasGroup canvasGroup;
     GameObject addPlayersUI;
+    GameObject boxEditingUI;
 
     void Start()
     {
         dropArea = GameObject.Find("ContentBoxes").GetComponent<RectTransform>();
+        boxEditingUI = GameObject.Find("CasillaUI");
         canvasGroup = GetComponent<CanvasGroup>();
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("Item pulsado: " + gameObject.name);
+        string id = GetComponentInChildren<TextMeshProUGUI>().text;
+        CreationManager.Instance.startEditingBox(id);
     }
 
     public void OnBeginDrag(PointerEventData eventData)

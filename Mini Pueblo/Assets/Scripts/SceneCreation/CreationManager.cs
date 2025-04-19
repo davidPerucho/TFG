@@ -54,6 +54,9 @@ public class CreationManager : MonoBehaviour
     [SerializeField]
     Image diceImage;
 
+    [SerializeField]
+    GameObject boxEditingUI;
+
     private readonly string apiKey = "AIzaSyCt94fTBRR6J-kO3XHo8WkC8aAGKIyqedI";
     string sceneName; //Nombre de la escena que se está creando
     string sceneSavePath; //Dirección donde guardar la escena
@@ -93,10 +96,20 @@ public class CreationManager : MonoBehaviour
     List<GameObject> playersUI; //Elementos UI de los jugadores
     List<TableBoxData> boxes; //Datos de los jugadores
     List<GameObject> boxesUI; //Elementos UI de los jugadores
-    List<TableTokenData> tokens; //Datos de las fichas
+
+    public static CreationManager Instance { get; private set; } //Instancia de la clase
 
     void Awake()
     {
+        //Singleton
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+
         //Creo la nueva escena con el nombre insertado en el menu de creación
         sceneName = PlayerPrefs.GetString("SceneName", "Minijuego");
 
@@ -230,6 +243,7 @@ public class CreationManager : MonoBehaviour
             UIManager.Instance.EnableObject("Jugadores");
             UIManager.Instance.EnableObject("Tablero");
             UIManager.Instance.EnableObject("Links");
+            UIManager.Instance.EnableObject("CrearTablero");
         });
         UIManager.Instance.AddListenerToButton("VolverCasillas", () => {
             UIManager.Instance.DisableObject("NumCasillasText");
@@ -243,6 +257,7 @@ public class CreationManager : MonoBehaviour
             UIManager.Instance.EnableObject("Jugadores");
             UIManager.Instance.EnableObject("Tablero");
             UIManager.Instance.EnableObject("Links");
+            UIManager.Instance.EnableObject("CrearTablero");
         });
     }
 
@@ -542,6 +557,7 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.EnableObject("Jugadores");
         UIManager.Instance.EnableObject("Tablero");
         UIManager.Instance.EnableObject("Links");
+        UIManager.Instance.EnableObject("CrearTablero");
 
         //Añado la funcionalidad de los botones
         UIManager.Instance.AddListenerToButton("Jugadores", tablePlayerSceneOptions);
@@ -557,6 +573,7 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.DisableObject("Jugadores");
         UIManager.Instance.DisableObject("Tablero");
         UIManager.Instance.DisableObject("Links");
+        UIManager.Instance.DisableObject("CrearTablero");
 
         UIManager.Instance.EnableObject("NumCasillasText");
         UIManager.Instance.EnableObject("NumCasillas");
@@ -577,6 +594,7 @@ public class CreationManager : MonoBehaviour
             b.winner = false;
             b.eat = false;
             b.tokensToWin = -1;
+            b.maxTokens = -1;
             b.pushBack = false;
             boxes.Add(b);
 
@@ -623,6 +641,7 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.DisableObject("Jugadores");
         UIManager.Instance.DisableObject("Tablero");
         UIManager.Instance.DisableObject("Links");
+        UIManager.Instance.DisableObject("CrearTablero");
 
         UIManager.Instance.EnableObject("NumJugadoresText");
         UIManager.Instance.EnableObject("NumJugadores");
@@ -645,6 +664,7 @@ public class CreationManager : MonoBehaviour
             p.playerType = TablePlayerType.LOCAL;
             p.id = numPlayers;
             p.tokenColor = getPlayerColor();
+            p.tokens = new List<TableTokenData>();
             players.Add(p);
 
             GameObject newItem = Instantiate(playerItemUI, playerContentPosition);
@@ -682,6 +702,21 @@ public class CreationManager : MonoBehaviour
             });
             playersUI.Add(newItem);
 
+            foreach (TablePlayerData player in players)
+            {
+                int tokensLeft = numTokens - player.tokens.Count;
+
+                for (int i = 0; i < tokensLeft; i++)
+                {
+                    TableTokenData t = new TableTokenData();
+                    t.id = tokensLeft + i + 1;
+                    t.boxId = -1;
+                    t.startingBoxId = -1;
+
+                    player.tokens.Add(t);
+                }
+            }
+
             numPlayers++;
             UIManager.Instance.SetText("NumJugadores", numPlayers.ToString());
         });
@@ -698,7 +733,28 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.AddListenerToButton("AddFichas", () => { 
             TableTokenData t = new TableTokenData();
             t.id = numTokens;
-            tokens.Add(t);
+            t.boxId = -1;
+            t.startingBoxId = -1;
+
+            foreach (TablePlayerData p in players)
+            {
+                p.tokens.Add(t);
+            }
+
+            foreach (TablePlayerData player in players)
+            {
+                int tokensLeft = numTokens - player.tokens.Count;
+
+                for (int i = 0; i < tokensLeft; i++)
+                {
+                    TableTokenData token = new TableTokenData();
+                    token.id = tokensLeft + i + 1;
+                    token.boxId = -1;
+                    token.startingBoxId = -1;
+
+                    player.tokens.Add(t);
+                }
+            }
 
             numTokens++;
             UIManager.Instance.SetText("NumFichas", numTokens.ToString()); 
@@ -707,7 +763,10 @@ public class CreationManager : MonoBehaviour
             if (numTokens > 1)
             {
                 numTokens--;
-                tokens.RemoveAt(numTokens);
+                foreach (TablePlayerData p in players)
+                {
+                    p.tokens.RemoveAt(numTokens-1);
+                }
             }
             UIManager.Instance.SetText("NumFichas", numTokens.ToString());
         });
@@ -755,7 +814,7 @@ public class CreationManager : MonoBehaviour
     /// <returns>True si los dos colores se parecen, false en caso contrario.</returns>
     bool similarColors(Color a, Color b)
     {
-        float tolerancia = 0.3f;
+        float tolerancia = 0.4f;
         float diferencia = Vector3.Distance(
             new Vector3(a.r, a.g, a.b),
             new Vector3(b.r, b.g, b.b)
@@ -871,5 +930,47 @@ public class CreationManager : MonoBehaviour
     private class Translation
     {
         public string translatedText;
+    }
+
+    /// <summary>
+    /// Muestra el menu de edición para una casilla.
+    /// </summary>
+    /// <param name="id">Id de la casilla que se quiere editar.</param>
+    public void startEditingBox(string id)
+    {
+        boxEditingUI.SetActive(true);
+        boxEditingUI.transform.Find("ImagenCasilla").GetComponentInChildren<TextMeshProUGUI>().text = id;
+        BoxEditor.Instance.loadTokens(players);
+    }
+
+    /// <summary>
+    /// Actualiza los datos de una casilla editada.
+    /// </summary>
+    /// <param name="data">Datos con las fichas actualizadas.</param>
+    /// <param name="eat">True si la casilla permite comer.</param>
+    /// <param name="maxTokens">True si la casilla tiene un número máximo de tokens.</param>
+    /// <param name="numMaxTokens">Número máximo de tokens en caso de que exista.</param>
+    /// <param name="id">Id de la casilla que ha sido editada.</param>
+    public void loadEditingBoxData(List<TablePlayerData> data, bool eat, bool maxTokens, int numMaxTokens, bool win, int tokensToWin, int id)
+    {
+        players = data;
+
+        foreach (TableBoxData b in boxes)
+        {
+            if (b.id == id)
+            {
+                b.eat = eat;
+
+                if (maxTokens == true)
+                {
+                    b.maxTokens = numMaxTokens;
+                }
+                if (win == true)
+                {
+                    b.winner = win;
+                    b.tokensToWin = tokensToWin;
+                }
+            }
+        }
     }
 }

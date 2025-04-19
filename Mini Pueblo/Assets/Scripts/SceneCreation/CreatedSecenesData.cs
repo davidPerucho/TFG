@@ -74,7 +74,6 @@ public class TableBoxData
 {
     public int id; //Número de la casilla
     public Vector2 position; //Posición de la casilla en el tablero
-    public List<TableLinkData> links; //Links con otras casillas
     public int backLinkId; //Link con la casilla de atrás -1 si no existe
     public int maxTokens; //Máximo número de jugadores en la casilla -1 si es infinito
     public bool eat; //True si se comen las fichas
@@ -123,6 +122,7 @@ public class TableSceneData
     public List<TablePlayerData> players; //Jugadores
     public string characterIndex; //Indice del personaje
     public string locationIndex; //Localización del personaje
+    public List<TableLinkData> links; //Links con otras casillas
 }
 
 [System.Serializable]
