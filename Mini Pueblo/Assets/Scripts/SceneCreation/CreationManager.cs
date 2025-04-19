@@ -16,46 +16,52 @@ using UnityEngine.UI;
 public class CreationManager : MonoBehaviour
 {
     [SerializeField]
-    GameObject yesNoUI;
+    GameObject yesNoUI; //Interfaz para guardar el progreso en la creación
 
     [SerializeField]
-    GameObject colorBook;
+    GameObject colorBook; //Botón para indicar que se quiere una pintura con estilo de libro de colorear
 
     [SerializeField]
-    GameObject abstractStyle;
+    GameObject abstractStyle; //Botón para indicar que se quiere una pintura abstracta
 
     [SerializeField]
-    GameObject cubist;
+    GameObject cubist; //Botón para indicar que se quiere una pintura cubista
 
     [SerializeField]
-    GameObject freePainting;
+    GameObject freePainting; //Botón para indicar que se quiere pintar por libre
 
     [SerializeField]
-    GameObject numberPainting;
+    GameObject numberPainting; //Botón para ndicar que se quiere pintar con números
 
     [SerializeField]
-    GameObject playerItemUI;
+    GameObject playerItemUI; //Prefab de los jugadores creados
 
     [SerializeField]
     Transform playerContentPosition; //Posición en la que mostrar los datos del jugador
 
     [SerializeField]
-    GameObject boxItemUI;
+    GameObject boxItemUI; //Prefab de las casillas creadas
 
     [SerializeField]
     Transform boxesContentPosition; //Posición en la que mostrar las casillas al crearlas
 
     [SerializeField]
-    GameObject scrollPlayers;
+    GameObject scrollPlayers; //Interfaz que muestra los jugadores creados
 
     [SerializeField]
-    GameObject scrollBoxes;
+    GameObject scrollBoxes; //Interfaz que muestra el tablero
 
     [SerializeField]
-    Image diceImage;
+    Image diceImage; //Color del botón del dado
 
     [SerializeField]
-    GameObject boxEditingUI;
+    GameObject boxEditingUI; //Interfaz de edición de casillas
+
+    [SerializeField]
+    GameObject linkEditingUI; //Interfaz de edición de links
+
+    [SerializeField]
+    GameObject tokenItemUI; //Prefab de las fiches creadas
 
     private readonly string apiKey = "AIzaSyCt94fTBRR6J-kO3XHo8WkC8aAGKIyqedI";
     string sceneName; //Nombre de la escena que se está creando
@@ -217,6 +223,7 @@ public class CreationManager : MonoBehaviour
             }
             else if (sceneType == SceneType.TABLE)
             {
+                loadTokens();
                 tableSceneOptions();
             }
         }
@@ -562,6 +569,22 @@ public class CreationManager : MonoBehaviour
         //Añado la funcionalidad de los botones
         UIManager.Instance.AddListenerToButton("Jugadores", tablePlayerSceneOptions);
         UIManager.Instance.AddListenerToButton("Tablero", tableBoardSceneOptions);
+        UIManager.Instance.AddListenerToButton("Links", tableLinksSceneOptions);
+    }
+
+    /// <summary>
+    /// Muestra la interfaz para editar los links.
+    /// </summary>
+    void tableLinksSceneOptions()
+    {
+        //Muestro los elementos de UI
+        UIManager.Instance.DisableObject("Jugadores");
+        UIManager.Instance.DisableObject("Tablero");
+        UIManager.Instance.DisableObject("Links");
+        UIManager.Instance.DisableObject("CrearTablero");
+
+        //Cargo la interfaz de edición de links
+        linkEditingUI.SetActive(true);
     }
 
     /// <summary>
@@ -969,6 +992,34 @@ public class CreationManager : MonoBehaviour
                 {
                     b.winner = win;
                     b.tokensToWin = tokensToWin;
+                }
+            }
+        }
+
+        loadTokens();
+    }
+
+    /// <summary>
+    /// Carga visualmente los tokens en las casillas correspondientes.
+    /// </summary>
+    void loadTokens()
+    {
+        foreach (TablePlayerData p in players)
+        {
+            foreach (TableTokenData t in p.tokens)
+            {
+                int tokenBox = t.startingBoxId;
+                if (tokenBox != -1)
+                {
+                    foreach (GameObject b in boxesUI)
+                    {
+                        if (int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text) == tokenBox)
+                        {
+                            Transform tokenPosition = b.GetComponentInChildren<ScrollRect>().content;
+                            GameObject newItem = Instantiate(tokenItemUI, tokenPosition);
+                            newItem.GetComponent<Image>().color = p.tokenColor;
+                        }
+                    }
                 }
             }
         }
