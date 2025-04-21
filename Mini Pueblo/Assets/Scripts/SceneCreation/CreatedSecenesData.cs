@@ -61,9 +61,9 @@ public enum TableConditionType
 public class TableLinkData
 {
     public int toId; //Id de la casilla a la que se quiere ir
-    public TableConditionType conditionTipe; //Tipo de condición para moverse
-    public int minNum; //Número minimo que tiene que sacar el dado en caso de que esa sea la condición
-    public List<int> playerId; //Id de los jugadores en caso de que esa se la condición
+    public int fromId; //Id de la casilla desde la que parte el link
+    public int minNum; //Número minimo que tiene que sacar el dado en caso de que esa sea la condición -1 si no
+    public List<int> playerId; //Id de los jugadores en caso de que esa se la condición null si no
 }
 
 [System.Serializable]
