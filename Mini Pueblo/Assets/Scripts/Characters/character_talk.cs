@@ -128,6 +128,11 @@ public class CharacterTalk : MonoBehaviour
                         DataPersitence.instance.saveGame();
                         SceneManager.LoadScene("NormalPainting");
                     }
+                    else if (scene.type == SceneType.TABLE)
+                    {
+                        DataPersitence.instance.saveGame();
+                        SceneManager.LoadScene("TableGame");
+                    }
                 }
             }
         }

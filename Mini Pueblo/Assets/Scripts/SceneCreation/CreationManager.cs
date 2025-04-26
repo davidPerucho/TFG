@@ -238,6 +238,7 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.AddListenerToButton("Pintar", paintSceneOptions);
         UIManager.Instance.AddListenerToButton("JuegoDeMesa", tableSceneOptions);
         UIManager.Instance.AddListenerToButton("Crear", () => { StartCoroutine(createScene()); });
+        UIManager.Instance.AddListenerToButton("CrearTablero", () => { StartCoroutine(createScene()); });
         UIManager.Instance.AddListenerToButton("VolverTablero", () => {
             UIManager.Instance.DisableObject("NumJugadoresText");
             UIManager.Instance.DisableObject("NumJugadores");
@@ -858,45 +859,42 @@ public class CreationManager : MonoBehaviour
     /// </summary>
     IEnumerator createScene()
     {
-        string responseText = "Animal"; //Tema por defecto de la escena
-
-        //URL de la API de Google Translate
-        string url = $"https://translation.googleapis.com/language/translate/v2?key={apiKey}";
-
-        // Cuerpo de la petición
-        string jsonData = $"{{\"q\": \"{UIManager.Instance.GetInputValue("InputPrompt")}\", \"source\": \"es\", \"target\": \"en\"}}";
-
-        //Creo la solicitud HTTP
-        UnityWebRequest request = new UnityWebRequest(url, "POST");
-        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
-        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-        request.downloadHandler = new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
-
-        yield return request.SendWebRequest();
-
-        //Verifico la respuesta
-        if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
-        {
-            Debug.LogError("Error: " + request.error);
-        }
-        else
-        {
-            responseText = request.downloadHandler.text;
-
-            TranslateResponse response = JsonUtility.FromJson<TranslateResponse>(responseText);
-            if (response != null && response.data.translations.Length > 0)
-            {
-                responseText = response.data.translations[0].translatedText;
-            }
-        }
-
-        //Creo el personaje
-        createCharacter(characterIndex, int.Parse(locationIndex), PlayerPrefs.GetString("CharacterPhrase", "Vamos a jugar."), sceneName);
-
-        //Guardo los datos de la escena creada
         if (sceneType == SceneType.PAINTING)
         {
+            string responseText = "Animal"; //Tema por defecto de la escena
+
+            //URL de la API de Google Translate
+            string url = $"https://translation.googleapis.com/language/translate/v2?key={apiKey}";
+
+            // Cuerpo de la petición
+            string jsonData = $"{{\"q\": \"{UIManager.Instance.GetInputValue("InputPrompt")}\", \"source\": \"es\", \"target\": \"en\"}}";
+
+            //Creo la solicitud HTTP
+            UnityWebRequest request = new UnityWebRequest(url, "POST");
+            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            yield return request.SendWebRequest();
+
+            //Verifico la respuesta
+            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError("Error: " + request.error);
+            }
+            else
+            {
+                responseText = request.downloadHandler.text;
+
+                TranslateResponse response = JsonUtility.FromJson<TranslateResponse>(responseText);
+                if (response != null && response.data.translations.Length > 0)
+                {
+                    responseText = response.data.translations[0].translatedText;
+                }
+            }
+
+            //Guardo los datos de la escena creada
             PaintingSceneData data = new PaintingSceneData();
             data.characterIndex = characterIndex;
             data.locationIndex = locationIndex;
@@ -914,6 +912,13 @@ public class CreationManager : MonoBehaviour
         else if (sceneType == SceneType.TABLE)
         {
             TableSceneData data = new TableSceneData();
+            data.players = players;
+            data.boxes = boxes;
+            data.links = links;
+            data.dice = dice;
+            data.numBoxes = numBoxes;
+            data.numTokens = numTokens;
+            data.numPlayers = numPlayers;
             data.characterIndex = characterIndex;
             data.locationIndex = locationIndex;
             data.sceneType = sceneType;
@@ -939,6 +944,9 @@ public class CreationManager : MonoBehaviour
         scenesTypes.scenes.Add(tuple);
         jsonTypes = JsonUtility.ToJson(scenesTypes, true);
         File.WriteAllText(typesPath, jsonTypes);
+
+        //Creo el personaje
+        createCharacter(characterIndex, int.Parse(locationIndex), PlayerPrefs.GetString("CharacterPhrase", "Vamos a jugar."), sceneName);
 
         SceneManager.LoadScene("MainMenu");
     }
