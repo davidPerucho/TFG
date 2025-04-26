@@ -130,6 +130,7 @@ public class BoxEditor : MonoBehaviour
         });
         saveButton.onClick.AddListener(() =>
         {
+            id = int.Parse(transform.Find("ImagenCasilla").transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
             CreationManager.Instance.loadEditingBoxData(players, eat, maxTokens, numMaxTokens, win, tokensToWin, id);
 
             foreach (GameObject free in freeTokensUI)
@@ -181,7 +182,7 @@ public class BoxEditor : MonoBehaviour
     {
         freeTokensUI = new List<GameObject>();
         addedTokensUI = new List<GameObject>();
-
+        id = int.Parse(transform.Find("ImagenCasilla").transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
         players = data;
 
         foreach (TablePlayerData p in players)
@@ -232,6 +233,64 @@ public class BoxEditor : MonoBehaviour
                     freeTokensUI.Add(freeItem);
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// Carga los datos de la interfaz para una casilla en concreto.
+    /// </summary>
+    /// <param name="box">Datos de la casilla.</param>
+    public void loadBoxUI(TableBoxData box)
+    {
+        if (box.winner == true)
+        {
+            win = true;
+            transform.Find("Ganadora").GetComponent<Image>().color = Color.green;
+            UIManager.Instance.EnableObject("GanarText");
+            UIManager.Instance.EnableObject("FichasGanarText");
+            UIManager.Instance.EnableObject("AddFichasGanar");
+            UIManager.Instance.EnableObject("RemoveFichasGanar");
+
+            tokensToWin = box.tokensToWin;
+            UIManager.Instance.SetText("FichasGanarText", tokensToWin.ToString());
+        }
+        else
+        {
+            win = false;
+            transform.Find("Ganadora").GetComponent<Image>().color = Color.white;
+            UIManager.Instance.DisableObject("GanarText");
+            UIManager.Instance.DisableObject("FichasGanarText");
+            UIManager.Instance.DisableObject("AddFichasGanar");
+            UIManager.Instance.DisableObject("RemoveFichasGanar");
+            transform.Find("Ganadora").GetComponent<Image>().color = Color.white;
+        }
+        if (box.eat == true)
+        {
+            eat = true;
+            transform.Find("Comer").GetComponent<Image>().color = Color.green;
+        }
+        else
+        {
+            eat = false;
+            transform.Find("Comer").GetComponent<Image>().color = Color.white;
+        }
+        if (box.maxTokens > 0)
+        {
+            maxTokens = true;
+            numMaxTokens = box.maxTokens;
+
+            UIManager.Instance.EnableObject("MaxFichasText");
+            UIManager.Instance.EnableObject("AddMaxFichas");
+            UIManager.Instance.EnableObject("RemoveMaxFichas");
+            transform.Find("MaxFichas").GetComponent<Image>().color = Color.green;
+            UIManager.Instance.SetText("MaxFichasText", numMaxTokens.ToString());
+        }
+        else
+        {
+            UIManager.Instance.DisableObject("MaxFichasText");
+            UIManager.Instance.DisableObject("AddMaxFichas");
+            UIManager.Instance.DisableObject("RemoveMaxFichas");
+            transform.Find("MaxFichas").GetComponent<Image>().color = Color.white;
         }
     }
 }

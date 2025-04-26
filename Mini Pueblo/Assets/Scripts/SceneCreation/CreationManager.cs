@@ -102,6 +102,7 @@ public class CreationManager : MonoBehaviour
     List<GameObject> playersUI; //Elementos UI de los jugadores
     List<TableBoxData> boxes; //Datos de los jugadores
     List<GameObject> boxesUI; //Elementos UI de los jugadores
+    List<TableLinkData> links; //Datos de los links entre casillas
 
     public static CreationManager Instance { get; private set; } //Instancia de la clase
 
@@ -135,6 +136,7 @@ public class CreationManager : MonoBehaviour
         playersUI = new List<GameObject>();
         boxes = new List<TableBoxData>();
         boxesUI = new List<GameObject>();
+        links = new List<TableLinkData>();
     }
 
     void Start()
@@ -173,6 +175,7 @@ public class CreationManager : MonoBehaviour
                         numBoxes = t.numBoxes;
                         players = t.players;
                         boxes = t.boxes;
+                        links = t.links;
                         dice = t.dice;
                     }
                 }
@@ -337,6 +340,8 @@ public class CreationManager : MonoBehaviour
                 sceneData.numBoxes = numBoxes;
                 sceneData.players = players;
                 sceneData.boxes = boxes;
+                links = LinkEditor.Instance.createdLinks;
+                sceneData.links = links;
                 CreatedScenes createdScenesList = new CreatedScenes();
                 string json;
 
@@ -585,6 +590,8 @@ public class CreationManager : MonoBehaviour
 
         //Cargo la interfaz de edición de links
         linkEditingUI.SetActive(true);
+        LinkEditor.Instance.loadLinks(links);
+        LinkEditor.Instance.loadDropData(players, links, boxes);
     }
 
     /// <summary>
@@ -963,6 +970,16 @@ public class CreationManager : MonoBehaviour
     {
         boxEditingUI.SetActive(true);
         boxEditingUI.transform.Find("ImagenCasilla").GetComponentInChildren<TextMeshProUGUI>().text = id;
+
+        TableBoxData box = new TableBoxData();
+        foreach (TableBoxData b in boxes)
+        {
+            if (b.id == int.Parse(id))
+            {
+                box = b;
+            }
+        }
+        BoxEditor.Instance.loadBoxUI(box);
         BoxEditor.Instance.loadTokens(players);
     }
 
@@ -1004,6 +1021,15 @@ public class CreationManager : MonoBehaviour
     /// </summary>
     void loadTokens()
     {
+        foreach (GameObject b in boxesUI)
+        {
+            Transform tokenPosition = b.GetComponentInChildren<ScrollRect>().content;
+            for (int i = 0; i < tokenPosition.childCount; i++)
+            {
+                Destroy(tokenPosition.GetChild(i).gameObject);
+            }
+        }
+
         foreach (TablePlayerData p in players)
         {
             foreach (TableTokenData t in p.tokens)
