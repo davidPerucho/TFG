@@ -36,6 +36,7 @@ public class LinkEditor : MonoBehaviour
     bool diceCondition = false;
     bool winnerLink = false;
     bool noWinner = false;
+    bool autoLink = false;
 
     public List<TableLinkData> createdLinks;
     List<TablePlayerData> players;
@@ -71,6 +72,7 @@ public class LinkEditor : MonoBehaviour
         GameObject removeDiceButton = AddLinkUI.transform.Find("RemoveTirada").gameObject;
 
         GameObject winButton = AddLinkUI.transform.Find("LinkGanador").gameObject;
+        GameObject autoButton = AddLinkUI.transform.Find("LinkAuto").gameObject;
 
         //Añado la funcionalidad correspondiente a cada boton
         returnButton.onClick.AddListener(() =>
@@ -126,6 +128,7 @@ public class LinkEditor : MonoBehaviour
             playerCondition = false;
             diceCondition = false;
             winnerLink = false;
+            autoLink = false;
 
             numDice.GetComponent<TextMeshProUGUI>().text = minDice.ToString();
 
@@ -133,6 +136,7 @@ public class LinkEditor : MonoBehaviour
             playerDropdown.SetActive(false);
 
             winButton.GetComponent<Image>().color = Color.white;
+            autoButton.GetComponent<Image>().color = Color.white;
 
             diceConditionButton.GetComponent<Image>().color = Color.white;
             numDice.SetActive(false);
@@ -196,6 +200,19 @@ public class LinkEditor : MonoBehaviour
                     boxDropdown.value = 0;
                     boxDropdown.RefreshShownValue();
                 }
+            }
+        });
+
+        winButton.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            autoLink = !autoLink;
+            if (autoLink)
+            {
+                autoButton.GetComponent<Image>().color = Color.green;
+            }
+            else
+            {
+                autoButton.GetComponent<Image>().color = Color.white;
             }
         });
 
@@ -393,6 +410,17 @@ public class LinkEditor : MonoBehaviour
             string linkType = "";
             string linkBoxes = "";
             string linkDescription = "";
+
+            if (autoLink == true)
+            {
+                linkType += "AUTO ";
+
+                link.auto = true;
+            }
+            else
+            {
+                link.auto = false;
+            }
             if (winnerLink == true)
             {
                 linkType += "WIN ";
@@ -460,11 +488,13 @@ public class LinkEditor : MonoBehaviour
             GameObject removeDiceButton = AddLinkUI.transform.Find("RemoveTirada").gameObject;
 
             GameObject winButton = AddLinkUI.transform.Find("LinkGanador").gameObject;
+            GameObject autoButton = AddLinkUI.transform.Find("LinkAuto").gameObject;
 
             minDice = 1;
             playerCondition = false;
             diceCondition = false;
             winnerLink = false;
+            autoLink = false;
 
             numDice.GetComponent<TextMeshProUGUI>().text = minDice.ToString();
 
@@ -472,6 +502,7 @@ public class LinkEditor : MonoBehaviour
             playerDropdown.gameObject.SetActive(false);
 
             winButton.GetComponent<Image>().color = Color.white;
+            autoButton.GetComponent<Image>().color = Color.white;
 
             diceConditionButton.GetComponent<Image>().color = Color.white;
             numDice.SetActive(false);
