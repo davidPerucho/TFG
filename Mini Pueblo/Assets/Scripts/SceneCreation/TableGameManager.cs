@@ -1,15 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TableGameManager : MonoBehaviour
 {
+    [SerializeField]
+    Transform playerTokenScroll;
+
+    [SerializeField]
+    Transform boardScroll;
+
+    [SerializeField]
+    GameObject tokenPrefab;
+
     TableSceneData table;
     int diceNum = 1;
     bool diceThrown = false;
     bool gameEnd = false;
     int currentlyPlaying = 0;
+    List<GameObject> playerTokens = new List<GameObject>();
 
     void Awake()
     {
@@ -20,8 +32,6 @@ public class TableGameManager : MonoBehaviour
         //Leo la información  creo en la escena
         string json = File.ReadAllText(filePath);
         table = JsonUtility.FromJson<TableSceneData>(json);
-
-        Debug.Log("Njugadores: " + table.numPlayers + "Ncasillas: " + table.numBoxes + "Nfichas: " + table.numTokens);
     }
 
     void Start()
@@ -71,6 +81,15 @@ public class TableGameManager : MonoBehaviour
         else
         {
             UIManager.Instance.SetText("Instruccion", $"Jugando IA");
+        }
+
+        //Muestro las fichas disponibles del jugador
+        foreach (TableTokenData t in table.players[currentlyPlaying].tokens)
+        {
+            GameObject newItem = Instantiate(tokenPrefab, playerTokenScroll);
+            newItem.GetComponent<Image>().color = table.players[currentlyPlaying].tokenColor;
+            newItem.transform.Find("TextoFicha").GetComponent<TextMeshProUGUI>().text = $"Ficha {table.players[currentlyPlaying].id}";
+            playerTokens.Add(newItem);
         }
     }
 }

@@ -203,7 +203,7 @@ public class LinkEditor : MonoBehaviour
             }
         });
 
-        winButton.GetComponent<Button>().onClick.AddListener(() =>
+        autoButton.GetComponent<Button>().onClick.AddListener(() =>
         {
             autoLink = !autoLink;
             if (autoLink)
