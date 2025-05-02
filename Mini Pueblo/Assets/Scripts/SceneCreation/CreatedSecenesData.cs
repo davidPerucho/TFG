@@ -76,7 +76,7 @@ public class TableLinkData
 public class TableBoxData
 {
     public int id; //Número de la casilla
-    public Vector2 position; //Posición de la casilla en el tablero
+    public Vector3 position; //Posición de la casilla en el tablero
     public int backLinkId; //Link con la casilla de atrás -1 si no existe
     public int maxTokens; //Máximo número de jugadores en la casilla -1 si es infinito
     public bool eat; //True si se comen las fichas

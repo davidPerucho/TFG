@@ -16,12 +16,25 @@ public class TableGameManager : MonoBehaviour
     [SerializeField]
     GameObject tokenPrefab;
 
+    [SerializeField]
+    GameObject boxPrefab;
+
+    [SerializeField]
+    GameObject tokenItemUI;
+
+    [SerializeField]
+    ScrollRect boardBar;
+
+    [SerializeField]
+    ScrollRect playerBar;
+
     TableSceneData table;
     int diceNum = 1;
     bool diceThrown = false;
     bool gameEnd = false;
     int currentlyPlaying = 0;
     List<GameObject> playerTokens = new List<GameObject>();
+    List<GameObject> boardBoxes = new List<GameObject>();
 
     void Awake()
     {
@@ -32,6 +45,9 @@ public class TableGameManager : MonoBehaviour
         //Leo la información  creo en la escena
         string json = File.ReadAllText(filePath);
         table = JsonUtility.FromJson<TableSceneData>(json);
+
+        boardScroll.GetComponent<RectTransform>().anchoredPosition = new Vector2(-700f, 768.5f);
+        playerBar.verticalNormalizedPosition = 1f;
     }
 
     void Start()
@@ -50,6 +66,32 @@ public class TableGameManager : MonoBehaviour
                 }
             });
         }
+
+        //Añado las casillas del tablero
+        foreach (TableBoxData b in table.boxes)
+        {
+            GameObject newBox = Instantiate(boxPrefab, boardScroll);
+            newBox.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text = b.id.ToString();
+
+            newBox.transform.position = b.position;
+            newBox.transform.SetParent(boardScroll);
+
+            //Añado las posibles fichas a la casilla
+            foreach (TablePlayerData p in table.players)
+            {
+                foreach (TableTokenData t in p.tokens)
+                {
+                    if (t.startingBoxId == b.id)
+                    {
+                        Transform tokenPosition = newBox.GetComponentInChildren<ScrollRect>().content;
+                        GameObject newItem = Instantiate(tokenItemUI, tokenPosition);
+                        newItem.GetComponent<Image>().color = p.tokenColor;
+                    }
+                }
+            }
+
+            boardBoxes.Add(newBox);        }
+        boardBar.verticalNormalizedPosition = 1f;
 
         currentlyPlaying = 0;
         setPlayerInfo();

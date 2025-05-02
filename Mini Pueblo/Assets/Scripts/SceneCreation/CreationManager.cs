@@ -137,6 +137,8 @@ public class CreationManager : MonoBehaviour
         boxes = new List<TableBoxData>();
         boxesUI = new List<GameObject>();
         links = new List<TableLinkData>();
+
+        boxesContentPosition.GetComponent<RectTransform>().anchoredPosition = new Vector2(-700f, 916.5f);
     }
 
     void Start()
@@ -212,7 +214,7 @@ public class CreationManager : MonoBehaviour
                 foreach (TableBoxData b in boxes)
                 {
                     GameObject newItem = Instantiate(boxItemUI, boxesContentPosition);
-                    newItem.transform.position = b.position;
+                    newItem.GetComponent<RectTransform>().anchoredPosition = b.position;
                     int boxId = b.id;
                     newItem.name = b.id.ToString();
                     newItem.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text = boxId.ToString();
@@ -328,7 +330,7 @@ public class CreationManager : MonoBehaviour
                 int i;
                 for (i = 0; i < numBoxes; i++)
                 {
-                    boxes.ElementAt(i).position = boxesUI.ElementAt(i).transform.position;
+                    boxes[i].position = boxesUI[i].transform.position;
                 }
                 TableSceneData sceneData = new TableSceneData();
                 sceneData.sceneName = sceneName;
@@ -911,6 +913,12 @@ public class CreationManager : MonoBehaviour
         }
         else if (sceneType == SceneType.TABLE)
         {
+            int i;
+            for (i = 0; i < numBoxes; i++)
+            {
+                boxes[i].position = boxesUI[i].transform.position;
+            }
+
             TableSceneData data = new TableSceneData();
             data.players = players;
             data.boxes = boxes;
