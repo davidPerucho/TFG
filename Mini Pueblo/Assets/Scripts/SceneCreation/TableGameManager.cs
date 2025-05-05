@@ -6,6 +6,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class TableGameManager : MonoBehaviour
@@ -30,6 +31,9 @@ public class TableGameManager : MonoBehaviour
 
     [SerializeField]
     ScrollRect playerBar;
+
+    [SerializeField]
+    GameObject victoryUI;
 
     TableSceneData table;
     int diceNum = 1;
@@ -69,6 +73,11 @@ public class TableGameManager : MonoBehaviour
 
     void Start()
     {
+        victoryUI.transform.Find("Salir").GetComponent<Button>().onClick.AddListener(() =>
+        {
+            SceneManager.LoadScene("Hub");
+        });
+
         if (table.dice == true)
         {
             UIManager.Instance.EnableObject("DadoBoton");
@@ -226,6 +235,12 @@ public class TableGameManager : MonoBehaviour
     /// </summary>
     IEnumerator playerThrow()
     {
+        bool canEat = false; //Indica si la casilla a la que voy a mover la ficha permite comerfichas
+        bool maxTokens = false; //Indica si la casilla a la que voy a mover la ficha tiene limitaciones de cantidad
+        int numTokens = -1; //Cuantos tokens permite la casilla a la que voy a mover la ficha
+        bool canMove = true; //True si se puede hacer el movimiento a la próxima casilla
+
+        //Obtengo el token seleccionado
         TableTokenData token = new TableTokenData();
 
         foreach (TablePlayerData p in table.players)
@@ -248,6 +263,8 @@ public class TableGameManager : MonoBehaviour
         //Muevo la ficha el número de casillas que marca el dado
         for (int i = 0; i < diceNum; i++)
         {
+            //Voy reduciendo la tirada del dado en la interfaz
+            UIManager.Instance.SetText("Dado", (diceNum - i).ToString());
             List<TableLinkData> posibleLinks = new List<TableLinkData>();
 
             //Miro cuales son los links posibles
@@ -262,38 +279,148 @@ public class TableGameManager : MonoBehaviour
                 }
             }
             
+            //Si solo hay un camino posible muevo la ficha en esa dirección
             if (posibleLinks.Count == 1)
             {
-                foreach (GameObject b in boardBoxes)
+                //Compruebo que el número del dado sea suficiente
+                if (posibleLinks[0].minNum > diceNum - i)
                 {
-                    int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
-                    if (posibleLinks[0].fromId == boxId)
+                    //Compruebo máximo número de fichas y la posibilidad de que se puedan comer fichas
+                    foreach (TableBoxData b in table.boxes)
                     {
-                        Transform content = b.transform.Find("ContentFichas");
-                        for (int j = 0; j < content.childCount; j++)
+                        if (posibleLinks[0].toId == b.id)
                         {
-                            Transform child = content.GetChild(i);
-
-                            if (child.gameObject.GetComponent<Image>().color == table.players[currentlyPlaying].tokenColor)
+                            if (b.maxTokens != -1)
                             {
-                                Destroy(child.gameObject);
+                                maxTokens = true;
+                                numTokens = b.maxTokens;
+                            }
+                            if (b.eat == true)
+                            {
+                                canEat = true;
+                            }
+                            break;
+                        }
+                    }
+
+                    //Miro cuantos tokens tiene la casilla y si se puede realizar el movimiento
+                    if (maxTokens == true)
+                    {
+                        int boxTokens = 0; //Número de ficahas que tiene la casilla
+                        List<int> playersWithTokens = new List<int>(); //Lista de jugadores con tokens en la casilla a la que se quiere mover
+                        foreach (TablePlayerData p in table.players)
+                        {
+                            foreach (TableTokenData t in p.tokens)
+                            {
+                                if (t.boxId == posibleLinks[0].toId)
+                                {
+                                    boxTokens++;
+                                    if (playersWithTokens.Contains(p.id) == false)
+                                    {
+                                        playersWithTokens.Add(p.id);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (canEat == false && numTokens <= boxTokens)
+                        {
+                            canMove = false;
+                        }
+                        else if (canEat == true && (playersWithTokens.Count > 0 || playersWithTokens.Contains(table.players[currentlyPlaying].id) == false))
+                        {
+                            canMove = true;
+                        }
+                        else
+                        {
+                            canMove = true;
+                        }
+                    }
+
+                    //Realizo el movimiento en caso de que sea posible
+                    if (canMove == true)
+                    {
+                        int nextBoxId = -1;
+                        foreach (GameObject b in boardBoxes)
+                        {
+                            int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
+                            Transform content = b.transform.Find("ContentFichas");
+                            if (posibleLinks[0].fromId == boxId)
+                            {
+                                for (int j = 0; j < content.childCount; j++)
+                                {
+                                    Transform child = content.GetChild(j);
+
+                                    if (child.gameObject.GetComponent<Image>().color == table.players[currentlyPlaying].tokenColor)
+                                    {
+                                        Destroy(child.gameObject);
+                                        break;
+                                    }
+                                }
+                            }
+                            else if (posibleLinks[0].toId == boxId)
+                            {
+                                //Compruebo si hay que comer alguna ficha
+                                if (canEat == true)
+                                {
+                                    nextBoxId = boxId;
+                                    for (int j = 0; j < content.childCount; j++)
+                                    {
+                                        Transform child = content.GetChild(j);
+
+                                        if (child.gameObject.GetComponent<Image>().color != table.players[currentlyPlaying].tokenColor)
+                                        {
+                                            Destroy(child.gameObject);
+                                        }
+                                    }
+                                }
+
+                                token.boxId = boxId;
+                                if (token.startingBoxId == -1)
+                                {
+                                    token.startingBoxId = boxId;
+                                }
+
+                                GameObject item = Instantiate(tokenItemUI, content);
+                                item.GetComponent<Image>().color = table.players[currentlyPlaying].tokenColor;
+                            }
+                        }
+
+                        //En caso de que se haya comido alguna ficha la devuelvo a su origen
+                        if (nextBoxId != -1)
+                        {
+                            List<(int, Color)> updatedTokens = new List<(int, Color)>();
+                            foreach (TablePlayerData p in table.players)
+                            {
+                                foreach (TableTokenData t in p.tokens)
+                                {
+                                    if (t.boxId == nextBoxId && p.id != table.players[currentlyPlaying].id)
+                                    {
+                                        t.boxId = t.startingBoxId;
+                                        updatedTokens.Add((t.boxId, p.tokenColor));
+                                    }
+                                }
+                            }
+
+                            foreach ((int, Color) t in updatedTokens)
+                            {
+                                foreach (GameObject b in boardBoxes)
+                                {
+                                    int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
+                                    Transform content = b.transform.Find("ContentFichas");
+                                    if (t.Item1 == boxId)
+                                    {
+                                        GameObject item = Instantiate(tokenItemUI, content);
+                                        item.GetComponent<Image>().color = t.Item2;
+                                    }
+                                }
                             }
                         }
                     }
-                    else if (posibleLinks[0].toId == boxId)
-                    {
-                        Transform content = b.transform.Find("ContentFichas");
-                        token.boxId = boxId;
-                        if (token.startingBoxId == -1)
-                        {
-                            token.startingBoxId = boxId;
-                        }
-
-                        GameObject item = Instantiate(tokenItemUI, content);
-                        item.GetComponent<Image>().color = table.players[currentlyPlaying].tokenColor;
-                    }
                 }
             }
+
+            //En caso de que haya más de un camino posible espero a que el jugador seleccione la casilla que quiere y luego muevo la ficha
             else
             {
                 UIManager.Instance.SetText("Instruccion", $"Selecciona una casilla");
@@ -315,36 +442,147 @@ public class TableGameManager : MonoBehaviour
                     }
                 }
 
-                foreach (GameObject b in boardBoxes)
+                //Compruebo que el número del dado sea suficiente
+                if (selectedLink.minNum > diceNum - i)
                 {
-                    int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
-                    if (selectedLink.fromId == boxId)
+                    //Compruebo máximo número de fichas y la posibilidad de que se puedan comer fichas
+                    foreach (TableBoxData b in table.boxes)
                     {
-                        Transform content = b.transform.Find("ContentFichas");
-                        for (int j = 0; j < content.childCount; j++)
+                        if (selectedLink.toId == b.id)
                         {
-                            Transform child = content.GetChild(j);
-
-                            if (child.gameObject.GetComponent<Image>().color == table.players[currentlyPlaying].tokenColor)
+                            if (b.maxTokens != -1)
                             {
-                                Destroy(child.gameObject);
+                                maxTokens = true;
+                                numTokens = b.maxTokens;
+                            }
+                            if (b.eat == true)
+                            {
+                                canEat = true;
+                            }
+                            break;
+                        }
+                    }
+
+                    //Miro cuantos tokens tiene la casilla y si se puede realizar el movimiento
+                    if (maxTokens == true)
+                    {
+                        int boxTokens = 0; //Número de ficahas que tiene la casilla
+                        List<int> playersWithTokens = new List<int>(); //Lista de jugadores con tokens en la casilla a la que se quiere mover
+                        foreach (TablePlayerData p in table.players)
+                        {
+                            foreach (TableTokenData t in p.tokens)
+                            {
+                                if (t.boxId == selectedLink.toId)
+                                {
+                                    boxTokens++;
+                                    if (playersWithTokens.Contains(p.id) == false)
+                                    {
+                                        playersWithTokens.Add(p.id);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (canEat == false && numTokens <= boxTokens)
+                        {
+                            canMove = false;
+                        }
+                        else if (canEat == true && (playersWithTokens.Count > 0 || playersWithTokens.Contains(table.players[currentlyPlaying].id) == false))
+                        {
+                            canMove = true;
+                        }
+                        else
+                        {
+                            canMove = true;
+                        }
+                    }
+
+                    //Realizo el movimiento en caso de que sea posible
+                    if (canMove == true)
+                    {
+                        int nextBoxId = -1;
+                        foreach (GameObject b in boardBoxes)
+                        {
+                            int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
+                            Transform content = b.transform.Find("ContentFichas");
+                            if (selectedLink.fromId == boxId)
+                            {
+                                for (int j = 0; j < content.childCount; j++)
+                                {
+                                    Transform child = content.GetChild(j);
+
+                                    if (child.gameObject.GetComponent<Image>().color == table.players[currentlyPlaying].tokenColor)
+                                    {
+                                        Destroy(child.gameObject);
+                                        break;
+                                    }
+                                }
+                            }
+                            else if (selectedLink.toId == boxId)
+                            {
+                                //Compruebo si hay que comer alguna ficha
+                                if (canEat == true)
+                                {
+                                    nextBoxId = boxId;
+                                    for (int j = 0; j < content.childCount; j++)
+                                    {
+                                        Transform child = content.GetChild(j);
+
+                                        if (child.gameObject.GetComponent<Image>().color != table.players[currentlyPlaying].tokenColor)
+                                        {
+                                            Destroy(child.gameObject);
+                                        }
+                                    }
+                                }
+
+                                token.boxId = boxId;
+                                if (token.startingBoxId == -1)
+                                {
+                                    token.startingBoxId = boxId;
+                                }
+
+                                GameObject item = Instantiate(tokenItemUI, content);
+                                item.GetComponent<Image>().color = table.players[currentlyPlaying].tokenColor;
+                            }
+                        }
+
+                        //En caso de que se haya comido alguna ficha la devuelvo a su origen
+                        if (nextBoxId != -1)
+                        {
+                            List<(int, Color)> updatedTokens = new List<(int, Color)>();
+                            foreach (TablePlayerData p in table.players)
+                            {
+                                foreach (TableTokenData t in p.tokens)
+                                {
+                                    if (t.boxId == nextBoxId && p.id != table.players[currentlyPlaying].id)
+                                    {
+                                        t.boxId = t.startingBoxId;
+                                        updatedTokens.Add((t.boxId, p.tokenColor));
+                                    }
+                                }
+                            }
+
+                            foreach ((int, Color) t in updatedTokens)
+                            {
+                                foreach (GameObject b in boardBoxes)
+                                {
+                                    int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
+                                    Transform content = b.transform.Find("ContentFichas");
+                                    if (t.Item1 == boxId)
+                                    {
+                                        GameObject item = Instantiate(tokenItemUI, content);
+                                        item.GetComponent<Image>().color = t.Item2;
+                                    }
+                                }
                             }
                         }
                     }
-                    else if (selectedLink.toId == boxId)
-                    {
-                        Transform content = b.transform.Find("ContentFichas");
-                        token.boxId = boxId;
-                        if (token.startingBoxId == -1)
-                        {
-                            token.startingBoxId = boxId;
-                        }
-
-                        GameObject item = Instantiate(tokenItemUI, content);
-                        item.GetComponent<Image>().color = table.players[currentlyPlaying].tokenColor;
-                    }
                 }
             }
+
+            //Parada entre movimientos
+            yield return new WaitForSeconds(1);
+            //TODO efecto de sonido
         }
 
         TableLinkData link = null;
@@ -359,29 +597,135 @@ public class TableGameManager : MonoBehaviour
         }
         if (link != null)
         {
-            foreach (GameObject b in boardBoxes)
+            foreach (TableBoxData b in table.boxes)
             {
-                int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
-                if (link.fromId == boxId)
+                if (link.toId == b.id)
                 {
-                    Transform content = b.transform.Find("ContentFichas");
-                    for (int j = 0; j < content.childCount; j++)
+                    if (b.maxTokens != -1)
                     {
-                        Transform child = content.GetChild(j);
+                        maxTokens = true;
+                        numTokens = b.maxTokens;
+                    }
+                    if (b.eat == true)
+                    {
+                        canEat = true;
+                    }
+                    break;
+                }
+            }
 
-                        if (child.gameObject.GetComponent<Image>().color == table.players[currentlyPlaying].tokenColor)
+            //Miro cuantos tokens tiene la casilla y si se puede realizar el movimiento
+            if (maxTokens == true)
+            {
+                int boxTokens = 0; //Número de ficahas que tiene la casilla
+                List<int> playersWithTokens = new List<int>(); //Lista de jugadores con tokens en la casilla a la que se quiere mover
+                foreach (TablePlayerData p in table.players)
+                {
+                    foreach (TableTokenData t in p.tokens)
+                    {
+                        if (t.boxId == link.toId)
                         {
-                            Destroy(child.gameObject);
+                            boxTokens++;
+                            if (playersWithTokens.Contains(p.id) == false)
+                            {
+                                playersWithTokens.Add(p.id);
+                            }
                         }
                     }
                 }
-                else if (link.toId == boxId)
-                {
-                    Transform content = b.transform.Find("ContentFichas");
-                    token.boxId = boxId;
 
-                    GameObject item = Instantiate(tokenItemUI, content);
-                    item.GetComponent<Image>().color = table.players[currentlyPlaying].tokenColor;
+                if (canEat == false && numTokens <= boxTokens)
+                {
+                    canMove = false;
+                }
+                else if (canEat == true && (playersWithTokens.Count > 0 || playersWithTokens.Contains(table.players[currentlyPlaying].id) == false))
+                {
+                    canMove = true;
+                }
+                else
+                {
+                    canMove = true;
+                }
+            }
+
+            //Realizo el movimiento en caso de que sea posible
+            if (canMove == true)
+            {
+                int nextBoxId = -1;
+                foreach (GameObject b in boardBoxes)
+                {
+                    int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
+                    Transform content = b.transform.Find("ContentFichas");
+                    if (link.fromId == boxId)
+                    {
+                        for (int j = 0; j < content.childCount; j++)
+                        {
+                            Transform child = content.GetChild(j);
+
+                            if (child.gameObject.GetComponent<Image>().color == table.players[currentlyPlaying].tokenColor)
+                            {
+                                Destroy(child.gameObject);
+                                break;
+                            }
+                        }
+                    }
+                    else if (link.toId == boxId)
+                    {
+                        //Compruebo si hay que comer alguna ficha
+                        if (canEat == true)
+                        {
+                            nextBoxId = boxId;
+                            for (int j = 0; j < content.childCount; j++)
+                            {
+                                Transform child = content.GetChild(j);
+
+                                if (child.gameObject.GetComponent<Image>().color != table.players[currentlyPlaying].tokenColor)
+                                {
+                                    Destroy(child.gameObject);
+                                }
+                            }
+                        }
+
+                        token.boxId = boxId;
+                        if (token.startingBoxId == -1)
+                        {
+                            token.startingBoxId = boxId;
+                        }
+
+                        GameObject item = Instantiate(tokenItemUI, content);
+                        item.GetComponent<Image>().color = table.players[currentlyPlaying].tokenColor;
+                    }
+                }
+
+                //En caso de que se haya comido alguna ficha la devuelvo a su origen
+                if (nextBoxId != -1)
+                {
+                    List<(int, Color)> updatedTokens = new List<(int, Color)>();
+                    foreach (TablePlayerData p in table.players)
+                    {
+                        foreach (TableTokenData t in p.tokens)
+                        {
+                            if (t.boxId == nextBoxId && p.id != table.players[currentlyPlaying].id)
+                            {
+                                t.boxId = t.startingBoxId;
+                                updatedTokens.Add((t.boxId, p.tokenColor));
+                            }
+                        }
+                    }
+
+                    foreach ((int, Color) t in updatedTokens)
+                    {
+                        foreach (GameObject b in boardBoxes)
+                        {
+                            int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
+                            Transform content = b.transform.Find("ContentFichas");
+                            if (t.Item1 == boxId)
+                            {
+                                GameObject item = Instantiate(tokenItemUI, content);
+                                item.GetComponent<Image>().color = t.Item2;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -421,6 +765,8 @@ public class TableGameManager : MonoBehaviour
                 if (linkCompleted == true)
                 {
                     //VICTORIA
+                    victoryUI.SetActive(true);
+                    victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
                 }
             }
         }
@@ -433,18 +779,23 @@ public class TableGameManager : MonoBehaviour
                     if (b.tokensToWin == 1)
                     {
                         //VICTORIA
+                        victoryUI.SetActive(true);
+                        victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
                     }
                     else
                     {
                         if (b.tokensToWin <= numTokensOnBox(b.id))
                         {
                             //VICTORIA
+                            victoryUI.SetActive(true);
+                            victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
                         }
                     }
                 }
             }
         }
 
+        //Paso al siguiente turno
         currentlyPlaying++;
     }
 
