@@ -125,21 +125,9 @@ public class TableGameManager : MonoBehaviour
         setPlayerInfo();
     }
 
-    void Update()
-    {
-        if (!gameEnd)
-        {
-            gameLoop();
-        }
-    }
-
-    void gameLoop()
-    {
-
-    }
-
     void setPlayerInfo()
     {
+        diceThrown = false;
         UIManager.Instance.SetText("Turno", $"Turno jugador {table.players[currentlyPlaying].id}");
 
         //Funcionalidad jugador local
@@ -171,6 +159,24 @@ public class TableGameManager : MonoBehaviour
             {
                 newItem.transform.Find("ViewToken").GetComponent<Button>().onClick.AddListener(() =>
                 {
+                    foreach (GameObject b in boardBoxes)
+                    {
+                        int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
+                        
+                        if (t.boxId == boxId)
+                        {
+                            Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
+                            for (int j = 0; j < content.childCount; j++)
+                            {
+                                Transform child = content.GetChild(j);
+
+                                if (child.gameObject.GetComponent<Image>().color == table.players[currentlyPlaying].tokenColor)
+                                {
+                                    child.Find("LuzFicha").gameObject.SetActive(true);
+                                }
+                            }
+                        }
+                    }
                     viewBox(t.boxId);
                 });
             }
@@ -343,8 +349,8 @@ public class TableGameManager : MonoBehaviour
                         int nextBoxId = -1;
                         foreach (GameObject b in boardBoxes)
                         {
-                            int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
-                            Transform content = b.transform.Find("ContentFichas");
+                            int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
+                            Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
                             if (posibleLinks[0].fromId == boxId)
                             {
                                 for (int j = 0; j < content.childCount; j++)
@@ -406,8 +412,8 @@ public class TableGameManager : MonoBehaviour
                             {
                                 foreach (GameObject b in boardBoxes)
                                 {
-                                    int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
-                                    Transform content = b.transform.Find("ContentFichas");
+                                    int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
+                                    Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
                                     if (t.Item1 == boxId)
                                     {
                                         GameObject item = Instantiate(tokenItemUI, content);
@@ -503,8 +509,8 @@ public class TableGameManager : MonoBehaviour
                         int nextBoxId = -1;
                         foreach (GameObject b in boardBoxes)
                         {
-                            int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
-                            Transform content = b.transform.Find("ContentFichas");
+                            int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
+                            Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
                             if (selectedLink.fromId == boxId)
                             {
                                 for (int j = 0; j < content.childCount; j++)
@@ -566,8 +572,8 @@ public class TableGameManager : MonoBehaviour
                             {
                                 foreach (GameObject b in boardBoxes)
                                 {
-                                    int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
-                                    Transform content = b.transform.Find("ContentFichas");
+                                    int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
+                                    Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
                                     if (t.Item1 == boxId)
                                     {
                                         GameObject item = Instantiate(tokenItemUI, content);
@@ -654,8 +660,8 @@ public class TableGameManager : MonoBehaviour
                 int nextBoxId = -1;
                 foreach (GameObject b in boardBoxes)
                 {
-                    int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
-                    Transform content = b.transform.Find("ContentFichas");
+                    int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
+                    Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
                     if (link.fromId == boxId)
                     {
                         for (int j = 0; j < content.childCount; j++)
@@ -717,8 +723,8 @@ public class TableGameManager : MonoBehaviour
                     {
                         foreach (GameObject b in boardBoxes)
                         {
-                            int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
-                            Transform content = b.transform.Find("ContentFichas");
+                            int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
+                            Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
                             if (t.Item1 == boxId)
                             {
                                 GameObject item = Instantiate(tokenItemUI, content);
@@ -767,6 +773,7 @@ public class TableGameManager : MonoBehaviour
                     //VICTORIA
                     victoryUI.SetActive(true);
                     victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
+                    gameEnd = true;
                 }
             }
         }
@@ -781,6 +788,7 @@ public class TableGameManager : MonoBehaviour
                         //VICTORIA
                         victoryUI.SetActive(true);
                         victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
+                        gameEnd = true;
                     }
                     else
                     {
@@ -789,6 +797,7 @@ public class TableGameManager : MonoBehaviour
                             //VICTORIA
                             victoryUI.SetActive(true);
                             victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
+                            gameEnd = true;
                         }
                     }
                 }
@@ -796,7 +805,16 @@ public class TableGameManager : MonoBehaviour
         }
 
         //Paso al siguiente turno
-        currentlyPlaying++;
+        if (gameEnd == false)
+        {
+            currentlyPlaying++;
+
+            if (currentlyPlaying >= table.players.Count)
+            {
+                currentlyPlaying = 0;
+            }
+            setPlayerInfo();
+        }
     }
 
     /// <summary>
