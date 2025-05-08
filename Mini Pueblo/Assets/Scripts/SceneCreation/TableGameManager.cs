@@ -159,33 +159,83 @@ public class TableGameManager : MonoBehaviour
             {
                 newItem.transform.Find("ViewToken").GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    foreach (GameObject b in boardBoxes)
-                    {
-                        int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
-                        
-                        if (t.boxId == boxId)
-                        {
-                            Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
-                            for (int j = 0; j < content.childCount; j++)
-                            {
-                                Transform child = content.GetChild(j);
-
-                                if (child.gameObject.GetComponent<Image>().color == table.players[currentlyPlaying].tokenColor)
-                                {
-                                    child.Find("LuzFicha").gameObject.SetActive(true);
-                                }
-                            }
-                        }
-                    }
-                    viewBox(t.boxId);
+                    viewToken(t);
                 });
             }
             playerTokens.Add(newItem);
         }
     }
 
+    void viewToken(TableTokenData token)
+    {
+        foreach (GameObject b in boardBoxes)
+        {
+            int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
+
+            if (token.boxId == boxId)
+            {
+                Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
+                for (int j = 0; j < content.childCount; j++)
+                {
+                    Transform child = content.GetChild(j);
+
+                    if (child.gameObject.GetComponent<Image>().color == table.players[currentlyPlaying].tokenColor)
+                    {
+                        child.Find("LuzFicha").gameObject.SetActive(true);
+                    }
+                }
+            }
+            else
+            {
+                Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
+                for (int j = 0; j < content.childCount; j++)
+                {
+                    Transform child = content.GetChild(j);
+
+                    if (child.gameObject.GetComponent<Image>().color == table.players[currentlyPlaying].tokenColor)
+                    {
+                        child.Find("LuzFicha").gameObject.SetActive(false);
+                    }
+                }
+            }
+        }
+        viewBox(token.boxId);
+    }
+
     IEnumerator selectToken(TableTokenData token)
     {
+        foreach (GameObject b in boardBoxes)
+        {
+            int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
+
+            if (token.boxId == boxId)
+            {
+                Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
+                for (int j = 0; j < content.childCount; j++)
+                {
+                    Transform child = content.GetChild(j);
+
+                    if (child.gameObject.GetComponent<Image>().color == table.players[currentlyPlaying].tokenColor)
+                    {
+                        child.Find("LuzFicha").gameObject.SetActive(true);
+                    }
+                }
+            }
+            else
+            {
+                Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
+                for (int j = 0; j < content.childCount; j++)
+                {
+                    Transform child = content.GetChild(j);
+
+                    if (child.gameObject.GetComponent<Image>().color == table.players[currentlyPlaying].tokenColor)
+                    {
+                        child.Find("LuzFicha").gameObject.SetActive(false);
+                    }
+                }
+            }
+        }
+
         if (token.startingBoxId == -1)
         {
             UIManager.Instance.SetText("Instruccion", $"Selecciona una casilla");
@@ -214,12 +264,13 @@ public class TableGameManager : MonoBehaviour
     /// <param name="boxId">Id de la casilla a la que se quiere enfocar.</param>
     void viewBox(int boxId)
     {
-        foreach (TableBoxData b in table.boxes)
+        foreach (GameObject b in boardBoxes)
         {
-            if (b.id == boxId)
+            int id = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
+            if (id == boxId)
             {
                 Canvas.ForceUpdateCanvases();
-                Vector2 initialValue = (Vector2)boardBar.transform.InverseTransformPoint(boardBar.content.position) - (Vector2)boardBar.transform.InverseTransformPoint(b.position);
+                Vector2 initialValue = (Vector2)boardBar.transform.InverseTransformPoint(boardBar.content.position) - (Vector2)boardBar.transform.InverseTransformPoint(b.transform.position);
                 boardBar.content.anchoredPosition = new Vector2(initialValue.x + boardBar.viewport.rect.width / 2, initialValue.y - (boardBar.viewport.rect.height + boardBar.viewport.rect.height / 2));
             }
         }
