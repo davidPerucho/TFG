@@ -35,6 +35,12 @@ public class TableGameManager : MonoBehaviour
     [SerializeField]
     GameObject victoryUI;
 
+    [SerializeField]
+    GameObject errorUI;
+
+    [SerializeField]
+    GameObject infoUI;
+
     TableSceneData table;
     int diceNum = 1;
     bool diceThrown = false;
@@ -329,15 +335,21 @@ public class TableGameManager : MonoBehaviour
             {
                 if (l.winner == false)
                 {
-                    if (l.fromId == token.boxId)
+                    if (l.fromId == token.boxId && (l.playerId == -1 || l.playerId == table.players[currentlyPlaying].id))
                     {
                         posibleLinks.Add(l);
                     }
                 }
             }
             
+            //Si no hay posibles caminos muestro un error
+            if (posibleLinks.Count == 0)
+            {
+                //ERROR
+                errorUI.SetActive(true);
+            }
             //Si solo hay un camino posible muevo la ficha en esa dirección
-            if (posibleLinks.Count == 1)
+            else if (posibleLinks.Count == 1)
             {
                 //Compruebo que el número del dado sea suficiente
                 if (posibleLinks[0].minNum > diceNum - i)
@@ -474,6 +486,18 @@ public class TableGameManager : MonoBehaviour
                             }
                         }
                     }
+                    else
+                    {
+                        //BLOQUEO
+                        infoUI.SetActive(true);
+                        infoUI.transform.Find("TextoInfo").GetComponent<TextMeshProUGUI>().text = "La ficha que quieres mover está bloqueada";
+                    }
+                }
+                else
+                {
+                    //INSUFICIENTE
+                    infoUI.SetActive(true);
+                    infoUI.transform.Find("TextoInfo").GetComponent<TextMeshProUGUI>().text = $"Necesitas sacar un {posibleLinks[0].minNum} o más para poder salir de esta casilla";
                 }
             }
 
@@ -634,6 +658,18 @@ public class TableGameManager : MonoBehaviour
                             }
                         }
                     }
+                    else
+                    {
+                        //BLOQUEO
+                        infoUI.SetActive(true);
+                        infoUI.transform.Find("TextoInfo").GetComponent<TextMeshProUGUI>().text = "La ficha que quieres mover está bloqueada";
+                    }
+                }
+                else
+                {
+                    //INSUFICIENTE
+                    infoUI.SetActive(true);
+                    infoUI.transform.Find("TextoInfo").GetComponent<TextMeshProUGUI>().text = $"Necesitas sacar un {posibleLinks[0].minNum} o más para poder salir de esta casilla";
                 }
             }
 
@@ -785,6 +821,12 @@ public class TableGameManager : MonoBehaviour
                     }
                 }
             }
+            else
+            {
+                //BLOQUEO
+                infoUI.SetActive(true);
+                infoUI.transform.Find("TextoInfo").GetComponent<TextMeshProUGUI>().text = "La ficha que quieres mover está bloqueada";
+            }
         }
 
         //Compruebo las condiciones de victoria
@@ -854,6 +896,9 @@ public class TableGameManager : MonoBehaviour
                 }
             }
         }
+
+        infoUI.SetActive(false);
+        errorUI.SetActive(false);
 
         //Paso al siguiente turno
         if (gameEnd == false)
