@@ -84,6 +84,11 @@ public class TableGameManager : MonoBehaviour
             SceneManager.LoadScene("Hub");
         });
 
+        errorUI.transform.Find("Salir").GetComponent<Button>().onClick.AddListener(() =>
+        {
+            SceneManager.LoadScene("Hub");
+        });
+
         if (table.dice == true)
         {
             UIManager.Instance.EnableObject("DadoBoton");
@@ -133,6 +138,12 @@ public class TableGameManager : MonoBehaviour
 
     void setPlayerInfo()
     {
+        foreach (GameObject t in playerTokens)
+        {
+            Destroy(t);
+        }
+        playerTokens.Clear();
+
         diceThrown = false;
         UIManager.Instance.SetText("Turno", $"Turno jugador {table.players[currentlyPlaying].id}");
 
@@ -150,14 +161,16 @@ public class TableGameManager : MonoBehaviour
         //Muestro las fichas disponibles del jugador
         foreach (TableTokenData t in table.players[currentlyPlaying].tokens)
         {
+            TableTokenData currentToken = t;
+
             GameObject newItem = Instantiate(tokenPrefab, playerTokenScroll);
             newItem.GetComponent<Image>().color = table.players[currentlyPlaying].tokenColor;
-            newItem.transform.Find("TextoFicha").GetComponent<TextMeshProUGUI>().text = $"Ficha {t.id}";
+            newItem.transform.Find("TextoFicha").GetComponent<TextMeshProUGUI>().text = $"Ficha {currentToken.id}";
             newItem.transform.Find("Select").GetComponent<Button>().onClick.AddListener(() =>
             {
-                StartCoroutine(selectToken(t));
+                StartCoroutine(selectToken(currentToken));
             });
-            if (t.startingBoxId == -1)
+            if (currentToken.startingBoxId == -1)
             {
                 newItem.transform.Find("ViewToken").GetComponent<Button>().enabled = false;
             }
@@ -165,7 +178,7 @@ public class TableGameManager : MonoBehaviour
             {
                 newItem.transform.Find("ViewToken").GetComponent<Button>().onClick.AddListener(() =>
                 {
-                    viewToken(t);
+                    viewToken(currentToken);
                 });
             }
             playerTokens.Add(newItem);
@@ -302,18 +315,16 @@ public class TableGameManager : MonoBehaviour
         bool maxTokens = false; //Indica si la casilla a la que voy a mover la ficha tiene limitaciones de cantidad
         int numTokens = -1; //Cuantos tokens permite la casilla a la que voy a mover la ficha
         bool canMove = true; //True si se puede hacer el movimiento a la próxima casilla
+        bool error = false; //True si se ha producido un error durante el juego
 
         //Obtengo el token seleccionado
         TableTokenData token = new TableTokenData();
 
-        foreach (TablePlayerData p in table.players)
+        foreach (TableTokenData t in table.players[currentlyPlaying].tokens)
         {
-            foreach (TableTokenData t in p.tokens)
+            if (t.id == selectedToken)
             {
-                if (t.id == selectedToken)
-                {
-                    token = t;
-                }
+                token = t;
             }
         }
 
@@ -346,13 +357,13 @@ public class TableGameManager : MonoBehaviour
             if (posibleLinks.Count == 0)
             {
                 //ERROR
-                errorUI.SetActive(true);
+                error = true;
             }
             //Si solo hay un camino posible muevo la ficha en esa dirección
             else if (posibleLinks.Count == 1)
             {
                 //Compruebo que el número del dado sea suficiente
-                if (posibleLinks[0].minNum > diceNum - i)
+                if (posibleLinks[0].minNum > diceNum - i || posibleLinks[0].minNum == -1)
                 {
                     //Compruebo máximo número de fichas y la posibilidad de que se puedan comer fichas
                     foreach (TableBoxData b in table.boxes)
@@ -524,7 +535,7 @@ public class TableGameManager : MonoBehaviour
                 }
 
                 //Compruebo que el número del dado sea suficiente
-                if (selectedLink.minNum > diceNum - i)
+                if (selectedLink.minNum > diceNum - i || posibleLinks[0].minNum == -1)
                 {
                     //Compruebo máximo número de fichas y la posibilidad de que se puedan comer fichas
                     foreach (TableBoxData b in table.boxes)
@@ -898,7 +909,12 @@ public class TableGameManager : MonoBehaviour
         }
 
         infoUI.SetActive(false);
-        errorUI.SetActive(false);
+        
+        if (error == true && gameEnd == false)
+        {
+            gameEnd = true;
+            errorUI.SetActive(true);
+        }
 
         //Paso al siguiente turno
         if (gameEnd == false)
