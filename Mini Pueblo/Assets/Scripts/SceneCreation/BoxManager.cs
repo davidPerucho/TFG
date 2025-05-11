@@ -8,7 +8,7 @@ public class BoxManager : MonoBehaviour, IPointerClickHandler
 {
     public void OnPointerClick(PointerEventData eventData)
     {
-        int boxId = int.Parse(transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
+        int boxId = int.Parse(transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
         TableGameManager.Instance.selectBox(boxId);
     }
 }

@@ -344,7 +344,7 @@ public class TableGameManager : MonoBehaviour
             //Miro cuales son los links posibles
             foreach (TableLinkData l in table.links)
             {
-                if (l.winner == false)
+                if (l.winner == false && l.auto == false)
                 {
                     if (l.fromId == token.boxId && (l.playerId == -1 || l.playerId == table.players[currentlyPlaying].id))
                     {
@@ -363,7 +363,7 @@ public class TableGameManager : MonoBehaviour
             else if (posibleLinks.Count == 1)
             {
                 //Compruebo que el número del dado sea suficiente
-                if (posibleLinks[0].minNum > diceNum - i || posibleLinks[0].minNum == -1)
+                if (posibleLinks[0].minNum <= diceNum - i || posibleLinks[0].minNum == -1)
                 {
                     //Compruebo máximo número de fichas y la posibilidad de que se puedan comer fichas
                     foreach (TableBoxData b in table.boxes)
@@ -535,7 +535,7 @@ public class TableGameManager : MonoBehaviour
                 }
 
                 //Compruebo que el número del dado sea suficiente
-                if (selectedLink.minNum > diceNum - i || posibleLinks[0].minNum == -1)
+                if (selectedLink.minNum <= diceNum - i || selectedLink.minNum == -1)
                 {
                     //Compruebo máximo número de fichas y la posibilidad de que se puedan comer fichas
                     foreach (TableBoxData b in table.boxes)
@@ -919,6 +919,19 @@ public class TableGameManager : MonoBehaviour
         //Paso al siguiente turno
         if (gameEnd == false)
         {
+            //Quito el resalte de la ficha seleccionada
+            foreach (GameObject b in boardBoxes)
+            {
+                int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
+
+                Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
+                for (int j = 0; j < content.childCount; j++)
+                {
+                    Transform child = content.GetChild(j);
+                    child.Find("LuzFicha").gameObject.SetActive(false);
+                }
+            }
+
             currentlyPlaying++;
 
             if (currentlyPlaying >= table.players.Count)
