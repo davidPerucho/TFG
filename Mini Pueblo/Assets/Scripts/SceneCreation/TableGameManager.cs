@@ -4,6 +4,8 @@ using System.IO;
 using System.Xml.Linq;
 using TMPro;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime;
+using UnityEditor.PackageManager;
 using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -43,7 +45,7 @@ public class TableGameManager : MonoBehaviour
 
     TableSceneData table;
     int diceNum = 1;
-    bool diceThrown = false;
+    bool diceThrown = true;
     bool gameEnd = false;
     int currentlyPlaying = 0;
     int selectedToken = -1;
@@ -144,7 +146,7 @@ public class TableGameManager : MonoBehaviour
         }
         playerTokens.Clear();
 
-        diceThrown = false;
+        diceThrown = true;
         UIManager.Instance.SetText("Turno", $"Turno jugador {table.players[currentlyPlaying].id}");
 
         //Funcionalidad jugador local
@@ -168,7 +170,7 @@ public class TableGameManager : MonoBehaviour
             newItem.transform.Find("TextoFicha").GetComponent<TextMeshProUGUI>().text = $"Ficha {currentToken.id}";
             newItem.transform.Find("Select").GetComponent<Button>().onClick.AddListener(() =>
             {
-                StartCoroutine(selectToken(currentToken));
+                selectToken(currentToken);
             });
             if (currentToken.startingBoxId == -1)
             {
@@ -221,7 +223,7 @@ public class TableGameManager : MonoBehaviour
         viewBox(token.boxId);
     }
 
-    IEnumerator selectToken(TableTokenData token)
+    void selectToken(TableTokenData token)
     {
         foreach (GameObject b in boardBoxes)
         {
@@ -255,19 +257,14 @@ public class TableGameManager : MonoBehaviour
             }
         }
 
+        selectedToken = token.id;
         if (token.startingBoxId == -1)
         {
-            UIManager.Instance.SetText("Instruccion", $"Selecciona una casilla");
-            selectedBox = -1;
-            selectingBox = true;
-            yield return new WaitUntil(() => selectedBox != -1);
-
-            token.startingBoxId = selectedBox;
+            StartCoroutine(playerDropToken());
         }
-
-        selectedToken = token.id;
-        if (table.dice == true)
+        else if (table.dice == true)
         {
+            diceThrown = false;
             UIManager.Instance.SetText("Instruccion", $"Tira el dado");
         }
         else
@@ -290,8 +287,253 @@ public class TableGameManager : MonoBehaviour
             {
                 Canvas.ForceUpdateCanvases();
                 Vector2 initialValue = (Vector2)boardBar.transform.InverseTransformPoint(boardBar.content.position) - (Vector2)boardBar.transform.InverseTransformPoint(b.transform.position);
-                boardBar.content.anchoredPosition = new Vector2(initialValue.x + boardBar.viewport.rect.width / 2, initialValue.y - (boardBar.viewport.rect.height + boardBar.viewport.rect.height / 2));
+                boardBar.content.anchoredPosition = new Vector2(initialValue.x + boardBar.viewport.rect.width / 2, initialValue.y - boardBar.viewport.rect.height / 2);
             }
+        }
+    }
+
+    /// <summary>
+    /// Función encargada de colocar las fichas que no están todavía en el tablero.
+    /// </summary>
+    IEnumerator playerDropToken()
+    {
+        bool canDrop = false; //Indica si se puede depositar la ficha en la casilla seleccionada
+        bool canEat = false; //Indica si la casilla a la que voy a mover la ficha permite comerfichas
+        bool maxTokens = false; //Indica si la casilla a la que voy a mover la ficha tiene limitaciones de cantidad
+        int numTokens = -1; //Cuantos tokens permite la casilla a la que voy a mover la ficha
+
+        //Obtengo el token seleccionado
+        TableTokenData token = new TableTokenData();
+
+        foreach (TableTokenData t in table.players[currentlyPlaying].tokens)
+        {
+            if (t.id == selectedToken)
+            {
+                token = t;
+            }
+        }
+
+        while (canDrop == false)
+        {
+            foreach (GameObject tokenUI in playerTokens)
+            {
+                tokenUI.transform.Find("Select").GetComponent<Button>().enabled = false;
+                tokenUI.transform.Find("ViewToken").GetComponent<Button>().enabled = false;
+            }
+
+            UIManager.Instance.SetText("Instruccion", $"Selecciona una casilla");
+            selectedBox = -1;
+            selectingBox = true;
+            yield return new WaitUntil(() => selectedBox != -1);
+
+            //Compruebo máximo número de fichas y la posibilidad de que se puedan comer fichas
+            foreach (TableBoxData b in table.boxes)
+            {
+                if (selectedBox == b.id)
+                {
+                    if (b.maxTokens != -1)
+                    {
+                        maxTokens = true;
+                        numTokens = b.maxTokens;
+                    }
+                    if (b.eat == true)
+                    {
+                        canEat = true;
+                    }
+                    break;
+                }
+            }
+
+            //Miro cuantos tokens tiene la casilla y si se puede realizar el movimiento
+            if (maxTokens == true)
+            {
+                int boxTokens = 0; //Número de ficahas que tiene la casilla
+                List<int> playersWithTokens = new List<int>(); //Lista de jugadores con tokens en la casilla a la que se quiere mover
+                foreach (TablePlayerData p in table.players)
+                {
+                    foreach (TableTokenData t in p.tokens)
+                    {
+                        if (t.boxId == selectedBox)
+                        {
+                            boxTokens++;
+                            if (playersWithTokens.Contains(p.id) == false)
+                            {
+                                playersWithTokens.Add(p.id);
+                            }
+                        }
+                    }
+                }
+
+                if (canEat == false && numTokens <= boxTokens)
+                {
+                    canDrop = false;
+                }
+                else if (canEat == true && (playersWithTokens.Count > 0 || playersWithTokens.Contains(table.players[currentlyPlaying].id) == false))
+                {
+                    canDrop = true;
+                }
+                else
+                {
+                    canDrop = true;
+                }
+            }
+        }
+
+        int nextBoxId = -1;
+        foreach (GameObject b in boardBoxes)
+        {
+            int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
+            Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
+            if (selectedBox == boxId)
+            {
+                //Compruebo si hay que comer alguna ficha
+                if (canEat == true)
+                {
+                    nextBoxId = boxId;
+                    for (int j = 0; j < content.childCount; j++)
+                    {
+                        Transform child = content.GetChild(j);
+
+                        if (child.gameObject.GetComponent<Image>().color != table.players[currentlyPlaying].tokenColor)
+                        {
+                            Destroy(child.gameObject);
+                        }
+                    }
+                }
+
+                token.boxId = boxId;
+                if (token.startingBoxId == -1)
+                {
+                    token.startingBoxId = boxId;
+                }
+
+                GameObject item = Instantiate(tokenItemUI, content);
+                item.GetComponent<Image>().color = table.players[currentlyPlaying].tokenColor;
+            }
+        }
+
+        //En caso de que se haya comido alguna ficha la devuelvo a su origen
+        if (nextBoxId != -1)
+        {
+            List<(int, Color)> updatedTokens = new List<(int, Color)>();
+            foreach (TablePlayerData p in table.players)
+            {
+                foreach (TableTokenData t in p.tokens)
+                {
+                    if (t.boxId == nextBoxId && p.id != table.players[currentlyPlaying].id)
+                    {
+                        t.boxId = t.startingBoxId;
+                        updatedTokens.Add((t.boxId, p.tokenColor));
+                    }
+                }
+            }
+
+            foreach ((int, Color) t in updatedTokens)
+            {
+                foreach (GameObject b in boardBoxes)
+                {
+                    int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
+                    Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
+                    if (t.Item1 == boxId)
+                    {
+                        GameObject item = Instantiate(tokenItemUI, content);
+                        item.GetComponent<Image>().color = t.Item2;
+                    }
+                }
+            }
+        }
+
+        //Compruebo las condiciones de victoria
+        List<TableLinkData> winnigLinks = new List<TableLinkData>();
+        foreach (TableLinkData l in table.links)
+        {
+            if (l.winner == true)
+            {
+                winnigLinks.Add(l);
+            }
+        }
+
+        //Si existen conexiones de victoria compruebo las conexiones, en caso contrario solo compruebo las casillas de victoria
+        if (winnigLinks.Count > 0)
+        {
+            //Obtengo las posiciones de los tokens de los jugadores
+            List<int> tokensPositions = new List<int>();
+            foreach (TableTokenData t in table.players[currentlyPlaying].tokens)
+            {
+                tokensPositions.Add(t.boxId);
+            }
+
+            //Compruebo si se ha completado alguno de los links
+            foreach (TableLinkData l in winnigLinks)
+            {
+                bool linkCompleted = true;
+                foreach (int boxId in l.winnerBoxes)
+                {
+                    if (tokensPositions.Contains(boxId))
+                    {
+                        linkCompleted = false;
+                    }
+                }
+
+                if (linkCompleted == true)
+                {
+                    //VICTORIA
+                    victoryUI.SetActive(true);
+                    victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
+                    gameEnd = true;
+                }
+            }
+        }
+        else
+        {
+            foreach (TableBoxData b in table.boxes)
+            {
+                if (token.boxId == b.id && b.winner == true)
+                {
+                    if (b.tokensToWin == 1)
+                    {
+                        //VICTORIA
+                        victoryUI.SetActive(true);
+                        victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
+                        gameEnd = true;
+                    }
+                    else
+                    {
+                        if (b.tokensToWin <= numTokensOnBox(b.id))
+                        {
+                            //VICTORIA
+                            victoryUI.SetActive(true);
+                            victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
+                            gameEnd = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        //Paso al siguiente turno
+        if (gameEnd == false)
+        {
+            //Quito el resalte de la ficha seleccionada
+            foreach (GameObject b in boardBoxes)
+            {
+                int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
+
+                Transform content = b.transform.Find("Scroll View/Viewport/ContentFichas");
+                for (int j = 0; j < content.childCount; j++)
+                {
+                    Transform child = content.GetChild(j);
+                    child.Find("LuzFicha").gameObject.SetActive(false);
+                }
+            }
+
+            currentlyPlaying++;
+
+            if (currentlyPlaying >= table.players.Count)
+            {
+                currentlyPlaying = 0;
+            }
+            setPlayerInfo();
         }
     }
 
@@ -300,10 +542,63 @@ public class TableGameManager : MonoBehaviour
     /// </summary>
     IEnumerator playerMove()
     {
-        UIManager.Instance.SetText("Instruccion", $"Selecciona una casilla");
-        selectedBox = -1;
-        selectingBox = true;
-        yield return new WaitUntil(() => selectedBox != -1);
+        bool canEat = false; //Indica si la casilla a la que voy a mover la ficha permite comerfichas
+        bool maxTokens = false; //Indica si la casilla a la que voy a mover la ficha tiene limitaciones de cantidad
+        int numTokens = -1; //Cuantos tokens permite la casilla a la que voy a mover la ficha
+        bool canMove = true; //True si se puede hacer el movimiento a la próxima casilla
+        bool error = false; //True si se ha producido un error durante el juego
+
+        //Obtengo el token seleccionado
+        TableTokenData token = new TableTokenData();
+
+        foreach (TableTokenData t in table.players[currentlyPlaying].tokens)
+        {
+            if (t.id == selectedToken)
+            {
+                token = t;
+            }
+        }
+
+        foreach (GameObject tokenUI in playerTokens)
+        {
+            tokenUI.transform.Find("Select").GetComponent<Button>().enabled = false;
+            tokenUI.transform.Find("ViewToken").GetComponent<Button>().enabled = false;
+        }
+
+        //En caso de que la ficha no esté colocada la coloco
+        if (token.startingBoxId == -1)
+        {
+            UIManager.Instance.SetText("Instruccion", $"Selecciona una casilla");
+            selectedBox = -1;
+            selectingBox = true;
+            yield return new WaitUntil(() => selectedBox != -1);
+
+            token.startingBoxId = selectedBox;
+            token.boxId = selectedBox;
+        }
+        else
+        {
+            List<TableLinkData> posibleLinks = new List<TableLinkData>();
+
+            //Miro cuales son los links posibles
+            foreach (TableLinkData l in table.links)
+            {
+                if (l.winner == false && l.auto == false)
+                {
+                    if (l.fromId == token.boxId && (l.playerId == -1 || l.playerId == table.players[currentlyPlaying].id))
+                    {
+                        posibleLinks.Add(l);
+                    }
+                }
+            }
+
+            //Si no hay posibles caminos muestro un error
+            if (posibleLinks.Count == 0)
+            {
+                //ERROR
+                error = true;
+            }
+        }
     }
 
     /// <summary>
