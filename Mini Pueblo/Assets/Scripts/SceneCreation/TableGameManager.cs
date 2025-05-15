@@ -174,7 +174,7 @@ public class TableGameManager : MonoBehaviour
             });
             if (currentToken.startingBoxId == -1)
             {
-                newItem.transform.Find("ViewToken").GetComponent<Button>().enabled = false;
+                newItem.transform.Find("ViewToken").GetComponent<Button>().gameObject.SetActive(false);
             }
             else
             {
@@ -225,6 +225,10 @@ public class TableGameManager : MonoBehaviour
 
     void selectToken(TableTokenData token)
     {
+        foreach (GameObject p in playerTokens)
+        {
+            p.transform.Find("Select").GetComponent<Button>().gameObject.SetActive(false);
+        }
         foreach (GameObject b in boardBoxes)
         {
             int boxId = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
@@ -377,6 +381,10 @@ public class TableGameManager : MonoBehaviour
                     canDrop = true;
                 }
             }
+            else
+            {
+                canDrop = true;
+            }
         }
 
         int nextBoxId = -1;
@@ -469,7 +477,7 @@ public class TableGameManager : MonoBehaviour
                 bool linkCompleted = true;
                 foreach (int boxId in l.winnerBoxes)
                 {
-                    if (tokensPositions.Contains(boxId))
+                    if (tokensPositions.Contains(boxId) == false)
                     {
                         linkCompleted = false;
                     }
@@ -940,7 +948,7 @@ public class TableGameManager : MonoBehaviour
                     bool linkCompleted = true;
                     foreach (int boxId in l.winnerBoxes)
                     {
-                        if (tokensPositions.Contains(boxId))
+                        if (tokensPositions.Contains(boxId) == false)
                         {
                             linkCompleted = false;
                         }
@@ -1577,7 +1585,7 @@ public class TableGameManager : MonoBehaviour
                 bool linkCompleted = true;
                 foreach (int boxId in l.winnerBoxes)
                 {
-                    if (tokensPositions.Contains(boxId))
+                    if (tokensPositions.Contains(boxId) == false)
                     {
                         linkCompleted = false;
                     }

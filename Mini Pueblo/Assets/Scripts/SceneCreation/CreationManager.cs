@@ -742,7 +742,7 @@ public class CreationManager : MonoBehaviour
                 for (int i = 0; i < tokensLeft; i++)
                 {
                     TableTokenData t = new TableTokenData();
-                    t.id = tokensLeft + i + 1;
+                    t.id = player.tokens.Count + 1;
                     t.boxId = -1;
                     t.startingBoxId = -1;
 
@@ -765,7 +765,7 @@ public class CreationManager : MonoBehaviour
         });
         UIManager.Instance.AddListenerToButton("AddFichas", () => { 
             TableTokenData t = new TableTokenData();
-            t.id = numTokens;
+            t.id = numTokens + 1;
             t.boxId = -1;
             t.startingBoxId = -1;
 
@@ -781,10 +781,9 @@ public class CreationManager : MonoBehaviour
                 for (int i = 0; i < tokensLeft; i++)
                 {
                     TableTokenData token = new TableTokenData();
-                    token.id = tokensLeft + i + 1;
+                    token.id = player.tokens.Count + 1;
                     token.boxId = -1;
                     token.startingBoxId = -1;
-
                     player.tokens.Add(t);
                 }
             }
@@ -798,7 +797,7 @@ public class CreationManager : MonoBehaviour
                 numTokens--;
                 foreach (TablePlayerData p in players)
                 {
-                    p.tokens.RemoveAt(numTokens-1);
+                    p.tokens.RemoveAt(numTokens);
                 }
             }
             UIManager.Instance.SetText("NumFichas", numTokens.ToString());
