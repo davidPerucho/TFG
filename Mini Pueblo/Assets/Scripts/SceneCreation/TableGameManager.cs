@@ -96,15 +96,7 @@ public class TableGameManager : MonoBehaviour
             UIManager.Instance.EnableObject("DadoBoton");
             UIManager.Instance.EnableObject("Dado");
 
-            UIManager.Instance.AddListenerToButton("DadoBoton", () => {
-                if (diceThrown == false && selectedToken != -1)
-                {
-                    diceNum = Random.Range(1, 7);
-                    UIManager.Instance.SetText("Dado", diceNum.ToString());
-                    diceThrown = true;
-                    StartCoroutine(playerThrow());
-                }
-            });
+            UIManager.Instance.AddListenerToButton("DadoBoton", diceToast);
         }
 
         //Añado las casillas del tablero
@@ -136,6 +128,20 @@ public class TableGameManager : MonoBehaviour
 
         currentlyPlaying = 0;
         setPlayerInfo();
+    }
+
+    /// <summary>
+    /// Se encarga de realizar la tirada del dado.
+    /// </summary>
+    void diceToast()
+    {
+        if (diceThrown == false && selectedToken != -1)
+        {
+            diceNum = Random.Range(1, 7);
+            UIManager.Instance.SetText("Dado", diceNum.ToString());
+            diceThrown = true;
+            StartCoroutine(playerThrow());
+        }
     }
 
     /// <summary>
@@ -297,7 +303,14 @@ public class TableGameManager : MonoBehaviour
         else if (table.dice == true)
         {
             diceThrown = false;
-            UIManager.Instance.SetText("Instruccion", $"Tira el dado");
+            if (table.players[currentlyPlaying].playerType == TablePlayerType.IA)
+            {
+                diceToast();
+            }
+            else
+            {
+                UIManager.Instance.SetText("Instruccion", $"Tira el dado");
+            }
         }
         else
         {
@@ -487,6 +500,9 @@ public class TableGameManager : MonoBehaviour
                 }
             }
         }
+
+        //TODO sonido
+        yield return new WaitForSeconds(1);
 
         //Compruebo las condiciones de victoria
         List<TableLinkData> winnigLinks = new List<TableLinkData>();
@@ -955,6 +971,7 @@ public class TableGameManager : MonoBehaviour
                         }
                     }
                 }
+                yield return new WaitForSeconds(1);
             }
             else
             {
@@ -1600,6 +1617,7 @@ public class TableGameManager : MonoBehaviour
                         }
                     }
                 }
+                yield return new WaitForSeconds(1);
             }
             else
             {
