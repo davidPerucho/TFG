@@ -108,6 +108,25 @@ public class TableGameManager : MonoBehaviour
             newBox.transform.position = b.position;
             newBox.transform.SetParent(boardScroll);
 
+            //Añado las imagenes de fondo de las casillas
+            if (b.imagePath != null)
+            {
+                Texture2D texture = NativeGallery.LoadImageAtPath(b.imagePath, 1024);
+                if (texture == null)
+                {
+                    Debug.LogWarning("No se pudo cargar la imagen");
+                    return;
+                }
+
+                Sprite imageSprite = Sprite.Create(
+                    texture,
+                    new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f)
+                );
+
+                newBox.GetComponent<Image>().sprite = imageSprite;
+            }
+
             //Añado las posibles fichas a la casilla
             foreach (TablePlayerData p in table.players)
             {

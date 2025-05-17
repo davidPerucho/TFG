@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
@@ -32,6 +33,7 @@ public class BoxEditor : MonoBehaviour
     List<GameObject> addedTokensUI; //Lista de las fichas añadidas
     List<TablePlayerData> players; //Datos de los jugadores
     int id; //Id de la casilla que se está editando
+    string imagePath = null; //Ruta de la imagen de la casilla 
 
     public static BoxEditor Instance { get; private set; } //Instancia de la clase
 
@@ -56,6 +58,8 @@ public class BoxEditor : MonoBehaviour
         Button cancelButton = transform.Find("Cancelar").GetComponent<Button>();
         Button saveButton = transform.Find("Guardar").GetComponent<Button>();
         Button winButton = transform.Find("Ganadora").GetComponent<Button>();
+
+        transform.Find("AddImagen").GetComponent<Button>().onClick.AddListener(addImage);
 
         //Obtengo el id de la casilla
         id = int.Parse(transform.Find("ImagenCasilla").transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
@@ -131,7 +135,7 @@ public class BoxEditor : MonoBehaviour
         saveButton.onClick.AddListener(() =>
         {
             id = int.Parse(transform.Find("ImagenCasilla").transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
-            CreationManager.Instance.loadEditingBoxData(players, eat, maxTokens, numMaxTokens, win, tokensToWin, id);
+            CreationManager.Instance.loadEditingBoxData(players, eat, maxTokens, numMaxTokens, win, tokensToWin, id, imagePath);
 
             foreach (GameObject free in freeTokensUI)
             {
@@ -292,5 +296,55 @@ public class BoxEditor : MonoBehaviour
             UIManager.Instance.DisableObject("RemoveMaxFichas");
             transform.Find("MaxFichas").GetComponent<Image>().color = Color.white;
         }
+        if (box.imagePath != null)
+        {
+            imagePath = box.imagePath;
+            Texture2D texture = NativeGallery.LoadImageAtPath(imagePath, 1024);
+            if (texture == null)
+            {
+                Debug.LogWarning("No se pudo cargar la imagen");
+                return;
+            }
+
+            Sprite imageSprite = Sprite.Create(
+                texture,
+                new Rect(0, 0, texture.width, texture.height),
+                new Vector2(0.5f, 0.5f)
+            );
+
+            transform.Find("ImagenCasilla").GetComponent<Image>().sprite = imageSprite;
+        }
+        else
+        {
+            transform.Find("ImagenCasilla").GetComponent<Image>().sprite = null;
+        }
+    }
+
+    /// <summary>
+    /// Muestra una selección de imagen del dispositivo y la añade al fondo de la casilla.
+    /// </summary>
+    void addImage()
+    {
+        NativeGallery.GetImageFromGallery((path) =>
+        {
+            if (path != null)
+            {
+                imagePath = path;
+                Texture2D texture = NativeGallery.LoadImageAtPath(path, 1024);
+                if (texture == null)
+                {
+                    Debug.LogWarning("No se pudo cargar la imagen");
+                    return;
+                }
+
+                Sprite imageSprite = Sprite.Create(
+                    texture,
+                    new Rect(0, 0, texture.width, texture.height),
+                    new Vector2(0.5f, 0.5f)
+                );
+
+                transform.Find("ImagenCasilla").GetComponent<Image>().sprite = imageSprite;
+            }
+        }, "Selecciona una imagen", "image/*");
     }
 }

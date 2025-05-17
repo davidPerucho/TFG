@@ -1006,7 +1006,9 @@ public class CreationManager : MonoBehaviour
     /// <param name="maxTokens">True si la casilla tiene un número máximo de tokens.</param>
     /// <param name="numMaxTokens">Número máximo de tokens en caso de que exista.</param>
     /// <param name="id">Id de la casilla que ha sido editada.</param>
-    public void loadEditingBoxData(List<TablePlayerData> data, bool eat, bool maxTokens, int numMaxTokens, bool win, int tokensToWin, int id)
+    /// <param name="imahePath">Ruta de la imagen de la casilla.</param>
+    public void loadEditingBoxData(List<TablePlayerData> data, bool eat, bool maxTokens, int numMaxTokens, bool win, int tokensToWin, int id, 
+        string imahePath)
     {
         players = data;
 
@@ -1015,6 +1017,7 @@ public class CreationManager : MonoBehaviour
             if (b.id == id)
             {
                 b.eat = eat;
+                b.imagePath = imahePath;
 
                 if (maxTokens == true)
                 {
@@ -1024,6 +1027,31 @@ public class CreationManager : MonoBehaviour
                 {
                     b.winner = win;
                     b.tokensToWin = tokensToWin;
+                }
+            }
+        }
+
+        //Cargo la imagen de fondo de la casilla
+        if (imahePath != null)
+        {
+            foreach (GameObject b in boxesUI)
+            {
+                if (int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text) == id)
+                {
+                    Texture2D texture = NativeGallery.LoadImageAtPath(imahePath, 1024);
+                    if (texture == null)
+                    {
+                        Debug.LogWarning("No se pudo cargar la imagen");
+                        return;
+                    }
+
+                    Sprite imageSprite = Sprite.Create(
+                        texture,
+                        new Rect(0, 0, texture.width, texture.height),
+                        new Vector2(0.5f, 0.5f)
+                    );
+
+                    b.GetComponent<Image>().sprite = imageSprite;
                 }
             }
         }

@@ -84,6 +84,7 @@ public class TableBoxData
     public bool winner; //True si es la casilla de la victoria
     public bool pushBack; //True si la casilla de la victoria tiene rebote
     public bool starter; //True si la casilla es una posible casilla de salida
+    public string imagePath; //Rueta de la imagen de fondo de la casilla
 }
 
 [System.Serializable]
