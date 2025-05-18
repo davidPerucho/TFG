@@ -43,6 +43,15 @@ public class TableGameManager : MonoBehaviour
     [SerializeField]
     GameObject infoUI;
 
+    [SerializeField]
+    AudioClip tokenMoveSFX;
+
+    [SerializeField]
+    AudioClip diceToastSFX;
+
+    [SerializeField]
+    AudioClip victorySFX;
+
     TableSceneData table;
     int diceNum = 1;
     bool diceThrown = true;
@@ -53,6 +62,7 @@ public class TableGameManager : MonoBehaviour
     bool selectingBox = false;
     List<GameObject> playerTokens = new List<GameObject>();
     List<GameObject> boardBoxes = new List<GameObject>();
+    AudioSource audioSource;
 
     public static TableGameManager Instance { get; private set; } //Instancia de la clase
 
@@ -81,6 +91,8 @@ public class TableGameManager : MonoBehaviour
 
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+
         victoryUI.transform.Find("Salir").GetComponent<Button>().onClick.AddListener(() =>
         {
             SceneManager.LoadScene("Hub");
@@ -94,9 +106,8 @@ public class TableGameManager : MonoBehaviour
         if (table.dice == true)
         {
             UIManager.Instance.EnableObject("DadoBoton");
-            UIManager.Instance.EnableObject("Dado");
 
-            UIManager.Instance.AddListenerToButton("DadoBoton", diceToast);
+            UIManager.Instance.AddListenerToButton("DadoBoton", () => { StartCoroutine(diceToast()); });
         }
 
         //Añado las casillas del tablero
@@ -109,7 +120,7 @@ public class TableGameManager : MonoBehaviour
             newBox.transform.SetParent(boardScroll);
 
             //Añado las imagenes de fondo de las casillas
-            if (b.imagePath != null)
+            if (b.imagePath != null && b.imagePath != "")
             {
                 Texture2D texture = NativeGallery.LoadImageAtPath(b.imagePath, 1024);
                 if (texture == null)
@@ -152,13 +163,20 @@ public class TableGameManager : MonoBehaviour
     /// <summary>
     /// Se encarga de realizar la tirada del dado.
     /// </summary>
-    void diceToast()
+    IEnumerator diceToast()
     {
         if (diceThrown == false && selectedToken != -1)
         {
+            //Sonido del dado
+            audioSource.PlayOneShot(diceToastSFX);
+
+            //Asignación del número
+            UIManager.Instance.EnableObject("Dado");
             diceNum = Random.Range(1, 7);
             UIManager.Instance.SetText("Dado", diceNum.ToString());
             diceThrown = true;
+
+            yield return new WaitForSeconds(1);
             StartCoroutine(playerThrow());
         }
     }
@@ -520,7 +538,8 @@ public class TableGameManager : MonoBehaviour
             }
         }
 
-        //TODO sonido
+        //Reproduzco el sonido de la ficha y espero un segundo
+        audioSource.PlayOneShot(tokenMoveSFX);
         yield return new WaitForSeconds(1);
 
         //Compruebo las condiciones de victoria
@@ -558,6 +577,7 @@ public class TableGameManager : MonoBehaviour
                 if (linkCompleted == true)
                 {
                     //VICTORIA
+                    audioSource.PlayOneShot(victorySFX);
                     victoryUI.SetActive(true);
                     victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
                     gameEnd = true;
@@ -573,6 +593,7 @@ public class TableGameManager : MonoBehaviour
                     if (b.tokensToWin == 1)
                     {
                         //VICTORIA
+                        audioSource.PlayOneShot(victorySFX);
                         victoryUI.SetActive(true);
                         victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
                         gameEnd = true;
@@ -582,6 +603,7 @@ public class TableGameManager : MonoBehaviour
                         if (b.tokensToWin <= numTokensOnBox(b.id))
                         {
                             //VICTORIA
+                            audioSource.PlayOneShot(victorySFX);
                             victoryUI.SetActive(true);
                             victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
                             gameEnd = true;
@@ -844,9 +866,9 @@ public class TableGameManager : MonoBehaviour
             }
         }
 
-        //Parada entre movimientos
+        //Reproduzco el sonido de la ficha y espero un segundo
+        audioSource.PlayOneShot(tokenMoveSFX);
         yield return new WaitForSeconds(1);
-        //TODO efecto de sonido
 
         TableLinkData link = null;
         //Miro primero los links automáticos
@@ -1035,6 +1057,7 @@ public class TableGameManager : MonoBehaviour
                 if (linkCompleted == true)
                 {
                     //VICTORIA
+                    audioSource.PlayOneShot(victorySFX);
                     victoryUI.SetActive(true);
                     victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
                     gameEnd = true;
@@ -1050,6 +1073,7 @@ public class TableGameManager : MonoBehaviour
                     if (b.tokensToWin == 1)
                     {
                         //VICTORIA
+                        audioSource.PlayOneShot(victorySFX);
                         victoryUI.SetActive(true);
                         victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
                         gameEnd = true;
@@ -1059,6 +1083,7 @@ public class TableGameManager : MonoBehaviour
                         if (b.tokensToWin <= numTokensOnBox(b.id))
                         {
                             //VICTORIA
+                            audioSource.PlayOneShot(victorySFX);
                             victoryUI.SetActive(true);
                             victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
                             gameEnd = true;
@@ -1133,8 +1158,6 @@ public class TableGameManager : MonoBehaviour
         //Muevo la ficha el número de casillas que marca el dado
         for (int i = 0; i < diceNum; i++)
         {
-            //Voy reduciendo la tirada del dado en la interfaz
-            UIManager.Instance.SetText("Dado", (diceNum - i).ToString());
             List<TableLinkData> posibleLinks = new List<TableLinkData>();
 
             //Miro cuales son los links posibles
@@ -1489,9 +1512,9 @@ public class TableGameManager : MonoBehaviour
                 }
             }
 
-            //Parada entre movimientos
+            //Reproduzco el sonido de la ficha y espero un segundo
+            audioSource.PlayOneShot(tokenMoveSFX);
             yield return new WaitForSeconds(1);
-            //TODO efecto de sonido
         }
 
         TableLinkData link = null;
@@ -1681,6 +1704,7 @@ public class TableGameManager : MonoBehaviour
                 if (linkCompleted == true)
                 {
                     //VICTORIA
+                    audioSource.PlayOneShot(victorySFX);
                     victoryUI.SetActive(true);
                     victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
                     gameEnd = true;
@@ -1696,6 +1720,7 @@ public class TableGameManager : MonoBehaviour
                     if (b.tokensToWin == 1)
                     {
                         //VICTORIA
+                        audioSource.PlayOneShot(victorySFX);
                         victoryUI.SetActive(true);
                         victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
                         gameEnd = true;
@@ -1705,6 +1730,7 @@ public class TableGameManager : MonoBehaviour
                         if (b.tokensToWin <= numTokensOnBox(b.id))
                         {
                             //VICTORIA
+                            audioSource.PlayOneShot(victorySFX);
                             victoryUI.SetActive(true);
                             victoryUI.transform.Find("TextoVictoria").GetComponent<TextMeshProUGUI>().text = $"¡¡VICTORIA JUGADOR {table.players[currentlyPlaying].id}!!";
                             gameEnd = true;
