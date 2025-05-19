@@ -29,6 +29,9 @@ public class MainMenu : MonoBehaviour
     [SerializeField]
     GameObject terrainImage; //Imagen del terreno
 
+    [SerializeField]
+    GameObject titeImage; //Imagen del títulos
+
     // Start is called before the first frame update
     void Start()
     {
@@ -69,6 +72,8 @@ public class MainMenu : MonoBehaviour
     /// </summary>
     void openCreateSceneinterface()
     {
+        titeImage.SetActive(false);
+
         UIManager.Instance.DisableObject("Nueva");
         UIManager.Instance.DisableObject("Jugar");
         UIManager.Instance.DisableObject("CrearMenu");
@@ -324,7 +329,9 @@ public class MainMenu : MonoBehaviour
         screenindex = 0;
         locationSelection.SetActive(false);
         terrainImage.SetActive(false);
-        UIManager.Instance.SetText("TextoMenu", "MINI PUEBLO");
+
+        UIManager.Instance.SetText("TextoMenu", "");
+        titeImage.SetActive(true);
     }
 
     /// <summary>

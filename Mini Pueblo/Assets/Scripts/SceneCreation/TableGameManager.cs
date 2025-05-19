@@ -1012,6 +1012,9 @@ public class TableGameManager : MonoBehaviour
                         }
                     }
                 }
+
+                //Reproduzco el sonido de la ficha y espero un segundo
+                audioSource.PlayOneShot(tokenMoveSFX);
                 yield return new WaitForSeconds(1);
             }
             else
@@ -1659,6 +1662,9 @@ public class TableGameManager : MonoBehaviour
                         }
                     }
                 }
+
+                //Reproduzco el sonido de la ficha y espero un segundo
+                audioSource.PlayOneShot(tokenMoveSFX);
                 yield return new WaitForSeconds(1);
             }
             else
