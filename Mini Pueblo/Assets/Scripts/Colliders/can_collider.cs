@@ -11,7 +11,7 @@ public class CanCollider : MonoBehaviour
 
     void Start()
     {
-        PointsCollider.instance.hit = false;
+        //PointsCollider.instance.hit = false;
     }
 
     /// <summary>

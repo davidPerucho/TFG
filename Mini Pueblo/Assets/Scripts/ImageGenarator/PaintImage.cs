@@ -14,6 +14,7 @@ public class PaintImage : MonoBehaviour
     Texture2D imageTexture; //Textura de la imagen que se va a pintar
     Color fillColor = Color.white; //Color seleccionado para colorear
     bool pressed = false; //Es true cuando el bo´tón izquierdo del ratón está presionado o cuando se está tocando la pantalla
+    AudioSource audioSource; //Fuente de audio para los efectos de sonido
 
     [SerializeField]
     RawImage image; //Elemento utilizado para mostrar la imagen que se está pintando
@@ -36,10 +37,15 @@ public class PaintImage : MonoBehaviour
     [SerializeField]
     GameObject numbers; //Elemento utilizado para mostrar los números del selector de color
 
+    [SerializeField]
+    AudioClip paintSplashClip; //Efecto de sonido para la pintura
+
     // Start is called before the first frame update
     void Start()
     {
-        if (GetComponent<DynamicPainting>().sceneData.sceneThemeEnglish == "mandala")
+        audioSource = GetComponent<AudioSource>();
+
+        if (GetComponent<DynamicPainting>() == null || GetComponent<DynamicPainting>().sceneData.sceneThemeEnglish == "mandala")
         {
             savePath = Path.Combine(Application.persistentDataPath, "GeneratedImages");
         }
@@ -70,8 +76,13 @@ public class PaintImage : MonoBehaviour
 
             if (IsInsideImage(localCursor))
             {
-                //Si se hace click sobre la imagen pintamos la zona correspondiente
+                //Si se hace click sobre la imagen pintamos la zona correspondiente y reproducimos el sonido
                 Vector2Int pixel = GetPixelFromCursor(localCursor, imageTexture, image.rectTransform.rect);
+
+                if (!audioSource.isPlaying)
+                {
+                    audioSource.PlayOneShot(paintSplashClip);
+                }
 
                 FloodFill(pixel.x, pixel.y);
                 imageTexture.Apply();
@@ -215,7 +226,7 @@ public class PaintImage : MonoBehaviour
         Texture2D colorWheelTexture = new Texture2D(colorSelectorWidth, colorSelectorHeight);
         colorWheelTexture.wrapMode = TextureWrapMode.Clamp;
 
-        if (GetComponent<DynamicPainting>().sceneData.paintingSceneType == PaintingSceneType.NUMBERS)
+        if (GetComponent<DynamicPainting>() != null && GetComponent<DynamicPainting>().sceneData.paintingSceneType == PaintingSceneType.NUMBERS)
         {
             numbers.SetActive(true);
 

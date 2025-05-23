@@ -41,7 +41,10 @@ public class PointsCollider : MonoBehaviour
                     HighScore.instance.showHighScores(PointsSystem.instance.points);
                 }
             }
-
+            else
+            {
+                hit = false;
+            }
             Destroy(collision.gameObject);
         }
 

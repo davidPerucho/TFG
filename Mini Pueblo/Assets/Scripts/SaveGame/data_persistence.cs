@@ -57,7 +57,11 @@ public class DataPersitence : MonoBehaviour
     private void OnApplicationQuit()
     {
         SceneManager.sceneLoaded -= SceneEnter;
-        saveGame();
+
+        if (SceneManager.GetActiveScene().name == "Hub")
+        {
+            saveGame();
+        }
     }
 
     /// <summary>

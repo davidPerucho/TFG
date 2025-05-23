@@ -342,7 +342,7 @@ public class MainMenu : MonoBehaviour
         UIManager.Instance.DisableButton("Nueva");
         UIManager.Instance.DisableButton("Jugar");
         UIManager.Instance.DisableButton("Opciones");
-        UIManager.Instance.DisableObject("CrearMenu");
+        UIManager.Instance.DisableButton("CrearMenu");
     }
 
     /// <summary>

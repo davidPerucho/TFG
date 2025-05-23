@@ -36,6 +36,8 @@ public class HighScore : MonoBehaviour, IDataPersistence
         }
 
         instance = this;
+
+        scores = new List<int>();
     }
 
     public void showHighScores(int newScore)
@@ -92,7 +94,6 @@ public class HighScore : MonoBehaviour, IDataPersistence
         {
             low = scores.Min();
         }
-        Debug.Log("Antes: " + string.Join(", ", scores));
         if (score >= low)
         {
             if (scores.Count == numScores)
@@ -107,7 +108,6 @@ public class HighScore : MonoBehaviour, IDataPersistence
                 scores = scores.OrderByDescending(x => x).ToList();
             }
         }
-        Debug.Log("Despues: " + string.Join(", ", scores));
         if (score > high)
         {
             return true;

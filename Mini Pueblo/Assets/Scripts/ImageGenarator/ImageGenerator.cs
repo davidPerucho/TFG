@@ -33,7 +33,7 @@ public class ImageGenerator : MonoBehaviour
         
         seed = UnityEngine.Random.Range(0, int.MaxValue);
 
-        if (GetComponent<DynamicPainting>().sceneData.sceneThemeEnglish == "mandala")
+        if (GetComponent<DynamicPainting>() == null || GetComponent<DynamicPainting>().sceneData.sceneThemeEnglish == "mandala")
         {
             imagesDirectory = Path.Combine(Application.persistentDataPath, "GeneratedImages");
         }
@@ -140,7 +140,11 @@ public class ImageGenerator : MonoBehaviour
         //Desactivo otras funcionalidades mientras se genera la imagen
         loading = true;
         UIManager.Instance.EnableObject("TextImageGeneration");
-        UIManager.Instance.SetText("TextImageGeneration", $"Generando {GetComponent<DynamicPainting>().sceneData.sceneThemeSpanish}...");
+
+        if (GetComponent<DynamicPainting>() != null)
+        {
+            UIManager.Instance.SetText("TextImageGeneration", $"Generando {GetComponent<DynamicPainting>().sceneData.sceneThemeSpanish}...");
+        }
 
         //Genero la imagen
         StartCoroutine(GenerateAndSaveImage());

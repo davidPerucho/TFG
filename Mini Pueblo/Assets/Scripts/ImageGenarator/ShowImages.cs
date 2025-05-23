@@ -36,7 +36,7 @@ public class ShowImages : MonoBehaviour
         UIManager.Instance.AddListenerToButton("ButtonExit", () => { SceneManager.LoadScene("Hub"); });
 
         //Ruta al directorio donde se guardan las imágenes
-        if (GetComponent<DynamicPainting>().sceneData.sceneThemeEnglish == "mandala")
+        if (GetComponent<DynamicPainting>() == null || GetComponent<DynamicPainting>().sceneData.sceneThemeEnglish == "mandala")
         {
             imagesDirectory = Path.Combine(Application.persistentDataPath, "GeneratedImages");
         }

@@ -20,7 +20,6 @@ public class CharacterCreationManager : MonoBehaviour
 
             foreach (CharacterData characterData in characterList.characters)
             {
-                Debug.Log(characterData.yRotation);
                 GameObject character = Instantiate(characterPrefabs[characterData.cIndex], characterData.coordinates, Quaternion.Euler(0, characterData.yRotation, 0));
                 CharacterTalk characterTalk = character.GetComponent<CharacterTalk>();
                 characterTalk.characterPhrase = characterData.phrase;
