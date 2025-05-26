@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.TextCore.Text;
@@ -10,7 +11,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Clase encargada del manejo de la UI y las funcionalidades del menu principal y de la creación de escenas.
 /// </summary>
-public class MainMenu : MonoBehaviour
+public class MainMenu : MonoBehaviour, IDataPersistence
 {
     FileDataManager fileDataManager; //Manejador de datos guardados del juego
     RawImage[] characters; //Almacena las imágenes de los personajes
@@ -32,20 +33,94 @@ public class MainMenu : MonoBehaviour
     [SerializeField]
     GameObject titeImage; //Imagen del títulos
 
+    [SerializeField]
+    GameObject musicVolumeSelector; //Selector del volumen de la música
+
+    [SerializeField]
+    GameObject sfxVolumeSelector; //Selector del volumen de los efectos
+
+    [SerializeField]
+    GameObject ttsCheck; //Selector de las voces de los personajes
+
+
     // Start is called before the first frame update
     void Start()
     {
+        //Añado listeners para cuando se cambia el volumen de la musica
+        musicVolumeSelector.GetComponent<Slider>().onValueChanged.AddListener(changeMusicVolume);
+
+        //Añado las funciones a los botones
         UIManager.Instance.AddListenerToButton("Jugar", play);
         UIManager.Instance.AddListenerToButton("Continuar", continueCreation);
         UIManager.Instance.AddListenerToButton("Crear", continueCreation);
         UIManager.Instance.AddListenerToButton("Volver", returnToMenu);
-        UIManager.Instance.AddListenerToButton("CrearMenu", openCreateSceneinterface);
+        UIManager.Instance.AddListenerToButton("CrearMenu", openCreateSceneInterface);
+        UIManager.Instance.AddListenerToButton("VolverOpciones", hideOptions);
+        UIManager.Instance.AddListenerToButton("Resetear", resetOptions);
+        UIManager.Instance.AddListenerToButton("Opciones", showOptionsMenu);
         fileDataManager = new FileDataManager(Application.persistentDataPath, "datos.json");
         UIManager.Instance.AddListenerToButton("Nueva", newGame);
         if (fileDataManager.file_exists() == false) 
         {
-            UIManager.Instance.DisableObject("Jugar");
+            UIManager.Instance.DisableButton("Jugar");
         }
+    }
+
+    /// <summary>
+    /// Cambia el volumen de la música.
+    /// </summary>
+    /// <param name="volume">Nuevo volumen de la música.</param>
+    void changeMusicVolume(float volume)
+    {
+        GetComponent<AudioSource>().volume = volume;
+    }
+
+    /// <summary>
+    /// Muestra el menu de opciones.
+    /// </summary>
+    void showOptionsMenu()
+    {
+        UIManager.Instance.DisableObject("CrearMenu");
+        UIManager.Instance.DisableObject("Nueva");
+        UIManager.Instance.DisableObject("Jugar");
+        UIManager.Instance.DisableObject("Opciones");
+
+        UIManager.Instance.EnableObject("VolverOpciones");
+        UIManager.Instance.EnableObject("Resetear");
+        UIManager.Instance.EnableObject("TextoMusica");
+        UIManager.Instance.EnableObject("TextoEfectos");
+        musicVolumeSelector.SetActive(true);
+        sfxVolumeSelector.SetActive(true);
+        ttsCheck.SetActive(true);
+    }
+
+    /// <summary>
+    /// Oculta el menu de opciones y vuelve al menu principal.
+    /// </summary>
+    void hideOptions()
+    {
+        UIManager.Instance.DisableObject("VolverOpciones");
+        UIManager.Instance.DisableObject("Resetear");
+        UIManager.Instance.DisableObject("TextoMusica");
+        UIManager.Instance.DisableObject("TextoEfectos");
+        musicVolumeSelector.SetActive(false);
+        sfxVolumeSelector.SetActive(false);
+        ttsCheck.SetActive(false);
+
+        UIManager.Instance.EnableObject("CrearMenu");
+        UIManager.Instance.EnableObject("Nueva");
+        UIManager.Instance.EnableObject("Jugar");
+        UIManager.Instance.EnableObject("Opciones");
+    }
+
+    /// <summary>
+    /// Resetea los valores de las opciones devolviendolos a su valor por defecto.
+    /// </summary>
+    void resetOptions()
+    {
+        musicVolumeSelector.GetComponent<Slider>().value = 1;
+        sfxVolumeSelector.GetComponent<Slider>().value = 1;
+        ttsCheck.GetComponent<Toggle>().isOn = true;
     }
 
     /// <summary>
@@ -54,6 +129,7 @@ public class MainMenu : MonoBehaviour
     void play()
     {
         disableButtons();
+        DataPersitence.instance.saveGame();
         SceneManager.LoadSceneAsync("Hub");
     }
 
@@ -64,13 +140,14 @@ public class MainMenu : MonoBehaviour
     {
         disableButtons();
         DataPersitence.instance.newGame();
+        DataPersitence.instance.saveGame();
         SceneManager.LoadSceneAsync("Hub");
     }
 
     /// <summary>
     /// Desactiva los elementos de UI del menu y activa los de la creación de minijuegos/actividades.
     /// </summary>
-    void openCreateSceneinterface()
+    void openCreateSceneInterface()
     {
         titeImage.SetActive(false);
 
@@ -373,5 +450,27 @@ public class MainMenu : MonoBehaviour
         index = int.Parse(locationObject.name) - 1;
         locations[index].color = Color.blue;
         locationIndex = index + 1;
+    }
+
+    /// <summary>
+    /// Carga los datos de las opciones.
+    /// </summary>
+    /// <param name="data">Datos del juego.</param>
+    public void loadData(GameData data)
+    {
+        musicVolumeSelector.GetComponent<Slider>().value = data.musicVolume;
+        sfxVolumeSelector.GetComponent<Slider>().value = data.sfxVolume;
+        ttsCheck.GetComponent<Toggle>().isOn = data.characterVoices;
+    }
+
+    /// <summary>
+    /// Guarda los datos del menu de opciones.
+    /// </summary>
+    /// <param name="data">Datos del juego.</param>
+    public void saveData(ref GameData data)
+    {
+        data.musicVolume = musicVolumeSelector.GetComponent<Slider>().value;
+        data.sfxVolume = sfxVolumeSelector.GetComponent<Slider>().value;
+        data.characterVoices = ttsCheck.GetComponent<Toggle>().isOn;
     }
 }

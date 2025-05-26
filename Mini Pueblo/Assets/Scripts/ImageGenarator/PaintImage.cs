@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// <summary>
 /// Clase que se encarga de manejar los elementos destinados a pintar las imágenes.
 /// </summary>
-public class PaintImage : MonoBehaviour
+public class PaintImage : MonoBehaviour, IDataPersistence
 {
     string savePath; //Ruta en la que se guardarán las imágenes coloreadas
     string filePath; //Ruta de la imágen que se va a pintar
@@ -15,6 +15,7 @@ public class PaintImage : MonoBehaviour
     Color fillColor = Color.white; //Color seleccionado para colorear
     bool pressed = false; //Es true cuando el bo´tón izquierdo del ratón está presionado o cuando se está tocando la pantalla
     AudioSource audioSource; //Fuente de audio para los efectos de sonido
+    float sfxVolume = 1f; //Volumen de los efectos de sonido
 
     [SerializeField]
     RawImage image; //Elemento utilizado para mostrar la imagen que se está pintando
@@ -327,4 +328,17 @@ public class PaintImage : MonoBehaviour
         //Inicio la funcionalidad del selector de imagen
         FindAnyObjectByType<ShowImages>().ReloadImages();
     }
+
+    /// <summary>
+    /// Carga el volumen de los efectos de sonido que se ha asignado en el menu de opciones.
+    /// </summary>
+    /// <param name="data"></param>
+    public void loadData(GameData data)
+    {
+        sfxVolume = data.sfxVolume;
+
+        audioSource.volume = sfxVolume;
+    }
+
+    public void saveData(ref GameData data){}
 }

@@ -9,7 +9,7 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// Esta clase se encarga de almacenar las conversaciones y acciones de los NPC.
 /// </summary>
-public class CharacterTalk : MonoBehaviour
+public class CharacterTalk : MonoBehaviour, IDataPersistence
 {
     public string characterPhrase; //Frase del NPC
     public string sceneName; //Nombre de la scena (minijuego/actividad) de la que se encraga el NPC
@@ -23,6 +23,7 @@ public class CharacterTalk : MonoBehaviour
     AudioClip characterVoice = null; //Audio con la frase del NPC
     string voicePath; //Ruta hacia el archivo .wav con el audio del personaje
     static readonly List<string> sceneList = new List<string> { "DynamicScene", "Hub", "MainMenu", "MandalaPainting", "PaperPlane", "SceneCreation", "ShootingGame", "TutorialPaperPlane" }; //Lista de nombres de escenas ya existentes
+    bool ttsEnabled = true; //True si están abilitadas las voces de los personajes
 
     void Start()
     {
@@ -99,7 +100,7 @@ public class CharacterTalk : MonoBehaviour
         StartCoroutine(FindAnyObjectByType<dialog_manager>().showUIWithDelay(characterPhrase, loadScene, cancelTalk));
 
         //Lanza el audio con la frase del personaje
-        if (characterVoice != null)
+        if (characterVoice != null && ttsEnabled == true)
         {
             SoundManager.instance.addSFX(transform, characterVoice, 0.9f);
         }
@@ -184,4 +185,15 @@ public class CharacterTalk : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// Obtego el dato guardado del menu de opciones.
+    /// </summary>
+    /// <param name="data">Datos del juego.</param>
+    public void loadData(GameData data)
+    {
+        ttsEnabled = data.characterVoices;
+    }
+
+    public void saveData(ref GameData data){}
 }

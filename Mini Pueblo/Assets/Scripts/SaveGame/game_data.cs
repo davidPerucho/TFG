@@ -18,6 +18,11 @@ public class GameData
     //Variables sistema de puntos
     public List<int> pointsShootingGame;
 
+    //Variables del menu de opciones
+    public bool characterVoices;
+    public float musicVolume;
+    public float sfxVolume;
+
     /// <summary>
     /// Constructor de la clase.
     /// </summary>
@@ -27,5 +32,8 @@ public class GameData
         playerRotation = Quaternion.identity;
         tutorial = true;
         pointsShootingGame = new List<int>();
+        characterVoices = true;
+        musicVolume = 1f;
+        sfxVolume = 1f;
     }
 }

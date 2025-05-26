@@ -6,6 +6,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Clase encargada de cargar los datos para las escenas de pintura.
+/// </summary>
 public class DynamicPainting : MonoBehaviour
 {
     [HideInInspector]

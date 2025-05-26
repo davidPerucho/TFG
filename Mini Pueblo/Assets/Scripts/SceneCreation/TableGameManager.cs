@@ -11,58 +11,62 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class TableGameManager : MonoBehaviour
+/// <summary>
+/// Clase encargada de llevar a cabo la funcionalidad de los juegos de mesa
+/// </summary>
+public class TableGameManager : MonoBehaviour, IDataPersistence
 {
     [SerializeField]
-    Transform playerTokenScroll;
+    Transform playerTokenScroll; //Lugar de la pantalla en el que se muestran las fichas del jugador
 
     [SerializeField]
-    Transform boardScroll;
+    Transform boardScroll; //Lugar de la pantalla en el que se muestra el tablero
 
     [SerializeField]
-    GameObject tokenPrefab;
+    GameObject tokenPrefab; //Objeto de las fichas
 
     [SerializeField]
-    GameObject boxPrefab;
+    GameObject boxPrefab; //Objeto de las casillas
 
     [SerializeField]
-    GameObject tokenItemUI;
+    GameObject tokenItemUI; //Objeto de las fichas del jugador
 
     [SerializeField]
-    ScrollRect boardBar;
+    ScrollRect boardBar; //Barras de movimiento del tablero
 
     [SerializeField]
-    ScrollRect playerBar;
+    ScrollRect playerBar; //Barras de movimiento de la ventana que muestra las fichas del jugador
 
     [SerializeField]
-    GameObject victoryUI;
+    GameObject victoryUI; //Interfaz de victoria
 
     [SerializeField]
-    GameObject errorUI;
+    GameObject errorUI; //Interfaz de error
 
     [SerializeField]
-    GameObject infoUI;
+    GameObject infoUI; //Interfaz informativa
 
     [SerializeField]
-    AudioClip tokenMoveSFX;
+    AudioClip tokenMoveSFX; //Audio de movimiento del token
 
     [SerializeField]
-    AudioClip diceToastSFX;
+    AudioClip diceToastSFX; //Audio de lanzamiento del dado
 
     [SerializeField]
-    AudioClip victorySFX;
+    AudioClip victorySFX; //Audio de victoria
 
-    TableSceneData table;
-    int diceNum = 1;
-    bool diceThrown = true;
-    bool gameEnd = false;
-    int currentlyPlaying = 0;
-    int selectedToken = -1;
-    int selectedBox = -1;
-    bool selectingBox = false;
-    List<GameObject> playerTokens = new List<GameObject>();
-    List<GameObject> boardBoxes = new List<GameObject>();
-    AudioSource audioSource;
+    TableSceneData table; //Datos del juego de mesa
+    int diceNum = 1; //Número de la tirada
+    bool diceThrown = true; //True si ya se ha tirado el dado en este turno
+    bool gameEnd = false; //True si la partida a finalizado
+    int currentlyPlaying = 0; //Index del jugador que está jugando en este turno
+    int selectedToken = -1; //Id de la ficha seleccionada para mover
+    int selectedBox = -1; //Id de la casilla seleccionada para moverse
+    bool selectingBox = false; //True si se está seleccionando una casilla
+    List<GameObject> playerTokens = new List<GameObject>(); //Lista con los elementos de la interfaz correspondientes a las fichas de los jugadores
+    List<GameObject> boardBoxes = new List<GameObject>(); //Lista con los elementos de la interfaz correspondientes a las casillas
+    AudioSource audioSource; //Fuente de audio
+    float sfxVolume = 1f; //Volumen de los efectos de sonido
 
     public static TableGameManager Instance { get; private set; } //Instancia de la clase
 
@@ -1816,4 +1820,13 @@ public class TableGameManager : MonoBehaviour
             selectedBox = -1;
         }
     }
+
+    public void loadData(GameData data)
+    {
+        sfxVolume = data.sfxVolume;
+
+        audioSource.volume = sfxVolume;
+    }
+
+    public void saveData(ref GameData data){}
 }
