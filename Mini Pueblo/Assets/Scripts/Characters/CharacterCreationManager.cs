@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
+/// <summary>
+/// Clase encargada de poner en pantalla los personajes creados para las escenas dinámicas.
+/// </summary>
 public class CharacterCreationManager : MonoBehaviour
 {
     [SerializeField]

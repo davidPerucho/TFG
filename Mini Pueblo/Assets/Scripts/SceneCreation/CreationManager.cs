@@ -71,23 +71,23 @@ public class CreationManager : MonoBehaviour
     float[] characterYRotation = { 180f, 180f, 180f, 137f, 137f, 180f, 275f }; //Rotación de los personajes en el eje Y
     Dictionary<string, float> characterYCoordinate = new Dictionary<string, float> //Almacenamiento de las coordenadas Y de los personajes
     {
-        { "1", 0f },
+        { "1", 0.11f }, //Chica joven
         { "2", 0.05f }, //Gnomo
         { "3", 0.11f }, //Hombre normal
-        { "4", 0f },
-        { "5", 0f },
-        { "6", 0f },
-        { "7", 0f }
+        { "4", 0.11f }, //Hombre con traje
+        { "5", 0.11f }, //Mujer normal
+        { "6", 0.11f }, //Niña
+        { "7", 0.11f } //Chico joven
     };
     Dictionary<string, string> characterSex = new Dictionary<string, string> //Almacenamiento de el sexo de los personajes
     {
-        { "1", "H" },
+        { "1", "M" }, //Chica joven
         { "2", "H" }, //Gnomo
         { "3", "H" }, //Hombre normal
-        { "4", "H" },
-        { "5", "H" },
-        { "6", "H" },
-        { "7", "H" }
+        { "4", "H" }, //Hombre con traje
+        { "5", "M" }, //Mujer normal
+        { "6", "M" }, //Niña
+        { "7", "H" }  //Chico joven
     };
     SceneType sceneType; //Tipo de escena
     string characterIndex; //Indice del personaje
