@@ -77,6 +77,14 @@ public class DataPersitence : MonoBehaviour
     }
 
     /// <summary>
+    /// Recarga el array de objetos que tienen opciones de guardado en la escena.
+    /// </summary>
+    public void reloadObjects()
+    {
+        persitentObjects = findPersistenceObjects();
+    }
+
+    /// <summary>
     /// Crea una nueva partida.
     /// </summary>
     public void newGame()

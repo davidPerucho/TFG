@@ -103,7 +103,7 @@ public class SoundManager : MonoBehaviour, IDataPersistence
         musicVolume = data.musicVolume / 2;
         sfxVolume = data.sfxVolume;
 
-        audioSourceMusic.volume = musicVolume;
+        GetComponent<AudioSource>().volume = musicVolume;
     }
 
     public void saveData(ref GameData data){}

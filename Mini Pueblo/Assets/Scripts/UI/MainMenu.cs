@@ -64,6 +64,10 @@ public class MainMenu : MonoBehaviour, IDataPersistence
         {
             UIManager.Instance.DisableButton("Jugar");
         }
+
+        //Cargo los valores del menu de opciones
+        DataPersitence.instance.reloadObjects();
+        DataPersitence.instance.loadGame();
     }
 
     /// <summary>
@@ -129,6 +133,7 @@ public class MainMenu : MonoBehaviour, IDataPersistence
     void play()
     {
         disableButtons();
+        DataPersitence.instance.reloadObjects();
         DataPersitence.instance.saveGame();
         SceneManager.LoadSceneAsync("Hub");
     }
@@ -140,6 +145,7 @@ public class MainMenu : MonoBehaviour, IDataPersistence
     {
         disableButtons();
         DataPersitence.instance.newGame();
+        DataPersitence.instance.reloadObjects();
         DataPersitence.instance.saveGame();
         SceneManager.LoadSceneAsync("Hub");
     }

@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System.IO;
 using System.Diagnostics;
+using Unity.VisualScripting;
+using System.Linq;
 
 /// <summary>
 /// Script encargado de la creación de voces mediante un TTS.
@@ -31,8 +33,26 @@ public class VoiceManager : MonoBehaviour
             UnityEngine.Debug.Log($"El directorio no existía, pero se ha creado: {voicesDirectory}");
         }
 
-        //Obtengo las frases de todos los personajes
-        CharacterTalk[] characters = FindObjectsOfType<CharacterTalk>();
+        //Obtengo las frases de todos los personajes, incluidos los guardados
+        List<CharacterTalk> characters = FindObjectsOfType<CharacterTalk>().ToList();
+
+        string filePath = Path.Combine(Application.persistentDataPath, "Managers/" + "NewCharacters.json");
+        if (File.Exists(filePath))
+        {
+            //Leo la información de los personajes que se han creado para las escenas dinámicas
+            string json = File.ReadAllText(filePath);
+            CharacterList characterList = JsonUtility.FromJson<CharacterList>(json);
+
+            foreach (CharacterData characterData in characterList.characters)
+            {
+                CharacterTalk characterTalk = new CharacterTalk();
+                characterTalk.characterPhrase = characterData.phrase;
+                characterTalk.sceneName = characterData.scene;
+                characterTalk.characterSex = characterData.sex;
+
+                characters.Add(characterTalk);
+            }
+        }
 
         ProcessStartInfo processInfo;
         Process process;
@@ -43,7 +63,7 @@ public class VoiceManager : MonoBehaviour
             processInfo = new ProcessStartInfo
             {
                 FileName = nodePath,
-                Arguments = $"\"{scriptPath}\" \"{character.characterPhrase}\" \"{character.characterSex}\" \"{character.gameObject.name}\" \"{voicesDirectory}\"",
+                Arguments = $"\"{scriptPath}\" \"{character.characterPhrase}\" \"{character.characterSex}\" \"{character.sceneName}\" \"{voicesDirectory}\"",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
