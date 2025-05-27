@@ -140,12 +140,10 @@ public class HighScore : MonoBehaviour, IDataPersistence
         {
             scores = new List<int>();
         }
-        Debug.Log("Carga datos: " + string.Join(", ", data.pointsShootingGame) + "; puntos: " + string.Join(", ", scores));
     }
 
     public void saveData(ref GameData data)
     {
         data.pointsShootingGame = scores;
-        Debug.Log("Guarda datos: " + string.Join(", ", data.pointsShootingGame) + "; puntos: " + string.Join(", ", scores));
     }
 }
