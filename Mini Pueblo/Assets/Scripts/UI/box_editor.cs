@@ -5,6 +5,7 @@ using TMPro;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.UI;
+using SFB;
 
 /// <summary>
 /// Clase encargada de gestionar la edición de casillas del tablero
@@ -59,7 +60,14 @@ public class BoxEditor : MonoBehaviour
         Button saveButton = transform.Find("Guardar").GetComponent<Button>();
         Button winButton = transform.Find("Ganadora").GetComponent<Button>();
 
-        transform.Find("AddImagen").GetComponent<Button>().onClick.AddListener(addImage);
+        if (Application.platform == RuntimePlatform.Android)
+        {
+            transform.Find("AddImagen").GetComponent<Button>().onClick.AddListener(addImageAndroid);
+        }
+        else if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor)
+        {
+            transform.Find("AddImagen").GetComponent<Button>().onClick.AddListener(addImageWindows);
+        }
 
         //Obtengo el id de la casilla
         id = int.Parse(transform.Find("ImagenCasilla").transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
@@ -296,7 +304,7 @@ public class BoxEditor : MonoBehaviour
             UIManager.Instance.DisableObject("RemoveMaxFichas");
             transform.Find("MaxFichas").GetComponent<Image>().color = Color.white;
         }
-        if (box.imagePath != null)
+        if (box.imagePath != null && box.imagePath != "")
         {
             imagePath = box.imagePath;
             Texture2D texture = NativeGallery.LoadImageAtPath(imagePath, 1024);
@@ -321,30 +329,74 @@ public class BoxEditor : MonoBehaviour
     }
 
     /// <summary>
-    /// Muestra una selección de imagen del dispositivo y la añade al fondo de la casilla.
+    /// Muestra una selección de imagen del dispositivo y la añade al fondo de la casilla para android.
     /// </summary>
-    void addImage()
+    void addImageAndroid()
     {
-        NativeGallery.GetImageFromGallery((path) =>
+        NativeGallery.RequestPermissionAsync((perm) =>
         {
-            if (path != null)
+            if (perm == NativeGallery.Permission.Granted)
             {
-                imagePath = path;
-                Texture2D texture = NativeGallery.LoadImageAtPath(path, 1024);
-                if (texture == null)
+                NativeGallery.GetImageFromGallery((path) =>
                 {
-                    Debug.LogWarning("No se pudo cargar la imagen");
-                    return;
-                }
+                    if (path != null && path != "")
+                    {
+                        imagePath = path;
+                        Texture2D texture = NativeGallery.LoadImageAtPath(path, 1024);
+                        if (texture == null)
+                        {
+                            Debug.LogWarning("No se ha podido cargar la imagen");
+                            return;
+                        }
 
-                Sprite imageSprite = Sprite.Create(
+                        Sprite imageSprite = Sprite.Create(
+                            texture,
+                            new Rect(0, 0, texture.width, texture.height),
+                            new Vector2(0.5f, 0.5f)
+                        );
+
+                        transform.Find("ImagenCasilla").GetComponent<Image>().sprite = imageSprite;
+                    }
+                }, "Selecciona una imagen", "image/*");
+            }
+            else
+            {
+                Debug.LogWarning("Permiso denegado para acceder a la galería.");
+            }
+        }, NativeGallery.PermissionType.Read, NativeGallery.MediaType.Image);
+    }
+
+    /// <summary>
+    /// Muestra una selección de imagen del dispositivo y la añade al fondo de la casilla para windows.
+    /// </summary>
+    void addImageWindows()
+    {
+        var extensions = new[] {
+            new ExtensionFilter("Image Files", "png", "jpg", "jpeg")
+        };
+
+        // Abrir selector de archivos
+        string[] paths = StandaloneFileBrowser.OpenFilePanel("Selecciona una imagen", "", extensions, false);
+        if (paths.Length > 0 && !string.IsNullOrEmpty(paths[0]))
+        {
+            imagePath = paths[0];
+            byte[] imageData = File.ReadAllBytes(imagePath);
+
+            Texture2D texture = new Texture2D(2, 2);
+            if (texture.LoadImage(imageData))
+            {
+                Sprite sprite = Sprite.Create(
                     texture,
                     new Rect(0, 0, texture.width, texture.height),
                     new Vector2(0.5f, 0.5f)
                 );
 
-                transform.Find("ImagenCasilla").GetComponent<Image>().sprite = imageSprite;
+                transform.Find("ImagenCasilla").GetComponent<Image>().sprite = sprite;
             }
-        }, "Selecciona una imagen", "image/*");
+            else
+            {
+                Debug.LogWarning("No se pudo cargar la imagen");
+            }
+        }
     }
 }

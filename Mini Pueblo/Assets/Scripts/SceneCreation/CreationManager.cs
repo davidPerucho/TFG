@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -214,7 +215,28 @@ public class CreationManager : MonoBehaviour
                 foreach (TableBoxData b in boxes)
                 {
                     GameObject newItem = Instantiate(boxItemUI, boxesContentPosition);
-                    newItem.GetComponent<RectTransform>().anchoredPosition = b.position;
+                    newItem.transform.position = b.position;
+                    newItem.transform.SetParent(boxesContentPosition);
+
+                    //Añado las imagenes de fondo de las casillas
+                    if (b.imagePath != null && b.imagePath != "")
+                    {
+                        Texture2D texture = NativeGallery.LoadImageAtPath(b.imagePath, 1024);
+                        if (texture == null)
+                        {
+                            Debug.LogWarning("No se pudo cargar la imagen");
+                            return;
+                        }
+
+                        Sprite imageSprite = Sprite.Create(
+                            texture,
+                            new Rect(0, 0, texture.width, texture.height),
+                            new Vector2(0.5f, 0.5f)
+                        );
+
+                        newItem.GetComponent<Image>().sprite = imageSprite;
+                    }
+
                     int boxId = b.id;
                     newItem.name = b.id.ToString();
                     newItem.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text = boxId.ToString();
@@ -343,7 +365,7 @@ public class CreationManager : MonoBehaviour
                 sceneData.numBoxes = numBoxes;
                 sceneData.players = players;
                 sceneData.boxes = boxes;
-                links = LinkEditor.Instance.createdLinks;
+                links = LinkEditor.Instance?.createdLinks == null ? new List<TableLinkData>() : LinkEditor.Instance.createdLinks;
                 sceneData.links = links;
                 CreatedScenes createdScenesList = new CreatedScenes();
                 string json;
@@ -353,13 +375,7 @@ public class CreationManager : MonoBehaviour
                     json = File.ReadAllText(creationSavePath);
                     createdScenesList = JsonUtility.FromJson<CreatedScenes>(json);
 
-                    foreach (TableSceneData t in createdScenesList.tableScenes)
-                    {
-                        if (t.sceneName == sceneName)
-                        {
-                            createdScenesList.tableScenes.Remove(t);
-                        }
-                    }
+                    createdScenesList.tableScenes.RemoveAll(t => t.sceneName == sceneName);
                 }
                 else
                 {
@@ -378,6 +394,53 @@ public class CreationManager : MonoBehaviour
 
             SceneManager.LoadScene("MainMenu");
         }
+
+        //Guardo los datos del personaje
+        int lIndex = int.Parse(locationIndex);
+        Vector3 characterPosition = new Vector3(locationCoordinates[lIndex - 1].x, locationCoordinates[lIndex - 1].y + characterYCoordinate[characterIndex], locationCoordinates[lIndex - 1].z);
+        CharacterData character = new CharacterData
+        {
+            coordinates = characterPosition,
+            phrase = PlayerPrefs.GetString("CharacterPhrase", "Vamos a jugar."),
+            cIndex = int.Parse(characterIndex) - 1,
+            lIndex = lIndex,
+            sex = characterSex[characterIndex],
+            yRotation = characterYRotation[lIndex - 1],
+            scene = sceneName
+        };
+
+        if (!Directory.Exists(Path.Combine(Application.persistentDataPath, "Managers/"))) //Comprobar que el directorio existe
+        {
+            Directory.CreateDirectory(Path.Combine(Application.persistentDataPath, "Managers/"));
+            Debug.Log($"El directorio no existía, pero se ha creado");
+        }
+
+        string filePath = Path.Combine(Application.persistentDataPath, "Managers/" + "CharactersOnCreation.json");
+        CharacterList characterList = new CharacterList();
+        string jsonCharacter = "";
+        if (File.Exists(filePath))
+        {
+            jsonCharacter = File.ReadAllText(filePath);
+            characterList = JsonUtility.FromJson<CharacterList>(jsonCharacter);
+
+            foreach (CharacterData c in characterList.characters)
+            {
+                if (c.lIndex == lIndex)
+                {
+                    characterList.characters.Remove(c);
+                    break;
+                }
+            }
+
+            characterList.characters.Add(character);
+        }
+        else
+        {
+            characterList.characters.Add(character);
+        }
+        jsonCharacter = JsonUtility.ToJson(characterList, true);
+        File.WriteAllText(filePath, jsonCharacter);
+        Debug.Log("Datos guardados en: " + filePath);
     }
 
     /// <summary>
@@ -419,20 +482,52 @@ public class CreationManager : MonoBehaviour
     /// <param name="sceneName">Nombre de la escena a la que llama el personaje.</param>
     void createCharacter(string cIndex, int lIndex, string characterPhrase, string sceneName)
     {
-        //Obtengo la posición del personaje
-        Vector3 characterPosition = new Vector3(locationCoordinates[lIndex - 1].x, locationCoordinates[lIndex - 1].y + characterYCoordinate[cIndex], locationCoordinates[lIndex - 1].z);
+        bool saveExists = false;
+        CharacterData character = new CharacterData();
 
-        //Guardo los datos del personaje en un json para inicializarlo más tarde
-        CharacterData character = new CharacterData
+        if (File.Exists(Path.Combine(Application.persistentDataPath, "Managers/" + "CharactersOnCreation.json")))
         {
-            coordinates = characterPosition,
-            phrase = characterPhrase,
-            cIndex = int.Parse(cIndex) - 1,
-            lIndex = lIndex,
-            sex = characterSex[cIndex],
-            yRotation = characterYRotation[lIndex - 1],
-            scene = sceneName
-        };
+            string jsonCharacter = File.ReadAllText(Path.Combine(Application.persistentDataPath, "Managers/" + "CharactersOnCreation.json"));
+            CharacterList cList = JsonUtility.FromJson<CharacterList>(jsonCharacter);
+
+            int i = 0;
+            foreach (CharacterData c in cList.characters)
+            {
+                if (c.scene == sceneName)
+                {
+                    saveExists = true;
+                    character = c;
+                    break;
+                }
+                i++;
+            }
+
+            if (saveExists == true)
+            {
+                cList.characters.RemoveAt(i);
+            }
+
+            jsonCharacter = JsonUtility.ToJson(cList, true);
+            File.WriteAllText(Path.Combine(Application.persistentDataPath, "Managers/" + "CharactersOnCreation.json"), jsonCharacter);
+        }
+
+        if (saveExists == false)
+        {
+            //Obtengo la posición del personaje
+            Vector3 characterPosition = new Vector3(locationCoordinates[lIndex - 1].x, locationCoordinates[lIndex - 1].y + characterYCoordinate[cIndex], locationCoordinates[lIndex - 1].z);
+
+            //Guardo los datos del personaje en un json para inicializarlo más tarde
+            character = new CharacterData
+            {
+                coordinates = characterPosition,
+                phrase = characterPhrase,
+                cIndex = int.Parse(cIndex) - 1,
+                lIndex = lIndex,
+                sex = characterSex[cIndex],
+                yRotation = characterYRotation[lIndex - 1],
+                scene = sceneName
+            };
+        }
 
         if (!Directory.Exists(Path.Combine(Application.persistentDataPath, "Managers/"))) //Comprobar que el directorio existe
         {
@@ -1032,7 +1127,7 @@ public class CreationManager : MonoBehaviour
         }
 
         //Cargo la imagen de fondo de la casilla
-        if (imahePath != null)
+        if (imahePath != null && imahePath != "")
         {
             foreach (GameObject b in boxesUI)
             {

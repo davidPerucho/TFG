@@ -38,7 +38,7 @@ public class LinkEditor : MonoBehaviour
     bool noWinner = false;
     bool autoLink = false;
 
-    public List<TableLinkData> createdLinks;
+    public List<TableLinkData> createdLinks = new List<TableLinkData>();
     List<TablePlayerData> players;
     List<TableBoxData> boxes;
     List<GameObject> linkObjects = new List<GameObject>();
@@ -244,6 +244,7 @@ public class LinkEditor : MonoBehaviour
                 numDice.GetComponent<TextMeshProUGUI>().text = minDice.ToString();
             }
         });
+
         removeDiceButton.GetComponent<Button>().onClick.AddListener(() =>
         {
             if (minDice > 1)
@@ -255,49 +256,53 @@ public class LinkEditor : MonoBehaviour
 
         AddLinkUI.transform.Find("RemoveCasilla").GetComponent<Button>().onClick.AddListener(() =>
         {
-            int boxId = int.Parse(linkCreationObjects[linkCreationObjects.Count - 1].GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
+            if (linkCreationObjects.Count > 0)
+            {
+                int boxId = int.Parse(linkCreationObjects[linkCreationObjects.Count - 1].GetComponent<TextMeshProUGUI>().text.Split(' ')[1]);
 
-            if (linkCreationObjects.Count > 1)
-            {
-                Destroy(linkCreationObjects[linkCreationObjects.Count - 1]);
-                linkCreationObjects.RemoveAt(linkCreationObjects.Count - 1);
-                Destroy(linkCreationObjects[linkCreationObjects.Count - 1]);
-                linkCreationObjects.RemoveAt(linkCreationObjects.Count - 1);
-            }
-            else
-            {
-                Destroy(linkCreationObjects[0]);
-                linkCreationObjects.RemoveAt(0);
-            }
-
-            usedBoxes.Remove(boxId);
-            TMP_Dropdown boxDropdown = AddLinkUI.transform.Find("DropCasilla").GetComponent<TMP_Dropdown>();
-            boxDropdown.options.Clear();
-            foreach (TableBoxData b in boxes)
-            {
-                if (usedBoxes.Contains(b.id) == false)
+                if (linkCreationObjects.Count > 1)
                 {
-                    boxDropdown.options.Add(new TMP_Dropdown.OptionData() { text = $"Casilla: {b.id}" });
+                    Destroy(linkCreationObjects[linkCreationObjects.Count - 1]);
+                    linkCreationObjects.RemoveAt(linkCreationObjects.Count - 1);
+                    Destroy(linkCreationObjects[linkCreationObjects.Count - 1]);
+                    linkCreationObjects.RemoveAt(linkCreationObjects.Count - 1);
                 }
-            }
+                else
+                {
+                    Destroy(linkCreationObjects[0]);
+                    linkCreationObjects.RemoveAt(0);
+                }
 
-            if (boxDropdown.options.Count < 2)
-            {
-                boxDropdown.value = boxDropdown.options.Count - 1;
-                boxDropdown.RefreshShownValue();
-                boxDropdown.value = 0;
-                boxDropdown.RefreshShownValue();
-            }
-            else if (boxDropdown.options.Count > 0)
-            {
-                boxDropdown.value = boxDropdown.options.Count - 1;
-                boxDropdown.RefreshShownValue();
-                boxDropdown.value = 0;
-                boxDropdown.RefreshShownValue();
+                usedBoxes.Remove(boxId);
+                TMP_Dropdown boxDropdown = AddLinkUI.transform.Find("DropCasilla").GetComponent<TMP_Dropdown>();
+                boxDropdown.options.Clear();
+                foreach (TableBoxData b in boxes)
+                {
+                    if (usedBoxes.Contains(b.id) == false)
+                    {
+                        boxDropdown.options.Add(new TMP_Dropdown.OptionData() { text = $"Casilla: {b.id}" });
+                    }
+                }
+
+                if (boxDropdown.options.Count < 2)
+                {
+                    boxDropdown.value = boxDropdown.options.Count - 1;
+                    boxDropdown.RefreshShownValue();
+                    boxDropdown.value = 0;
+                    boxDropdown.RefreshShownValue();
+                }
+                else if (boxDropdown.options.Count > 0)
+                {
+                    boxDropdown.value = boxDropdown.options.Count - 1;
+                    boxDropdown.RefreshShownValue();
+                    boxDropdown.value = 0;
+                    boxDropdown.RefreshShownValue();
+                }
             }
         });
 
         AddLinkUI.transform.Find("AddCasilla").GetComponent<Button>().onClick.AddListener(addLink);
+
         AddLinkUI.transform.Find("AddLink").GetComponent<Button>().onClick.AddListener(saveLink);
     }
 
@@ -314,10 +319,6 @@ public class LinkEditor : MonoBehaviour
         if (createdLinks == null)
         {
             createdLinks = linksData;
-        }
-        else
-        {
-            createdLinks.AddRange(linksData);
         }
 
         TMP_Dropdown playerDropdown = AddLinkUI.transform.Find("DropJugadores").GetComponent<TMP_Dropdown>();
@@ -530,27 +531,31 @@ public class LinkEditor : MonoBehaviour
             string linkBoxes = "";
             string linkDescription = "";
 
+            if (l.auto == true)
+            {
+                linkType += "AUTO ";
+            }
             if (l.winner == true)
             {
                 linkType += "WIN ";
 
                 int i = 0;
-                foreach (int boxId in l.winnerBoxes)
+                foreach (int box in l.winnerBoxes)
                 {
-                    if (i == l.winnerBoxes.Count - 1)
+                    if (i == linkCreationObjects.Count - 1)
                     {
-                        linkBoxes += boxId.ToString();
+                        linkBoxes += box;
                     }
-                    else
+                    else if (i % 2 == 0)
                     {
-                        linkBoxes += boxId.ToString() + "-> ";
+                        linkBoxes += box + "-> ";
                     }
                     i++;
                 }
             }
             else
             {
-                linkBoxes += l.fromId.ToString() + " -> " + l.toId.ToString();
+                linkBoxes = l.fromId + "-> " + l.toId;
             }
             if (l.playerId != -1)
             {

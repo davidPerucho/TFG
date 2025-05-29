@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using TMPro;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime;
-using UnityEditor.PackageManager;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -346,7 +342,7 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
             diceThrown = false;
             if (table.players[currentlyPlaying].playerType == TablePlayerType.IA)
             {
-                diceToast();
+                StartCoroutine(diceToast());
             }
             else
             {
@@ -1825,7 +1821,7 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
     {
         sfxVolume = data.sfxVolume;
 
-        audioSource.volume = sfxVolume;
+        GetComponent<AudioSource>().volume = sfxVolume;
     }
 
     public void saveData(ref GameData data){}
