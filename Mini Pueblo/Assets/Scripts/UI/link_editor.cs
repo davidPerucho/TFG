@@ -82,6 +82,12 @@ public class LinkEditor : MonoBehaviour
             UIManager.Instance.EnableObject("Links");
             UIManager.Instance.EnableObject("CrearTablero");
 
+            foreach (GameObject l in linkObjects)
+            {
+                Destroy(l);
+            }
+            linkObjects.Clear();
+
             gameObject.SetActive(false);
         });
 

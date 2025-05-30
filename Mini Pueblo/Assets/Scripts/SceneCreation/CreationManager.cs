@@ -207,6 +207,32 @@ public class CreationManager : MonoBehaviour
                         buttonLocal.GetComponent<Image>().color = Color.white;
                         buttonAI.GetComponent<Image>().color = Color.green;
                     }
+                    buttonLocal.GetComponent<Button>().onClick.AddListener(() =>
+                    {
+                        buttonLocal.GetComponent<Image>().color = Color.green;
+                        buttonAI.GetComponent<Image>().color = Color.white;
+
+                        foreach (TablePlayerData player in players)
+                        {
+                            if (player.id == int.Parse(buttonLocal.parent.gameObject.name))
+                            {
+                                player.playerType = TablePlayerType.LOCAL;
+                            }
+                        }
+                    });
+                    buttonAI.GetComponent<Button>().onClick.AddListener(() =>
+                    {
+                        buttonAI.GetComponent<Image>().color = Color.green;
+                        buttonLocal.GetComponent<Image>().color = Color.white;
+
+                        foreach (TablePlayerData player in players)
+                        {
+                            if (player.id == int.Parse(buttonAI.parent.gameObject.name))
+                            {
+                                player.playerType = TablePlayerType.IA;
+                            }
+                        }
+                    });
                     playersUI.Add(newItem);
                 }
             }
@@ -1049,6 +1075,44 @@ public class CreationManager : MonoBehaviour
 
         //Creo el personaje
         createCharacter(characterIndex, int.Parse(locationIndex), PlayerPrefs.GetString("CharacterPhrase", "Vamos a jugar."), sceneName);
+
+        //Elimino el fichero que guardaba información de la creación si existe
+        if (File.Exists(creationSavePath))
+        {
+            string jsonSave = File.ReadAllText(creationSavePath);
+            CreatedScenes createdScenesList = JsonUtility.FromJson<CreatedScenes>(jsonSave);
+
+            int i = 0;
+            if (sceneType == SceneType.PAINTING)
+            {
+                foreach (PaintingSceneData p in createdScenesList.paintingScenes)
+                {
+                    if (p.sceneName == sceneName)
+                    {
+                        break;
+                    }
+                    i++;
+                }
+
+                createdScenesList.paintingScenes.RemoveAt(i);
+            }
+            else if (sceneType == SceneType.TABLE)
+            {
+                foreach (TableSceneData t in createdScenesList.tableScenes)
+                {
+                    if (t.sceneName == sceneName)
+                    {
+                        break;
+                    }
+                    i++;
+                }
+
+                createdScenesList.tableScenes.RemoveAt(i);
+            }
+
+            jsonSave = JsonUtility.ToJson(createdScenesList, true);
+            File.WriteAllText(creationSavePath, jsonSave);
+        }
 
         SceneManager.LoadScene("MainMenu");
     }

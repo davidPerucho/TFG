@@ -210,7 +210,7 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
         foreach (TableTokenData t in table.players[currentlyPlaying].tokens)
         {
             TableTokenData currentToken = t;
-
+            
             GameObject newItem = Instantiate(tokenPrefab, playerTokenScroll);
             newItem.GetComponent<Image>().color = table.players[currentlyPlaying].tokenColor;
             newItem.transform.Find("TextoFicha").GetComponent<TextMeshProUGUI>().text = $"Ficha {currentToken.id}";
@@ -218,14 +218,39 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
             //Funcionalidad botones
             if (table.players[currentlyPlaying].playerType == TablePlayerType.IA)
             {
+                UIManager.Instance.DisableObject("DadoBoton");
+            }
+            else
+            {
+                UIManager.Instance.EnableObject("DadoBoton");
+            }
+
+            if (table.players[currentlyPlaying].playerType == TablePlayerType.IA)
+            {
                 newItem.transform.Find("Select").GetComponent<Button>().gameObject.SetActive(false);
             }
             else
             {
-                newItem.transform.Find("Select").GetComponent<Button>().onClick.AddListener(() =>
+                //Solo permito seleccionar las fichas que se pueden mover
+                bool canMove = false;
+                foreach (TableLinkData l in table.links)
                 {
-                    selectToken(currentToken);
-                });
+                    if (l.fromId == t.boxId)
+                    {
+                        canMove = true;
+                    }
+                }
+                if (canMove == true)
+                {
+                    newItem.transform.Find("Select").GetComponent<Button>().onClick.AddListener(() =>
+                    {
+                        selectToken(currentToken);
+                    });
+                }
+                else
+                {
+                    newItem.transform.Find("Select").GetComponent<Button>().gameObject.SetActive(false);
+                }
             }
             
             if (currentToken.startingBoxId == -1 || table.players[currentlyPlaying].playerType == TablePlayerType.IA)
@@ -239,13 +264,63 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                     viewToken(currentToken);
                 });
             }
+
             playerTokens.Add(newItem);
         }
 
         //Inicio el turno de la IA
         if (table.players[currentlyPlaying].playerType == TablePlayerType.IA)
         {
-            int tokenindex = Random.Range(0, table.players[currentlyPlaying].tokens.Count);
+            //Se seleccionan primero las fichas que no están en el tablero
+            List<int> freeIndex = new List<int>();
+            int i = 0;
+            foreach (TableTokenData t in table.players[currentlyPlaying].tokens)
+            {
+                if (t.boxId == -1)
+                {
+                    freeIndex.Add(i);
+                }
+                i++;
+            }
+
+            int tokenindex = -1;
+            if (freeIndex.Count > 0 && table.dice == false)
+            {
+                tokenindex = freeIndex[Random.Range(0, freeIndex.Count)];
+            }
+            else
+            {
+                //Si todas las fichas estan en el tablero se seleccionan las fichas que se puedan mover
+                List<int> posibleIndex = new List<int>();
+                i = 0;
+                foreach (TableTokenData t in table.players[currentlyPlaying].tokens)
+                {
+                    bool canMove = false;
+                    foreach (TableLinkData l in table.links)
+                    {
+                        if (l.fromId == t.boxId)
+                        {
+                            canMove = true;
+                        }
+                    }
+                    if (canMove == true)
+                    {
+                        posibleIndex.Add(i);
+                    }
+                    i++;
+                }
+
+                if (posibleIndex.Count > 0)
+                {
+                    tokenindex = posibleIndex[Random.Range(0, posibleIndex.Count)];
+                }
+                //Si no se puede mover ninguna ficha y la partida no se ha acabado muestro un error
+                else
+                {
+                    errorUI.SetActive(true);
+                }
+            }
+            
             selectToken(table.players[currentlyPlaying].tokens[tokenindex]);
         }
     }
@@ -270,6 +345,7 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                     if (child.gameObject.GetComponent<Image>().color == table.players[currentlyPlaying].tokenColor)
                     {
                         child.Find("LuzFicha").gameObject.SetActive(true);
+                        break;
                     }
                 }
             }
@@ -314,6 +390,7 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                     if (child.gameObject.GetComponent<Image>().color == table.players[currentlyPlaying].tokenColor)
                     {
                         child.Find("LuzFicha").gameObject.SetActive(true);
+                        break;
                     }
                 }
             }
@@ -367,9 +444,23 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
             int id = int.Parse(b.transform.Find("TextoCasilla").GetComponent<TextMeshProUGUI>().text);
             if (id == boxId)
             {
+                //Obtengo la posición a la que tengo que mover el tablero para mostrar la casilla
                 Canvas.ForceUpdateCanvases();
                 Vector2 initialValue = (Vector2)boardBar.transform.InverseTransformPoint(boardBar.content.position) - (Vector2)boardBar.transform.InverseTransformPoint(b.transform.position);
-                boardBar.content.anchoredPosition = new Vector2(initialValue.x + boardBar.viewport.rect.width / 2, initialValue.y - boardBar.viewport.rect.height / 2);
+                Vector2 objectPosition = new Vector2(initialValue.x + boardBar.viewport.rect.width / 2, initialValue.y - boardBar.viewport.rect.height / 2);
+
+                //Delimito la posición en caso de que la casilla se encuentre cerca del borde del tablero para evitar rebotes
+                float minX = -(boardBar.content.rect.width - boardBar.viewport.rect.width);
+                float maxX = 0;
+
+                float minY = -(boardBar.content.rect.height / 2 - boardBar.viewport.rect.height / 2);
+                float maxY = (boardBar.content.rect.height / 2 - boardBar.viewport.rect.height / 2);
+
+                objectPosition.x = Mathf.Clamp(objectPosition.x, minX, maxX);
+                objectPosition.y = Mathf.Clamp(objectPosition.y, minY, maxY);
+
+                //Asigno la nueva posición al tablero
+                boardBar.content.anchoredPosition = objectPosition;
             }
         }
     }
@@ -397,6 +488,10 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
 
         while (canDrop == false)
         {
+            canEat = false;
+            canEat = false;
+            numTokens = -1;
+
             foreach (GameObject tokenUI in playerTokens)
             {
                 tokenUI.transform.Find("Select").GetComponent<Button>().enabled = false;
@@ -686,12 +781,24 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
         if (posibleLinks.Count == 0)
         {
             //ERROR
-            error = true;
+            foreach (TableBoxData b in table.boxes)
+            {
+                if (b.id == token.boxId && b.winner == false)
+                {
+                    error = true;
+                }
+            }
         }
         else
         {
             while (continueSelection == true)
             {
+                canEat = false;
+                canEat = false;
+                numTokens = -1;
+                canMove = true;
+                canEat = false;
+
                 TableLinkData selectedLink = null;
 
                 if (table.players[currentlyPlaying].playerType == TablePlayerType.IA)
@@ -1161,6 +1268,13 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
         //Muevo la ficha el número de casillas que marca el dado
         for (int i = 0; i < diceNum; i++)
         {
+            //Reseteo las variables
+            canEat = false;
+            maxTokens = false;
+            numTokens = -1;
+            canMove = true;
+            error = false;
+
             List<TableLinkData> posibleLinks = new List<TableLinkData>();
 
             //Miro cuales son los links posibles
@@ -1179,7 +1293,13 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
             if (posibleLinks.Count == 0)
             {
                 //ERROR
-                error = true;
+                foreach (TableBoxData b in table.boxes)
+                {
+                    if (b.id == token.boxId && b.winner == false)
+                    {
+                        error = true;
+                    }
+                }
             }
             //Si solo hay un camino posible muevo la ficha en esa dirección
             else if (posibleLinks.Count == 1)
@@ -1225,17 +1345,17 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                             }
                         }
 
-                        if (canEat == false && numTokens <= boxTokens)
+                        if (numTokens > boxTokens)
                         {
-                            canMove = false;
+                            canMove = true;
                         }
-                        else if (canEat == true && (playersWithTokens.Count > 0 || playersWithTokens.Contains(table.players[currentlyPlaying].id) == false))
+                        else if (canEat == true && playersWithTokens.Count > 0 && i == diceNum - 1)
                         {
                             canMove = true;
                         }
                         else
                         {
-                            canMove = true;
+                            canMove = false;
                         }
                     }
 
@@ -1263,7 +1383,7 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                             else if (posibleLinks[0].toId == boxId)
                             {
                                 //Compruebo si hay que comer alguna ficha
-                                if (canEat == true)
+                                if (canEat == true && i == diceNum - 1)
                                 {
                                     nextBoxId = boxId;
                                     for (int j = 0; j < content.childCount; j++)
@@ -1398,7 +1518,7 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                                 if (t.boxId == selectedLink.toId)
                                 {
                                     boxTokens++;
-                                    if (playersWithTokens.Contains(p.id) == false)
+                                    if (playersWithTokens.Contains(p.id) == false && p.id != table.players[currentlyPlaying].id)
                                     {
                                         playersWithTokens.Add(p.id);
                                     }
@@ -1406,17 +1526,17 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                             }
                         }
 
-                        if (canEat == false && numTokens <= boxTokens)
+                        if (numTokens > boxTokens)
                         {
-                            canMove = false;
+                            canMove = true;
                         }
-                        else if (canEat == true && (playersWithTokens.Count > 0 || playersWithTokens.Contains(table.players[currentlyPlaying].id) == false))
+                        else if (canEat == true && playersWithTokens.Count > 0 && i == diceNum - 1)
                         {
                             canMove = true;
                         }
                         else
                         {
-                            canMove = true;
+                            canMove = false;
                         }
                     }
 
@@ -1444,7 +1564,7 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                             else if (selectedLink.toId == boxId)
                             {
                                 //Compruebo si hay que comer alguna ficha
-                                if (canEat == true)
+                                if (canEat == true && i == diceNum - 1)
                                 {
                                     nextBoxId = boxId;
                                     for (int j = 0; j < content.childCount; j++)
@@ -1515,6 +1635,9 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                 }
             }
 
+            //Muevo el tablero para mostrar en el centro la nueva posición del token
+            viewBox(token.boxId);
+
             //Reproduzco el sonido de la ficha y espero un segundo
             audioSource.PlayOneShot(tokenMoveSFX);
             yield return new WaitForSeconds(1);
@@ -1569,17 +1692,17 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                     }
                 }
 
-                if (canEat == false && numTokens <= boxTokens)
+                if (numTokens > boxTokens)
                 {
-                    canMove = false;
+                    canMove = true;
                 }
-                else if (canEat == true && (playersWithTokens.Count > 0 || playersWithTokens.Contains(table.players[currentlyPlaying].id) == false))
+                else if (canEat == true && playersWithTokens.Count > 0)
                 {
                     canMove = true;
                 }
                 else
                 {
-                    canMove = true;
+                    canMove = false;
                 }
             }
 
@@ -1671,8 +1794,11 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
             {
                 //BLOQUEO
                 infoUI.SetActive(true);
-                infoUI.transform.Find("TextoInfo").GetComponent<TextMeshProUGUI>().text = "La ficha que quieres mover está bloqueada";
+                infoUI.transform.Find("TextoInfo").GetComponent<TextMeshProUGUI>().text = "El camino está bloqueado";
             }
+
+            //Muevo el tablero para mostrar en el centro la nueva posición del token
+            viewBox(token.boxId);
         }
 
         //Compruebo las condiciones de victoria
@@ -1757,6 +1883,8 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
         //Paso al siguiente turno
         if (gameEnd == false)
         {
+            UIManager.Instance.DisableObject("Dado");
+
             //Quito el resalte de la ficha seleccionada
             foreach (GameObject b in boardBoxes)
             {
