@@ -9,7 +9,7 @@ using UnityEngine;
 public enum SceneType
 {
     PAINTING,
-    SHOOTING,
+    EXTERNAL,
     TABLE
 }
 

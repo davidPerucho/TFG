@@ -287,6 +287,7 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.AddListenerToButton("Si", saveScene);
         UIManager.Instance.AddListenerToButton("Pintar", paintSceneOptions);
         UIManager.Instance.AddListenerToButton("JuegoDeMesa", tableSceneOptions);
+        UIManager.Instance.AddListenerToButton("JuegoExterno", createExternalScene);
         UIManager.Instance.AddListenerToButton("Crear", () => { StartCoroutine(createScene()); });
         UIManager.Instance.AddListenerToButton("CrearTablero", () => { StartCoroutine(createScene()); });
         UIManager.Instance.AddListenerToButton("VolverTablero", () => {
@@ -601,6 +602,7 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.DisableObject("Pintar");
         UIManager.Instance.DisableObject("TextoSeleccion");
         UIManager.Instance.DisableObject("JuegoDeMesa");
+        UIManager.Instance.DisableObject("JuegoExterno");
 
         UIManager.Instance.EnableObject("TextoPrompt");
         UIManager.Instance.EnableObject("InputPrompt");
@@ -689,6 +691,7 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.DisableObject("TextoSeleccion");
         UIManager.Instance.DisableObject("Pintar");
         UIManager.Instance.DisableObject("JuegoDeMesa");
+        UIManager.Instance.DisableObject("JuegoExterno");
 
         UIManager.Instance.EnableObject("Jugadores");
         UIManager.Instance.EnableObject("Tablero");
@@ -699,6 +702,17 @@ public class CreationManager : MonoBehaviour
         UIManager.Instance.AddListenerToButton("Jugadores", tablePlayerSceneOptions);
         UIManager.Instance.AddListenerToButton("Tablero", tableBoardSceneOptions);
         UIManager.Instance.AddListenerToButton("Links", tableLinksSceneOptions);
+    }
+
+    /// <summary>
+    /// Añade un juego externo.
+    /// </summary>
+    void createExternalScene()
+    {
+        //Cambio el tipo de escenas
+        sceneType = SceneType.EXTERNAL;
+
+        StartCoroutine(createScene());
     }
 
     /// <summary>

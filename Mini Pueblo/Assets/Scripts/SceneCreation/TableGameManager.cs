@@ -453,8 +453,8 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                 float minX = -(boardBar.content.rect.width - boardBar.viewport.rect.width);
                 float maxX = 0;
 
-                float minY = -(boardBar.content.rect.height / 2 - boardBar.viewport.rect.height / 2);
-                float maxY = (boardBar.content.rect.height / 2 - boardBar.viewport.rect.height / 2);
+                float minY = 0;
+                float maxY = (boardBar.content.rect.height - boardBar.viewport.rect.height);
 
                 objectPosition.x = Mathf.Clamp(objectPosition.x, minX, maxX);
                 objectPosition.y = Mathf.Clamp(objectPosition.y, minY, maxY);

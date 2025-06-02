@@ -3,8 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.Text;
+using System.Security.Cryptography;
 
 /// <summary>
 /// Esta clase se encarga de almacenar las conversaciones y acciones de los NPC.
@@ -134,6 +140,10 @@ public class CharacterTalk : MonoBehaviour, IDataPersistence
                         DataPersitence.instance.saveGame();
                         SceneManager.LoadScene("TableGame");
                     }
+                    else
+                    {
+                        loadExternalScene();
+                    }
                 }
             }
         }
@@ -142,6 +152,43 @@ public class CharacterTalk : MonoBehaviour, IDataPersistence
             DataPersitence.instance.saveGame();
             SceneManager.LoadScene(sceneName);
         }
+    }
+
+    /// <summary>
+    /// Carga una escena externa al proyecto.
+    /// </summary>
+    void loadExternalScene()
+    {
+        //string externalCatalogPath = "";
+        //
+        ////Obtengo los datos de la escena tanto el catálogo como los ajustes
+        //if (Application.platform == RuntimePlatform.Android)
+        //{
+        //    externalCatalogPath = System.IO.Path.Combine(Application.persistentDataPath, $"{sceneName}/Android/catalog.json");
+        //}
+        //else if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor)
+        //{
+        //    externalCatalogPath = System.IO.Path.Combine(Application.persistentDataPath, $"{sceneName}/Windows/catalog.json");
+        //}
+        //
+        ////Cargo la escena
+        //Addressables.LoadContentCatalogAsync(externalCatalogPath).Completed += (catalogHandle) =>
+        //{
+        //    if (catalogHandle.Status == AsyncOperationStatus.Succeeded)
+        //    {
+        //        DataPersitence.instance.saveGame();
+        //        Addressables.LoadSceneAsync($"Assets/Scenes/{sceneName}.prefab", LoadSceneMode.Single);
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError("Error cargando catálogo externo");
+        //    }
+        //};
+
+        PlayerPrefs.SetString("PrefabName", sceneName);
+        PlayerPrefs.Save();
+        DataPersitence.instance.saveGame();
+        SceneManager.LoadScene("DynamicScene");
     }
 
     /// <summary>
