@@ -11,6 +11,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Security.Cryptography;
+using System.Reflection;
+using System.Threading.Tasks;
 
 /// <summary>
 /// Esta clase se encarga de almacenar las conversaciones y acciones de los NPC.
@@ -142,13 +144,18 @@ public class CharacterTalk : MonoBehaviour, IDataPersistence
                     }
                     else
                     {
-                        loadExternalScene();
+                       loadExternalScene();
                     }
                 }
             }
         }
         else
         {
+            if (sceneName == "MandalaPainting")
+            {
+                PlayerPrefs.SetString("SceneToLoad", "");
+                PlayerPrefs.Save();
+            }
             DataPersitence.instance.saveGame();
             SceneManager.LoadScene(sceneName);
         }
@@ -159,36 +166,63 @@ public class CharacterTalk : MonoBehaviour, IDataPersistence
     /// </summary>
     void loadExternalScene()
     {
-        //string externalCatalogPath = "";
-        //
-        ////Obtengo los datos de la escena tanto el catálogo como los ajustes
-        //if (Application.platform == RuntimePlatform.Android)
-        //{
-        //    externalCatalogPath = System.IO.Path.Combine(Application.persistentDataPath, $"{sceneName}/Android/catalog.json");
-        //}
-        //else if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor)
-        //{
-        //    externalCatalogPath = System.IO.Path.Combine(Application.persistentDataPath, $"{sceneName}/Windows/catalog.json");
-        //}
-        //
-        ////Cargo la escena
-        //Addressables.LoadContentCatalogAsync(externalCatalogPath).Completed += (catalogHandle) =>
-        //{
-        //    if (catalogHandle.Status == AsyncOperationStatus.Succeeded)
-        //    {
-        //        DataPersitence.instance.saveGame();
-        //        Addressables.LoadSceneAsync($"Assets/Scenes/{sceneName}.prefab", LoadSceneMode.Single);
-        //    }
-        //    else
-        //    {
-        //        Debug.LogError("Error cargando catálogo externo");
-        //    }
-        //};
+        string externalCatalogPath = "";
+        string dllPath = System.IO.Path.Combine(Application.persistentDataPath, $"{sceneName}/{sceneName}.dll");
 
-        PlayerPrefs.SetString("PrefabName", sceneName);
-        PlayerPrefs.Save();
-        DataPersitence.instance.saveGame();
-        SceneManager.LoadScene("DynamicScene");
+        //En caso de que exista código para cargar lo cargo
+        if (File.Exists(dllPath))
+        {
+            if (loadSceneCode(dllPath) == false)
+            {
+                Debug.LogError("Error en la carga del dll");
+                SceneManager.LoadScene("Hub");
+                return;
+            }
+        }
+
+        //Obtengo los datos de la escena tanto el catálogo como los ajustes
+        if (Application.platform == RuntimePlatform.Android)
+        {
+            externalCatalogPath = System.IO.Path.Combine(Application.persistentDataPath, $"{sceneName}/Android/StandaloneWindows64/catalog_1.0.json");
+        }
+        else if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor)
+        {
+            externalCatalogPath = System.IO.Path.Combine(Application.persistentDataPath, $"{sceneName}/Windows/StandaloneWindows64/catalog_1.0.json");
+        }
+        
+        //Cargo la escena
+        Addressables.LoadContentCatalogAsync(externalCatalogPath).Completed += (catalogHandle) =>
+        {
+            if (catalogHandle.Status == AsyncOperationStatus.Succeeded)
+            {
+                //Guardo datos y cargo la nueva escena
+                DataPersitence.instance.saveGame();
+                Addressables.LoadSceneAsync($"Assets/Scenes/{sceneName}.unity", LoadSceneMode.Single);
+            }
+            else
+            {
+                SceneManager.LoadScene("Hub");
+                return;
+            }
+        };
+
+        //PlayerPrefs.SetString("PrefabName", sceneName);
+        //PlayerPrefs.Save();
+        //DataPersitence.instance.saveGame();
+        //SceneManager.LoadScene("DynamicScene");
+    }
+
+    /// <summary>
+    /// Carga el código para una escena almacenado en un dll.
+    /// </summary>
+    /// <param name="dllPath">Ruta del dll.</param>
+    /// <returns>Devuelve true si todo ha ido bien, false en caso contrario.</returns>
+    bool loadSceneCode(string dllPath)
+    {
+        byte[] dllBytes = File.ReadAllBytes(dllPath);
+        Assembly.Load(dllBytes);
+
+        return true;
     }
 
     /// <summary>

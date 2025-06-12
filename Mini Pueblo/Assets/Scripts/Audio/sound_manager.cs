@@ -15,6 +15,9 @@ public class SoundManager : MonoBehaviour, IDataPersistence
     [SerializeField]
     GameObject audioSFX; //Fuente de audio para los efectos de sonido del juego
 
+    //[HideInInspector]
+    //public bool sfxEnabled = true; //True si se pueden reproducir los efectos de sonido
+
     public float increaseDecrase = 0.4f; //Cuanto se modifica el volumen al subir o bajar
 
     //Singleton
@@ -67,6 +70,7 @@ public class SoundManager : MonoBehaviour, IDataPersistence
     {
         GameObject sfx = Instantiate(audioSFX, audioPosition);
 
+        sfx.gameObject.tag = "SFX";
         sfx.GetComponent<AudioSource>().loop = true;
         sfx.GetComponent<AudioSource>().clip = audioClip;
         sfx.GetComponent<AudioSource>().volume = volume * sfxVolume;
@@ -85,6 +89,7 @@ public class SoundManager : MonoBehaviour, IDataPersistence
     {
         GameObject sfx = Instantiate(audioSFX, audioPosition);
 
+        sfx.gameObject.tag = "SFX";
         sfx.GetComponent<AudioSource>().loop = false;
         sfx.GetComponent<AudioSource>().clip = audioClip;
         sfx.GetComponent<AudioSource>().volume = volume * sfxVolume;

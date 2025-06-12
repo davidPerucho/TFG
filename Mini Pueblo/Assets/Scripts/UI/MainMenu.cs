@@ -64,10 +64,23 @@ public class MainMenu : MonoBehaviour, IDataPersistence
         {
             UIManager.Instance.DisableButton("Jugar");
         }
+        UIManager.Instance.AddListenerToButton("Salir", exitGame);
 
         //Cargo los valores del menu de opciones
         DataPersitence.instance.reloadObjects();
         DataPersitence.instance.loadGame();
+    }
+
+    /// <summary>
+    /// Función que se encarga de salir del juego.
+    /// </summary>
+    void exitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 
     /// <summary>
@@ -88,6 +101,7 @@ public class MainMenu : MonoBehaviour, IDataPersistence
         UIManager.Instance.DisableObject("Nueva");
         UIManager.Instance.DisableObject("Jugar");
         UIManager.Instance.DisableObject("Opciones");
+        UIManager.Instance.DisableObject("Salir");
 
         UIManager.Instance.EnableObject("VolverOpciones");
         UIManager.Instance.EnableObject("Resetear");
@@ -115,6 +129,7 @@ public class MainMenu : MonoBehaviour, IDataPersistence
         UIManager.Instance.EnableObject("Nueva");
         UIManager.Instance.EnableObject("Jugar");
         UIManager.Instance.EnableObject("Opciones");
+        UIManager.Instance.EnableObject("Salir");
     }
 
     /// <summary>
@@ -161,6 +176,7 @@ public class MainMenu : MonoBehaviour, IDataPersistence
         UIManager.Instance.DisableObject("Jugar");
         UIManager.Instance.DisableObject("CrearMenu");
         UIManager.Instance.DisableObject("Opciones");
+        UIManager.Instance.DisableObject("Salir");
 
         UIManager.Instance.EnableObject("Continuar");
         UIManager.Instance.EnableObject("Volver");
@@ -397,6 +413,7 @@ public class MainMenu : MonoBehaviour, IDataPersistence
         UIManager.Instance.EnableObject("Jugar");
         UIManager.Instance.EnableObject("CrearMenu");
         UIManager.Instance.EnableObject("Opciones");
+        UIManager.Instance.EnableObject("Salir");
 
         if (fileDataManager.file_exists() == false)
         {
@@ -425,6 +442,7 @@ public class MainMenu : MonoBehaviour, IDataPersistence
         UIManager.Instance.DisableButton("Nueva");
         UIManager.Instance.DisableButton("Jugar");
         UIManager.Instance.DisableButton("Opciones");
+        UIManager.Instance.DisableButton("Salir");
         UIManager.Instance.DisableButton("CrearMenu");
     }
 

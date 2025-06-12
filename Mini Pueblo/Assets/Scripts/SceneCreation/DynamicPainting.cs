@@ -23,8 +23,15 @@ public class DynamicPainting : MonoBehaviour
         string filePath = Path.Combine(Application.persistentDataPath, "Scenes/" + sceneToLoad + ".json");
 
         //Leo la información de los personajes y los creo en la escena
-        string json = File.ReadAllText(filePath);
-        sceneData = JsonUtility.FromJson<PaintingSceneData>(json);
+        if (File.Exists(filePath))
+        {
+            string json = File.ReadAllText(filePath);
+            sceneData = JsonUtility.FromJson<PaintingSceneData>(json);
+        }
+        else
+        {
+            sceneData = null;
+        }
 
         //Mandala como tema por defecto
         if (sceneData == null || sceneData.sceneThemeEnglish == "")
@@ -74,6 +81,9 @@ public class DynamicPainting : MonoBehaviour
             }
         }
 
-        botonCrear.text = $"CREAR {sceneData.sceneThemeSpanish.ToUpper()}";
+        if (GetComponent<DynamicPainting>().sceneData.sceneThemeEnglish != "mandala")
+        {
+            botonCrear.text = $"CREAR {sceneData.sceneThemeSpanish.ToUpper()}";
+        }
     }
 }

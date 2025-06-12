@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using System.IO;
 
 /// <summary>
 /// Clase que se encarga de la persistencia de datos de la escena.

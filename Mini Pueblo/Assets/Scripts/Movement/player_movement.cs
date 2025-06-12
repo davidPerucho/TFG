@@ -1,6 +1,9 @@
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.AI;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 /// <summary>
 /// Clase encargada de manejar los movimientos y animaciones del jugador.
@@ -56,9 +59,13 @@ public class player_movement : MonoBehaviour, IDataPersistence
         else
         {
             playerAnimator.SetBool("moving", true); //Se inicia animación de movimiento
-            if(playerAudio == null)
+            if(playerAudio == null && Time.timeScale == 1)
             {
                 playerAudio = SoundManager.instance.addSFXLoop(transform, runningAudio, 0.8f); //Se inicia el sonido de correr del jugador
+            }
+            else if (Time.timeScale != 1)
+            {
+                Destroy(playerAudio);
             }
             faceMouseOrNPC();  // Continuar rotando hasta la posición de destino
         }

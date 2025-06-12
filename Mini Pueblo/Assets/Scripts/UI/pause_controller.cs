@@ -37,6 +37,7 @@ public class PauseController : MonoBehaviour
         if (SoundManager.instance != null)
         {
             SoundManager.instance.volumeMusicDown();
+            SoundManager.instance.EliminarTodosLosSFX();
         }
     }
 

@@ -337,6 +337,7 @@ public class PaintImage : MonoBehaviour, IDataPersistence
     {
         sfxVolume = data.sfxVolume;
 
+        audioSource = GetComponent<AudioSource>();
         audioSource.volume = sfxVolume;
     }
 

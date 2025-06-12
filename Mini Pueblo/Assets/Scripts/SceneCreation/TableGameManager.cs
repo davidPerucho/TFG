@@ -220,7 +220,7 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
             {
                 UIManager.Instance.DisableObject("DadoBoton");
             }
-            else
+            else if (table.dice == true)
             {
                 UIManager.Instance.EnableObject("DadoBoton");
             }
@@ -233,11 +233,18 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
             {
                 //Solo permito seleccionar las fichas que se pueden mover
                 bool canMove = false;
-                foreach (TableLinkData l in table.links)
+                if (currentToken.boxId == -1)
                 {
-                    if (l.fromId == t.boxId)
+                    canMove = true;
+                }
+                else
+                {
+                    foreach (TableLinkData l in table.links)
                     {
-                        canMove = true;
+                        if (l.fromId == currentToken.boxId)
+                        {
+                            canMove = true;
+                        }
                     }
                 }
                 if (canMove == true)
@@ -290,34 +297,70 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
             }
             else
             {
-                //Si todas las fichas estan en el tablero se seleccionan las fichas que se puedan mover
+                //Si todas las fichas estan en el tablero se seleccionan las fichas que se puedan mover priorizando las que no están en casillas de victoria
                 List<int> posibleIndex = new List<int>();
                 i = 0;
                 foreach (TableTokenData t in table.players[currentlyPlaying].tokens)
                 {
-                    bool canMove = false;
-                    foreach (TableLinkData l in table.links)
+                    foreach (TableBoxData b in table.boxes)
                     {
-                        if (l.fromId == t.boxId)
+                        if (t.boxId == b.id)
                         {
-                            canMove = true;
+                            if (b.winner == false)
+                            {
+                                bool canMove = false;
+                                foreach (TableLinkData l in table.links)
+                                {
+                                    if (l.fromId == t.boxId)
+                                    {
+                                        canMove = true;
+                                    }
+                                }
+                                if (canMove == true)
+                                {
+                                    posibleIndex.Add(i);
+                                }
+                                i++;
+                            }
+                            else
+                            {
+                                break;
+                            }
                         }
                     }
-                    if (canMove == true)
-                    {
-                        posibleIndex.Add(i);
-                    }
-                    i++;
                 }
 
                 if (posibleIndex.Count > 0)
                 {
                     tokenindex = posibleIndex[Random.Range(0, posibleIndex.Count)];
                 }
-                //Si no se puede mover ninguna ficha y la partida no se ha acabado muestro un error
                 else
                 {
-                    errorUI.SetActive(true);
+                    foreach (TableTokenData t in table.players[currentlyPlaying].tokens)
+                    {
+                        bool canMove = false;
+                        foreach (TableLinkData l in table.links)
+                        {
+                            if (l.fromId == t.boxId)
+                            {
+                                canMove = true;
+                            }
+                        }
+                        if (canMove == true)
+                        {
+                            posibleIndex.Add(i);
+                        }
+                        i++;
+                    }
+                    if (posibleIndex.Count > 0)
+                    {
+                        tokenindex = posibleIndex[Random.Range(0, posibleIndex.Count)];
+                    }
+                    //Si no se puede mover ninguna ficha y la partida no se ha acabado muestro un error
+                    else
+                    {
+                        errorUI.SetActive(true);
+                    }
                 }
             }
             
@@ -1304,8 +1347,15 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
             //Si solo hay un camino posible muevo la ficha en esa dirección
             else if (posibleLinks.Count == 1)
             {
-                //Compruebo que el número del dado sea suficiente
-                if (posibleLinks[0].minNum <= diceNum - i || posibleLinks[0].minNum == -1)
+                //Compruebo que el número del dado sea suficiente en la primera tirada
+                if ((posibleLinks[0].minNum <= diceNum - i && i != 0))
+                {
+                    //BLOQUEO
+                    infoUI.SetActive(true);
+                    infoUI.transform.Find("TextoInfo").GetComponent<TextMeshProUGUI>().text = "La ficha que quieres mover está bloqueada";
+                    break;
+                }
+                else if ((posibleLinks[0].minNum <= diceNum - i && i == 0) || posibleLinks[0].minNum == -1)
                 {
                     //Compruebo máximo número de fichas y la posibilidad de que se puedan comer fichas
                     foreach (TableBoxData b in table.boxes)
@@ -1438,12 +1488,19 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                                 }
                             }
                         }
+
+                        //En caso de que hubiese un límite de dado y se haya pasado la tirada acaba
+                        if (posibleLinks[0].minNum != -1)
+                        {
+                            break;
+                        }
                     }
                     else
                     {
                         //BLOQUEO
                         infoUI.SetActive(true);
                         infoUI.transform.Find("TextoInfo").GetComponent<TextMeshProUGUI>().text = "La ficha que quieres mover está bloqueada";
+                        break;
                     }
                 }
                 else
@@ -1486,7 +1543,14 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                 }
 
                 //Compruebo que el número del dado sea suficiente
-                if (selectedLink.minNum <= diceNum - i || selectedLink.minNum == -1)
+                if ((selectedLink.minNum <= diceNum - i && i != 0))
+                {
+                    //BLOQUEO
+                    infoUI.SetActive(true);
+                    infoUI.transform.Find("TextoInfo").GetComponent<TextMeshProUGUI>().text = "La ficha que quieres mover está bloqueada";
+                    break;
+                }
+                if ((selectedLink.minNum <= diceNum - i && i == 0) || selectedLink.minNum == -1)
                 {
                     //Compruebo máximo número de fichas y la posibilidad de que se puedan comer fichas
                     foreach (TableBoxData b in table.boxes)
@@ -1625,6 +1689,13 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                         //BLOQUEO
                         infoUI.SetActive(true);
                         infoUI.transform.Find("TextoInfo").GetComponent<TextMeshProUGUI>().text = "La ficha que quieres mover está bloqueada";
+                        break;
+                    }
+
+                    //En caso de que hubiese un bloqueo y se haya superado la tirada se acaba
+                    if (selectedLink.minNum != -1)
+                    {
+                        break;
                     }
                 }
                 else
@@ -1632,6 +1703,7 @@ public class TableGameManager : MonoBehaviour, IDataPersistence
                     //INSUFICIENTE
                     infoUI.SetActive(true);
                     infoUI.transform.Find("TextoInfo").GetComponent<TextMeshProUGUI>().text = $"Necesitas sacar un {posibleLinks[0].minNum} o más para poder salir de esta casilla";
+                    break;
                 }
             }
 
