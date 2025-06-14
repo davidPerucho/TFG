@@ -2,17 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceLocations;
 using UnityEngine.SceneManagement;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Text;
-using System.Security.Cryptography;
-using System.Reflection;
-using System.Threading.Tasks;
 
 /// <summary>
 /// Esta clase se encarga de almacenar las conversaciones y acciones de los NPC.
@@ -167,18 +163,6 @@ public class CharacterTalk : MonoBehaviour, IDataPersistence
     void loadExternalScene()
     {
         string externalCatalogPath = "";
-        string dllPath = System.IO.Path.Combine(Application.persistentDataPath, $"{sceneName}/{sceneName}.dll");
-
-        //En caso de que exista código para cargar lo cargo
-        if (File.Exists(dllPath))
-        {
-            if (loadSceneCode(dllPath) == false)
-            {
-                Debug.LogError("Error en la carga del dll");
-                SceneManager.LoadScene("Hub");
-                return;
-            }
-        }
 
         //Obtengo los datos de la escena tanto el catálogo como los ajustes
         if (Application.platform == RuntimePlatform.Android)
@@ -189,12 +173,35 @@ public class CharacterTalk : MonoBehaviour, IDataPersistence
         {
             externalCatalogPath = System.IO.Path.Combine(Application.persistentDataPath, $"{sceneName}/Windows/StandaloneWindows64/catalog_1.0.json");
         }
-        
+
         //Cargo la escena
         Addressables.LoadContentCatalogAsync(externalCatalogPath).Completed += (catalogHandle) =>
         {
             if (catalogHandle.Status == AsyncOperationStatus.Succeeded)
             {
+                //Cargo los prefabs que usa la escena
+                foreach (var key in Addressables.ResourceLocators.SelectMany(l => l.Keys).Distinct())
+                {
+                    if (key is string keyStr && keyStr.EndsWith(".prefab"))
+                    {
+                        Addressables.LoadAssetAsync<GameObject>(keyStr).Completed += handle =>
+                        {
+                            if (handle.Status == AsyncOperationStatus.Succeeded)
+                            {
+                                GameObject prefab = handle.Result;
+                                string prefabName = keyStr.Replace(".prefab", "").Split("/").Last();
+
+                                PrefabDictionary.instance.loadedPrefabs.Add(prefabName, prefab);
+                                Debug.Log($"Prefab '{prefabName}' cargado y agregado.");
+                            }
+                            else
+                            {
+                                Debug.LogError($"Error al cargar el prefab con clave: {keyStr}");
+                            }
+                        };
+                    }
+                }
+
                 //Guardo datos y cargo la nueva escena
                 DataPersitence.instance.saveGame();
                 Addressables.LoadSceneAsync($"Assets/Scenes/{sceneName}.unity", LoadSceneMode.Single);
@@ -210,19 +217,6 @@ public class CharacterTalk : MonoBehaviour, IDataPersistence
         //PlayerPrefs.Save();
         //DataPersitence.instance.saveGame();
         //SceneManager.LoadScene("DynamicScene");
-    }
-
-    /// <summary>
-    /// Carga el código para una escena almacenado en un dll.
-    /// </summary>
-    /// <param name="dllPath">Ruta del dll.</param>
-    /// <returns>Devuelve true si todo ha ido bien, false en caso contrario.</returns>
-    bool loadSceneCode(string dllPath)
-    {
-        byte[] dllBytes = File.ReadAllBytes(dllPath);
-        Assembly.Load(dllBytes);
-
-        return true;
     }
 
     /// <summary>
