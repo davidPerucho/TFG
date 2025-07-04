@@ -12,7 +12,9 @@ using System;
 public class ImageGenerator : MonoBehaviour
 {
     string baseUrl = "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key="; //Ruta de la api para generar imágenes
-    string apiKey = "AIzaSyCt94fTBRR6J-kO3XHo8WkC8aAGKIyqedI"; //Clave API
+
+    [SerializeField]
+    string apiKey; //Clave API
     public string prompt; //Prompt utilizado para generar la imagen
 
     public int width; //Ancho deseado para la imagen generada
